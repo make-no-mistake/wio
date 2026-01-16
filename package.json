@@ -1,6 +1,6 @@
 {
   "name": "wio",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
@@ -14,12 +14,12 @@
     "typescript": "latest"
   },
   "dependencies": {
-    "fastify": "latest",
+    "fastify": "^5.7.1",
     "prettier": "latest",
     "typescript-eslint": "^8.53.0"
   },
   "scripts": {
-    "dev": "bun --watch index.ts",
+    "dev": "bun --watch src/index.ts",
     "up": "docker compose up -d",
     "down": "docker compose down",
     "logs": "docker compose logs -f",
