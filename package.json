@@ -1,0 +1,29 @@
+{
+  "name": "wio",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "fastify": "latest",
+    "prettier": "latest",
+    "typescript-eslint": "^8.53.0"
+  },
+  "scripts": {
+    "dev": "bun --watch index.ts",
+    "up": "docker compose up -d",
+    "down": "docker compose down",
+    "logs": "docker compose logs -f",
+    "lint": "bun eslint . && bun prettier --check --write .",
+    "lint:fix": "bun eslint . --fix && bun prettier --write ."
+  }
+}

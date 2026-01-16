@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wio-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wio
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 50ms
+      timeout: 50ms
+      retries: 50
+    networks:
+      - wio-network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wio-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/wio
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - wio-network
+
+networks:
+  wio-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
