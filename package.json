@@ -25,5 +25,8 @@
     "logs": "docker compose logs -f",
     "lint": "bun eslint . && bun prettier --check --write .",
     "lint:fix": "bun eslint . --fix && bun prettier --write ."
+  },
+  "bin": {
+    "wio": "cli/main.ts"
   }
 }
