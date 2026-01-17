@@ -1,10 +1,17 @@
 import Fastify from "fastify";
 import { sql } from "bun";
-import { appAndSiteSpaceSwitch } from "./hooks/appAndSiteSpaceSwitch";
+import { appAndSiteSpaceSwitch } from "./callbacks/appAndSiteSpaceSwitch";
+import { retrieveSiteAsset } from "./site/assets";
+import { initDatabase } from "./db/schema";
+import { initStorage } from "./storage";
 
 const fastify = Fastify({
   logger: true,
+  rewriteUrl: appAndSiteSpaceSwitch,
 });
+
+await initDatabase();
+await initStorage();
 
 fastify.get("/", function (request, reply) {
   reply.send({ hello: "world" });
@@ -15,14 +22,22 @@ fastify.get("/time", async () => {
   return result[0];
 });
 
-fastify.addHook("onRequest", (request, reply) =>
-  appAndSiteSpaceSwitch(fastify, request, reply),
-);
+fastify.get("/all", async () => {
+  const sites = await sql`SELECT * FROM site_assets`;
+  return sites;
+});
 
 fastify.get("/sites/:site/identity", async (request, reply) => {
   const { site } = request.params as { site: string };
 
   return reply.send(`You are on a site "${site}"`);
+});
+
+fastify.get("/sites/:site/:asset", async (request, reply) => {
+  const { site, asset } = request.params as { site: string; asset: string };
+
+  const { bytes, mimetype } = await retrieveSiteAsset(site, asset);
+  return reply.header("Content-Type", mimetype).send(bytes);
 });
 
 fastify.get("/identity", (_, reply) => {
