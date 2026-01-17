@@ -11,5 +11,5 @@ curl -fsSL https://bun.com/install | bash
 CLI can be installed using
 
 ```
-bin link
+bun link
 ```
