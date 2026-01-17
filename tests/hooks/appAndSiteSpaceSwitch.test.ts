@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { extractLowestLevelDomain } from "../../src/hooks/setSiteOrDie";
+import { extractLowestLevelDomain } from "../../src/hooks/appAndSiteSpaceSwitch";
 
 test("production domain", () => {
   expect(extractLowestLevelDomain("hi.wio.dev")).toBe("hi");
