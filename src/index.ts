@@ -1,9 +1,9 @@
 import Fastify from "fastify";
 import { appAndSiteSpaceSwitch } from "./callbacks/appAndSiteSpaceSwitch";
-import { retrieveSiteAsset } from "./site/assets";
 import { initDatabase } from "./db/schema";
 import { initStorage } from "./storage";
-import { readFile } from "node:fs/promises";
+import { appRoutes } from "./app/routes";
+import { siteRoutes } from "./site/routes";
 
 const fastify = Fastify({
   logger: true,
@@ -13,17 +13,8 @@ const fastify = Fastify({
 await initDatabase();
 await initStorage();
 
-fastify.get("/", async (_, reply) => {
-  const index_content = await readFile(import.meta.dir + "/static/index.html");
-  reply.header("Content-Type", "text/html").send(index_content);
-});
-
-fastify.get("/sites/:site/:asset", async (request, reply) => {
-  const { site, asset } = request.params as { site: string; asset: string };
-
-  const { bytes, mimetype } = await retrieveSiteAsset(site, asset);
-  return reply.header("Content-Type", mimetype).send(bytes);
-});
+await fastify.register(appRoutes);
+await fastify.register(siteRoutes, { prefix: "/sites/:site" });
 
 fastify.listen({ port: 3000, host: "0.0.0.0" }, (err) => {
   if (err) {
