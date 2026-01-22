@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prompt Maker - wio</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        background: #f5f5f7;
+        color: #1d1d1f;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+      }
+
+      header {
+        background: #fff;
+        padding: 1rem 2rem;
+        border-bottom: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .main-container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        width: 300px;
+        background: #fff;
+        border-right: 1px solid #e5e5e5;
+        padding: 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .sidebar h2 {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        color: #86868b;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+      }
+
+      .draggable-item {
+        background: #fff;
+        border: 1px solid #d2d2d7;
+        border-radius: 8px;
+        padding: 1rem;
+        cursor: grab;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      }
+
+      .draggable-item:hover {
+        border-color: #0071e3;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+
+      .draggable-item:active {
+        cursor: grabbing;
+      }
+
+      .canvas-area {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .drop-zone {
+        width: 100%;
+        max-width: 800px;
+        min-height: 400px;
+        background: #fff;
+        border: 2px dashed #d2d2d7;
+        border-radius: 12px;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        transition: border-color 0.2s;
+        position: relative;
+      }
+
+      .drop-zone.drag-over {
+        border-color: #0071e3;
+        background: #fbfbfd;
+      }
+
+      .drop-zone:empty::after {
+        content: "Drag components here to build your prompt";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #86868b;
+        font-size: 1.1rem;
+        pointer-events: none;
+      }
+
+      .prompt-block {
+        background: #fff;
+        border: 1px solid #d2d2d7;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        position: relative;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .block-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .block-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #1d1d1f;
+      }
+
+      .remove-btn {
+        background: none;
+        border: none;
+        color: #ef4444;
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+      }
+      .remove-btn:hover { background: #fee2e2; }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .input-group label {
+        font-size: 0.85rem;
+        color: #424245;
+        font-weight: 500;
+      }
+
+      input[type="text"],
+      textarea,
+      select {
+        padding: 0.6rem;
+        border: 1px solid #d2d2d7;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: border-color 0.2s;
+      }
+
+      input[type="text"]:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #0071e3;
+        box-shadow: 0 0 0 3px rgba(0,113,227,0.1);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .controls {
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        padding: 1rem 2rem;
+        border-top: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+      }
+
+      .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: #0071e3;
+        color: white;
+      }
+      .btn-primary:hover { background: #0077ed; }
+
+      .btn-secondary {
+        background: #e5e5e5;
+        color: #1d1d1f;
+      }
+      .btn-secondary:hover { background: #d1d1d6; }
+      
+      .toast {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+      .toast.show { opacity: 1; }
+
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Prompt Maker</h1>
+    </header>
+
+    <div class="main-container">
+      <aside class="sidebar">
+        <h2>Components</h2>
+        
+        <div class="draggable-item" draggable="true" data-type="frontend">
+          Frontend
+        </div>
+        
+        <div class="draggable-item" draggable="true" data-type="backend">
+          Backend API
+        </div>
+        
+        <div class="draggable-item" draggable="true" data-type="database">
+          Database
+        </div>
+        
+        <div class="draggable-item" draggable="true" data-type="auth">
+          Authentication
+        </div>
+
+        <div class="draggable-item" draggable="true" data-type="websocket">
+          Websocket
+        </div>
+
+        <div class="draggable-item" draggable="true" data-type="ui-style">
+          UI/Style Theme
+        </div>
+      </aside>
+
+      <main class="canvas-area">
+        <div id="dropZone" class="drop-zone"></div>
+      </main>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="clearCanvas()">Clear</button>
+      <button class="btn btn-primary" onclick="generatePrompt()">Copy Prompt</button>
+    </div>
+
+    <div id="toast" class="toast">Prompt copied to clipboard!</div>
+
+    <script>
+      const dropZone = document.getElementById('dropZone');
+      let blockIdCounter = 0;
+
+      // Component Configurations
+      const components = {
+        frontend: {
+          title: "Frontend",
+          fields: [
+            { type: 'select', label: 'Framework', options: ['React', 'Vue', 'Svelte', 'Vanilla HTML/JS'] },
+            { type: 'select', label: 'Language', options: ['TypeScript', 'JavaScript'] },
+            { type: 'text', label: 'Key Libraries (comma sep)', placeholder: 'e.g., Tailwind, Redux' },
+            { type: 'textarea', label: 'Specific Requirements', placeholder: 'Describe the frontend logic or layout...' }
+          ]
+        },
+        backend: {
+          title: "Backend API",
+          fields: [
+            { type: 'select', label: 'Runtime', options: ['Node.js', 'Bun', 'Python', 'Go'] },
+            { type: 'select', label: 'Framework', options: ['Express', 'Fastify', 'Hono', 'Django', 'FastAPI'] },
+            { type: 'textarea', label: 'Endpoints / Logic', placeholder: 'List key endpoints or business logic...' }
+          ]
+        },
+        database: {
+          title: "Database",
+          fields: [
+            { type: 'select', label: 'Type', options: ['PostgreSQL', 'MySQL', 'MongoDB', 'SQLite', 'Redis'] },
+            { type: 'select', label: 'ORM', options: ['Prisma', 'Drizzle', 'TypeORM', 'Mongoose', 'Raw SQL'] },
+            { type: 'textarea', label: 'Schema Description', placeholder: 'Describe users, posts, relations...' }
+          ]
+        },
+        auth: {
+          title: "Authentication",
+          fields: [
+            { type: 'select', label: 'Method', options: ['JWT', 'Session', 'OAuth', 'Clerk', 'Firebase'] },
+            { type: 'textarea', label: 'Rules', placeholder: 'Who can access what?' }
+          ]
+        },
+        websocket: {
+          title: "Websocket / Realtime",
+          fields: [
+            { type: 'select', label: 'Technology', options: ['Socket.io', 'ws', 'Pusher'] },
+            { type: 'textarea', label: 'Events', placeholder: 'Describe real-time events...' }
+          ]
+        },
+        'ui-style': {
+          title: "UI / Visual Style",
+          fields: [
+            { type: 'select', label: 'Style', options: ['Minimalist', 'Brutalist', 'Corporate', 'Playful', 'Dark Mode'] },
+            { type: 'text', label: 'Primary Color', placeholder: '#0071e3' },
+            { type: 'textarea', label: 'Design System Notes', placeholder: 'Rounded corners, shadows, typography...' }
+          ]
+        }
+      };
+
+      // Drag and Drop Listeners
+      document.querySelectorAll('.draggable-item').forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', e.target.dataset.type);
+          e.dataTransfer.effectAllowed = 'copy';
+        });
+      });
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drag-over');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const type = e.dataTransfer.getData('text/plain');
+        if (components[type]) {
+          addBlock(type);
+        }
+      });
+
+      function addBlock(type) {
+        const config = components[type];
+        const id = `block-${blockIdCounter++}`;
+        
+        const div = document.createElement('div');
+        div.className = 'prompt-block';
+        div.id = id;
+        div.dataset.type = type;
+
+        let fieldsHtml = '';
+        config.fields.forEach((field, index) => {
+          const fieldId = `${id}-field-${index}`;
+          let inputHtml = '';
+          
+          if (field.type === 'select') {
+            const options = field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+            inputHtml = `<select id="${fieldId}">${options}</select>`;
+          } else if (field.type === 'textarea') {
+            inputHtml = `<textarea id="${fieldId}" placeholder="${field.placeholder || ''}"></textarea>`;
+          } else {
+            inputHtml = `<input type="text" id="${fieldId}" placeholder="${field.placeholder || ''}">`;
+          }
+
+          fieldsHtml += `
+            <div class="input-group">
+              <label for="${fieldId}">${field.label}</label>
+              ${inputHtml}
+            </div>
+          `;
+        });
+
+        div.innerHTML = `
+          <div class="block-header">
+            <span class="block-title">${config.title}</span>
+            <button class="remove-btn" onclick="removeBlock('${id}')">Remove</button>
+          </div>
+          ${fieldsHtml}
+        `;
+
+        dropZone.appendChild(div);
+      }
+
+      function removeBlock(id) {
+        document.getElementById(id).remove();
+      }
+
+      function clearCanvas() {
+        if(confirm('Are you sure you want to clear all blocks?')) {
+          dropZone.innerHTML = '';
+        }
+      }
+
+      function generatePrompt() {
+        const blocks = Array.from(dropZone.children);
+        if (blocks.length === 0) {
+          alert('Add some components first!');
+          return;
+        }
+
+        let prompt = "I need you to build a web application with the following specifications:\n\n";
+
+        blocks.forEach(block => {
+          const type = block.dataset.type;
+          const config = components[type];
+          
+          prompt += `## ${config.title}\n`;
+          
+          const inputs = block.querySelectorAll('input, select, textarea');
+          inputs.forEach((input, index) => {
+            const label = config.fields[index].label;
+            const value = input.value;
+            if (value && value.trim() !== '') {
+              prompt += `- **${label}**: ${value}\n`;
+            }
+          });
+          prompt += "\n";
+        });
+
+        prompt += "Please verify the consistency of these requirements and generate the necessary project files.";
+
+        navigator.clipboard.writeText(prompt).then(() => {
+          showToast();
+        }).catch(err => {
+          console.error('Failed to copy: ', err);
+          alert('Failed to copy to clipboard. See console.');
+        });
+      }
+
+      function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+    </script>
+  </body>
+</html>
