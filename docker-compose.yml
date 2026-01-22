@@ -1,0 +1,87 @@
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: wio-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - wio-network
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: wio-minio-init
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        until mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} 2>/dev/null; do echo waiting for minio...; sleep 2; done
+        mc mb local/wio-assets --ignore-existing
+        echo Bucket wio-assets ready
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    depends_on:
+      - minio
+    networks:
+      - wio-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: wio-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wio
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 50ms
+      timeout: 50ms
+      retries: 50
+    networks:
+      - wio-network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wio-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/wio
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY_ID=minioadmin
+      - S3_SECRET_ACCESS_KEY=minioadmin
+      - S3_BUCKET=wio-assets
+      - S3_REGION=us-east-1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    networks:
+      - wio-network
+
+networks:
+  wio-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  minio_data:
