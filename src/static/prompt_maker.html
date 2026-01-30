@@ -1,1045 +1,1042 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wio - Prompt Builder</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-card: rgba(255, 255, 255, 0.03);
-        --bg-glass: rgba(255, 255, 255, 0.05);
-        --border-color: rgba(255, 255, 255, 0.08);
-        --border-focus: rgba(139, 92, 246, 0.5);
-        --text-primary: #f4f4f5;
-        --text-secondary: #a1a1aa;
-        --text-muted: #71717a;
-        --accent-gradient: linear-gradient(135deg, #8b5cf6, #06b6d4);
-        --accent-primary: #8b5cf6;
-        --accent-secondary: #06b6d4;
-        --danger: #ef4444;
-        --danger-bg: rgba(239, 68, 68, 0.1);
-        --success: #10b981;
-        --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-        --glow-purple: 0 0 60px rgba(139, 92, 246, 0.15);
-        --glow-cyan: 0 0 60px rgba(6, 182, 212, 0.15);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        height: 100%;
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          system-ui,
-          sans-serif;
-        background: var(--bg-primary);
-        color: var(--text-primary);
-      }
-
-      body {
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        background-image:
-          radial-gradient(
-            ellipse 80% 50% at 50% -20%,
-            rgba(139, 92, 246, 0.15),
-            transparent
-          ),
-          radial-gradient(
-            ellipse 60% 40% at 100% 100%,
-            rgba(6, 182, 212, 0.1),
-            transparent
-          );
-      }
-
-      /* Header */
-      header {
-        background: var(--bg-glass);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 1rem 2rem;
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-        z-index: 10;
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-
-      .logo-icon {
-        width: 36px;
-        height: 36px;
-        background: var(--accent-gradient);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1rem;
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-      }
-
-      h1 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        background: var(--accent-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .header-subtitle {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        font-weight: 400;
-      }
-
-      .header-badge {
-        font-size: 0.7rem;
-        background: var(--bg-glass);
-        border: 1px solid var(--border-color);
-        padding: 0.25rem 0.75rem;
-        border-radius: 100px;
-        color: var(--text-muted);
-        font-weight: 500;
-        letter-spacing: 0.05em;
-      }
-
-      /* Main Layout */
-      .main-container {
-        display: flex;
-        flex: 1;
-        overflow: hidden;
-      }
-
-      /* Sidebar */
-      .sidebar {
-        width: 280px;
-        background: var(--bg-secondary);
-        border-right: 1px solid var(--border-color);
-        padding: 1.5rem;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-
-      .sidebar-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .sidebar h2 {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        letter-spacing: 0.1em;
-        font-weight: 600;
-      }
-
-      .component-count {
-        font-size: 0.65rem;
-        background: var(--bg-glass);
-        border: 1px solid var(--border-color);
-        padding: 0.15rem 0.5rem;
-        border-radius: 100px;
-        color: var(--text-muted);
-      }
-
-      .draggable-item {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1rem;
-        cursor: grab;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .draggable-item::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: var(--accent-gradient);
-        opacity: 0;
-        transition: opacity 0.25s;
-      }
-
-      .draggable-item:hover {
-        border-color: rgba(139, 92, 246, 0.3);
-        transform: translateY(-2px);
-        box-shadow: var(--glow-purple);
-      }
-
-      .draggable-item:hover::before {
-        opacity: 0.05;
-      }
-
-      .draggable-item:active {
-        cursor: grabbing;
-        transform: scale(0.98);
-      }
-
-      .item-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        flex-shrink: 0;
-        position: relative;
-        z-index: 1;
-      }
-
-      .item-icon.frontend {
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      }
-
-      .item-icon.backend {
-        background: linear-gradient(135deg, #10b981, #3b82f6);
-      }
-
-      .item-icon.database {
-        background: linear-gradient(135deg, #f59e0b, #ef4444);
-      }
-
-      .item-icon.auth {
-        background: linear-gradient(135deg, #ec4899, #8b5cf6);
-      }
-
-      .item-icon.websocket {
-        background: linear-gradient(135deg, #06b6d4, #10b981);
-      }
-
-      .item-icon.ui-style {
-        background: linear-gradient(135deg, #f472b6, #fb923c);
-      }
-
-      .item-content {
-        position: relative;
-        z-index: 1;
-      }
-
-      .item-title {
-        font-weight: 500;
-        font-size: 0.9rem;
-        color: var(--text-primary);
-        margin-bottom: 0.2rem;
-      }
-
-      .item-desc {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-      }
-
-      /* Canvas Area */
-      .canvas-area {
-        flex: 1;
-        padding: 2rem;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        align-items: center;
-      }
-
-      .drop-zone {
-        width: 100%;
-        max-width: 800px;
-        min-height: 450px;
-        max-height: calc(100vh - 200px);
-        overflow-y: auto;
-        background: var(--bg-card);
-        border: 2px dashed var(--border-color);
-        border-radius: 16px;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        transition:
-          border-color 0.3s,
-          background 0.3s,
-          box-shadow 0.3s;
-        position: relative;
-      }
-
-      .prompt-block {
-        flex-shrink: 0;
-      }
-
-      .drop-zone.drag-over {
-        border-color: var(--accent-primary);
-        background: rgba(139, 92, 246, 0.05);
-        box-shadow: var(--glow-purple);
-      }
-
-      .drop-zone:empty::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        text-align: center;
-        pointer-events: none;
-      }
-
-      .drop-zone:empty::before {
-        content: "🧩";
-        position: absolute;
-        top: calc(50% - 50px);
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 3rem;
-        opacity: 0.5;
-        animation: float 3s ease-in-out infinite;
-      }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateX(-50%) translateY(0);
-        }
-
-        50% {
-          transform: translateX(-50%) translateY(-10px);
-        }
-      }
-
-      .empty-state {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        pointer-events: none;
-        opacity: 0.7;
-      }
-
-      .empty-state-title {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: var(--text-secondary);
-        margin-top: 3.5rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .empty-state-desc {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-      }
-
-      /* Prompt Blocks */
-      .prompt-block {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 1.5rem;
-        box-shadow: var(--card-shadow);
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-        position: relative;
-        animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
-      }
-
-      .prompt-block::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--accent-gradient);
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-
-      .prompt-block:hover::before {
-        opacity: 1;
-      }
-
-      @keyframes slideIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px) scale(0.98);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      .block-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .block-title-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-
-      .block-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.95rem;
-      }
-
-      .block-title {
-        font-weight: 600;
-        font-size: 1rem;
-        color: var(--text-primary);
-      }
-
-      .remove-btn {
-        background: var(--danger-bg);
-        border: 1px solid transparent;
-        color: var(--danger);
-        cursor: pointer;
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-      }
-
-      .remove-btn:hover {
-        background: var(--danger);
-        color: white;
-        transform: scale(1.02);
-      }
-
-      .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .input-group label {
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-      }
-
-      input[type="text"],
-      textarea,
-      select {
-        padding: 0.75rem 1rem;
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 0.9rem;
-        width: 100%;
-        transition: all 0.25s;
-        color: var(--text-primary);
-      }
-
-      input[type="text"]::placeholder,
-      textarea::placeholder {
-        color: var(--text-muted);
-      }
-
-      input[type="text"]:focus,
-      textarea:focus,
-      select:focus {
-        outline: none;
-        border-color: var(--border-focus);
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-        background: rgba(139, 92, 246, 0.05);
-      }
-
-      select {
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        padding-right: 2.5rem;
-      }
-
-      select option {
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-        padding: 0.5rem;
-      }
-
-      textarea {
-        resize: vertical;
-        min-height: 90px;
-        line-height: 1.5;
-      }
-
-      /* Controls */
-      .controls {
-        position: sticky;
-        bottom: 0;
-        background: var(--bg-glass);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 1rem 2rem;
-        border-top: 1px solid var(--border-color);
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        z-index: 10;
-      }
-
-      .btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        border: none;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-family: inherit;
-      }
-
-      .btn-primary {
-        background: var(--accent-gradient);
-        color: white;
-        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
-      }
-
-      .btn-primary:active {
-        transform: translateY(0);
-      }
-
-      .btn-secondary {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        color: var(--text-secondary);
-      }
-
-      .btn-secondary:hover {
-        background: var(--bg-glass);
-        border-color: rgba(255, 255, 255, 0.15);
-        color: var(--text-primary);
-      }
-
-      /* Toast */
-      .toast {
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%) translateY(20px);
-        background: var(--success);
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        opacity: 0;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: 500;
-        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
-      }
-
-      .toast.show {
-        opacity: 1;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wio - Prompt Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-glass: rgba(255, 255, 255, 0.05);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(139, 92, 246, 0.5);
+      --text-primary: #f4f4f5;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --accent-gradient: linear-gradient(135deg, #8b5cf6, #06b6d4);
+      --accent-primary: #8b5cf6;
+      --accent-secondary: #06b6d4;
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      --success: #10b981;
+      --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --glow-purple: 0 0 60px rgba(139, 92, 246, 0.15);
+      --glow-cyan: 0 0 60px rgba(6, 182, 212, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        system-ui,
+        sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%,
+          rgba(139, 92, 246, 0.15),
+          transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%,
+          rgba(6, 182, 212, 0.1),
+          transparent);
+    }
+
+    /* Header */
+    header {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-gradient);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-badge {
+      font-size: 0.7rem;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-color);
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    /* Main Layout */
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    .component-count {
+      font-size: 0.65rem;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-color);
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      color: var(--text-muted);
+    }
+
+    .draggable-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: grab;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .draggable-item::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--accent-gradient);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .draggable-item:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-2px);
+      box-shadow: var(--glow-purple);
+    }
+
+    .draggable-item:hover::before {
+      opacity: 0.05;
+    }
+
+    .draggable-item:active {
+      cursor: grabbing;
+      transform: scale(0.98);
+    }
+
+    .item-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .item-icon.frontend {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    }
+
+    .item-icon.backend {
+      background: linear-gradient(135deg, #10b981, #3b82f6);
+    }
+
+    .item-icon.database {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+    }
+
+    .item-icon.auth {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    }
+
+    .item-icon.websocket {
+      background: linear-gradient(135deg, #06b6d4, #10b981);
+    }
+
+    .item-icon.ui-style {
+      background: linear-gradient(135deg, #f472b6, #fb923c);
+    }
+
+    .item-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .item-title {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .item-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Canvas Area */
+    .canvas-area {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .drop-zone {
+      width: 100%;
+      max-width: 800px;
+      min-height: 450px;
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      background: var(--bg-card);
+      border: 2px dashed var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition:
+        border-color 0.3s,
+        background 0.3s,
+        box-shadow 0.3s;
+      position: relative;
+    }
+
+    .prompt-block {
+      flex-shrink: 0;
+    }
+
+    .drop-zone.drag-over {
+      border-color: var(--accent-primary);
+      background: rgba(139, 92, 246, 0.05);
+      box-shadow: var(--glow-purple);
+    }
+
+    .drop-zone:empty::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .drop-zone:empty::before {
+      content: "🧩";
+      position: absolute;
+      top: calc(50% - 50px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      opacity: 0.5;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
         transform: translateX(-50%) translateY(0);
       }
 
-      /* Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+      50% {
+        transform: translateX(-50%) translateY(-10px);
+      }
+    }
+
+    .empty-state {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .empty-state-title {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-top: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Prompt Blocks */
+    .prompt-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .prompt-block::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent-gradient);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .prompt-block:hover::before {
+      opacity: 1;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
       }
 
-      ::-webkit-scrollbar-track {
-        background: transparent;
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .block-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .block-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .block-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    .remove-btn {
+      background: var(--danger-bg);
+      border: 1px solid transparent;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .remove-btn:hover {
+      background: var(--danger);
+      color: white;
+      transform: scale(1.02);
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      padding: 0.75rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      width: 100%;
+      transition: all 0.25s;
+      color: var(--text-primary);
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2.5rem;
+    }
+
+    select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 0.5rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.5;
+    }
+
+    /* Controls */
+    .controls {
+      position: sticky;
+      bottom: 0;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      z-index: 10;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-glass);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--text-primary);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--success);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        max-height: 200px;
       }
 
-      ::-webkit-scrollbar-thumb {
-        background: var(--border-color);
-        border-radius: 4px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.15);
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .sidebar {
-          width: 100%;
-          max-height: 200px;
-        }
-
-        .main-container {
-          flex-direction: column;
-        }
-      }
-
-      /* Footer */
-      footer {
-        background: var(--bg-secondary);
-        border-top: 1px solid var(--border-color);
-        padding: 0.75rem 2rem;
-        text-align: center;
-        font-size: 0.75rem;
-        color: var(--text-muted);
-      }
-
-      footer strong {
-        color: var(--text-secondary);
-      }
-
-      /* Live Preview Panel */
-      .preview-panel {
-        width: 380px;
-        background: var(--bg-primary);
-        border-left: 1px solid var(--border-color);
-        display: flex;
+      .main-container {
         flex-direction: column;
-        overflow: hidden;
       }
+    }
 
-      .preview-header {
-        padding: 0.875rem 1.25rem;
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+    /* Footer */
+    footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 0.75rem 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    footer strong {
+      color: var(--text-secondary);
+    }
+
+    /* Live Preview Panel */
+    .preview-panel {
+      width: 380px;
+      background: var(--bg-primary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      padding: 0.875rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .preview-header h2 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    .preview-content {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      font-size: 0.75rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+    }
+
+    .preview-content .preview-empty {
+      color: var(--text-muted);
+      text-align: center;
+      padding: 3rem 1.5rem;
+      font-family: "Inter", sans-serif;
+      font-size: 0.8rem;
+    }
+
+    .preview-content .preview-section {
+      margin-bottom: 0.75rem;
+    }
+
+    .preview-content .preview-heading {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .preview-content .preview-label {
+      color: var(--text-muted);
+    }
+
+    .preview-content .preview-value {
+      color: var(--text-secondary);
+    }
+
+    .preview-content .preview-intro,
+    .preview-content .preview-outro {
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 1100px) {
+      .preview-panel {
+        display: none;
       }
+    }
+  </style>
+</head>
 
-      .preview-header h2 {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        letter-spacing: 0.08em;
-        font-weight: 500;
-      }
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">W</div>
+      <div>
+        <h1>Wio</h1>
+        <span class="header-subtitle">Prompt Builder</span>
+      </div>
+    </div>
+    <a href="cli_simulator.html" class="header-badge" style="text-decoration: none; margin-right: 0.5rem;">▶ See
+      Demo</a>
+    <span class="header-badge">BETA</span>
+  </header>
 
-      .preview-content {
-        flex: 1;
-        padding: 1.25rem;
-        overflow-y: auto;
-        font-family: "SF Mono", "Fira Code", "Consolas", monospace;
-        font-size: 0.75rem;
-        line-height: 1.7;
-        white-space: pre-wrap;
-        word-break: break-word;
-        color: var(--text-secondary);
-        background: var(--bg-secondary);
-      }
+  <div class="main-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Components</h2>
+        <span class="component-count">6 items</span>
+      </div>
 
-      .preview-content .preview-empty {
-        color: var(--text-muted);
-        text-align: center;
-        padding: 3rem 1.5rem;
-        font-family: "Inter", sans-serif;
-        font-size: 0.8rem;
-      }
-
-      .preview-content .preview-section {
-        margin-bottom: 0.75rem;
-      }
-
-      .preview-content .preview-heading {
-        color: var(--text-primary);
-        font-weight: 500;
-      }
-
-      .preview-content .preview-label {
-        color: var(--text-muted);
-      }
-
-      .preview-content .preview-value {
-        color: var(--text-secondary);
-      }
-
-      .preview-content .preview-intro,
-      .preview-content .preview-outro {
-        color: var(--text-muted);
-      }
-
-      @media (max-width: 1100px) {
-        .preview-panel {
-          display: none;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <header>
-      <div class="logo">
-        <div class="logo-icon">W</div>
-        <div>
-          <h1>Wio</h1>
-          <span class="header-subtitle">Prompt Builder</span>
+      <div class="draggable-item" draggable="true" data-type="frontend">
+        <div class="item-icon frontend">🎨</div>
+        <div class="item-content">
+          <div class="item-title">Frontend</div>
+          <div class="item-desc">UI framework & styling</div>
         </div>
       </div>
-      <span class="header-badge">BETA</span>
-    </header>
 
-    <div class="main-container">
-      <aside class="sidebar">
-        <div class="sidebar-header">
-          <h2>Components</h2>
-          <span class="component-count">6 items</span>
+      <div class="draggable-item" draggable="true" data-type="backend">
+        <div class="item-icon backend">⚡</div>
+        <div class="item-content">
+          <div class="item-title">Backend API</div>
+          <div class="item-desc">Server & endpoints</div>
         </div>
+      </div>
 
-        <div class="draggable-item" draggable="true" data-type="frontend">
-          <div class="item-icon frontend">🎨</div>
-          <div class="item-content">
-            <div class="item-title">Frontend</div>
-            <div class="item-desc">UI framework & styling</div>
+      <div class="draggable-item" draggable="true" data-type="database">
+        <div class="item-icon database">🗄️</div>
+        <div class="item-content">
+          <div class="item-title">Database</div>
+          <div class="item-desc">Data storage & ORM</div>
+        </div>
+      </div>
+
+      <div class="draggable-item" draggable="true" data-type="auth">
+        <div class="item-icon auth">🔐</div>
+        <div class="item-content">
+          <div class="item-title">Authentication</div>
+          <div class="item-desc">User auth & security</div>
+        </div>
+      </div>
+
+      <div class="draggable-item" draggable="true" data-type="websocket">
+        <div class="item-icon websocket">🔌</div>
+        <div class="item-content">
+          <div class="item-title">Websocket</div>
+          <div class="item-desc">Real-time features</div>
+        </div>
+      </div>
+
+      <div class="draggable-item" draggable="true" data-type="ui-style">
+        <div class="item-icon ui-style">🎭</div>
+        <div class="item-content">
+          <div class="item-title">UI/Style Theme</div>
+          <div class="item-desc">Visual design system</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="canvas-area">
+      <div id="dropZone" class="drop-zone">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-state-title">Drag components here</div>
+          <div class="empty-state-desc">
+            Build your prompt by combining components
           </div>
         </div>
+      </div>
+    </main>
 
-        <div class="draggable-item" draggable="true" data-type="backend">
-          <div class="item-icon backend">⚡</div>
-          <div class="item-content">
-            <div class="item-title">Backend API</div>
-            <div class="item-desc">Server & endpoints</div>
-          </div>
+    <aside class="preview-panel">
+      <div class="preview-header">
+        <h2>Preview</h2>
+      </div>
+      <div class="preview-content" id="previewContent">
+        <div class="preview-empty">
+          Add components to see your prompt preview here...
         </div>
+      </div>
+    </aside>
+  </div>
 
-        <div class="draggable-item" draggable="true" data-type="database">
-          <div class="item-icon database">🗄️</div>
-          <div class="item-content">
-            <div class="item-title">Database</div>
-            <div class="item-desc">Data storage & ORM</div>
-          </div>
-        </div>
+  <div class="controls">
+    <button class="btn btn-secondary" onclick="clearCanvas()">
+      <span>🗑️</span> Clear All
+    </button>
+    <button class="btn btn-primary" onclick="generatePrompt()">
+      <span>📋</span> Copy Prompt
+    </button>
+  </div>
 
-        <div class="draggable-item" draggable="true" data-type="auth">
-          <div class="item-icon auth">🔐</div>
-          <div class="item-content">
-            <div class="item-title">Authentication</div>
-            <div class="item-desc">User auth & security</div>
-          </div>
-        </div>
+  <div id="toast" class="toast">
+    <span>✓</span> Prompt copied to clipboard!
+  </div>
 
-        <div class="draggable-item" draggable="true" data-type="websocket">
-          <div class="item-icon websocket">🔌</div>
-          <div class="item-content">
-            <div class="item-title">Websocket</div>
-            <div class="item-desc">Real-time features</div>
-          </div>
-        </div>
+  <footer>
+    © 2026 <strong>Wio</strong> by Make no mistake. All rights reserved.
+  </footer>
 
-        <div class="draggable-item" draggable="true" data-type="ui-style">
-          <div class="item-icon ui-style">🎭</div>
-          <div class="item-content">
-            <div class="item-title">UI/Style Theme</div>
-            <div class="item-desc">Visual design system</div>
-          </div>
-        </div>
-      </aside>
+  <script>
+    const dropZone = document.getElementById("dropZone");
+    const emptyState = document.getElementById("emptyState");
+    let blockIdCounter = 0;
 
-      <main class="canvas-area">
-        <div id="dropZone" class="drop-zone">
-          <div class="empty-state" id="emptyState">
-            <div class="empty-state-title">Drag components here</div>
-            <div class="empty-state-desc">
-              Build your prompt by combining components
-            </div>
-          </div>
-        </div>
-      </main>
+    // Component Configurations
+    const components = {
+      frontend: {
+        title: "Frontend",
+        icon: "🎨",
+        iconClass: "frontend",
+        fields: [
+          {
+            type: "select",
+            label: "Framework",
+            options: ["React", "Vue", "Svelte", "Vanilla HTML/JS"],
+          },
+          {
+            type: "select",
+            label: "Language",
+            options: ["TypeScript", "JavaScript"],
+          },
+          {
+            type: "text",
+            label: "Key Libraries (comma sep)",
+            placeholder: "e.g., Tailwind, Redux, Framer Motion",
+          },
+          {
+            type: "textarea",
+            label: "Specific Requirements",
+            placeholder:
+              "Describe the frontend logic, layout, or interactions...",
+          },
+        ],
+      },
+      backend: {
+        title: "Backend API",
+        icon: "⚡",
+        iconClass: "backend",
+        fields: [
+          {
+            type: "select",
+            label: "Runtime",
+            options: ["Node.js", "Bun", "Python", "Go"],
+          },
+          {
+            type: "select",
+            label: "Framework",
+            options: ["Express", "Fastify", "Hono", "Django", "FastAPI"],
+          },
+          {
+            type: "textarea",
+            label: "Endpoints / Logic",
+            placeholder: "List key endpoints or business logic...",
+          },
+        ],
+      },
+      database: {
+        title: "Database",
+        icon: "🗄️",
+        iconClass: "database",
+        fields: [
+          {
+            type: "select",
+            label: "Type",
+            options: ["PostgreSQL", "MySQL", "MongoDB", "SQLite", "Redis"],
+          },
+          {
+            type: "select",
+            label: "ORM",
+            options: ["Prisma", "Drizzle", "TypeORM", "Mongoose", "Raw SQL"],
+          },
+          {
+            type: "textarea",
+            label: "Schema Description",
+            placeholder: "Describe users, posts, relations...",
+          },
+        ],
+      },
+      auth: {
+        title: "Authentication",
+        icon: "🔐",
+        iconClass: "auth",
+        fields: [
+          {
+            type: "select",
+            label: "Method",
+            options: ["JWT", "Session", "OAuth", "Clerk", "Firebase"],
+          },
+          {
+            type: "textarea",
+            label: "Rules",
+            placeholder: "Who can access what? Role-based access?",
+          },
+        ],
+      },
+      websocket: {
+        title: "Websocket / Realtime",
+        icon: "🔌",
+        iconClass: "websocket",
+        fields: [
+          {
+            type: "select",
+            label: "Technology",
+            options: ["Socket.io", "ws", "Pusher"],
+          },
+          {
+            type: "textarea",
+            label: "Events",
+            placeholder: "Describe real-time events and channels...",
+          },
+        ],
+      },
+      "ui-style": {
+        title: "UI / Visual Style",
+        icon: "🎭",
+        iconClass: "ui-style",
+        fields: [
+          {
+            type: "select",
+            label: "Style",
+            options: [
+              "Minimalist",
+              "Brutalist",
+              "Corporate",
+              "Playful",
+              "Dark Mode",
+              "Glassmorphism",
+            ],
+          },
+          { type: "text", label: "Primary Color", placeholder: "#8b5cf6" },
+          {
+            type: "textarea",
+            label: "Design System Notes",
+            placeholder:
+              "Rounded corners, shadows, typography, animations...",
+          },
+        ],
+      },
+    };
 
-      <aside class="preview-panel">
-        <div class="preview-header">
-          <h2>Preview</h2>
-        </div>
-        <div class="preview-content" id="previewContent">
-          <div class="preview-empty">
-            Add components to see your prompt preview here...
-          </div>
-        </div>
-      </aside>
-    </div>
+    function updateEmptyState() {
+      const hasBlocks = dropZone.querySelectorAll(".prompt-block").length > 0;
+      emptyState.style.display = hasBlocks ? "none" : "block";
+    }
 
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="clearCanvas()">
-        <span>🗑️</span> Clear All
-      </button>
-      <button class="btn btn-primary" onclick="generatePrompt()">
-        <span>📋</span> Copy Prompt
-      </button>
-    </div>
+    // Drag and Drop Listeners
+    document.querySelectorAll(".draggable-item").forEach((item) => {
+      item.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData(
+          "text/plain",
+          e.target.closest(".draggable-item").dataset.type,
+        );
+        e.dataTransfer.effectAllowed = "copy";
+        e.target.closest(".draggable-item").style.opacity = "0.5";
+      });
 
-    <div id="toast" class="toast">
-      <span>✓</span> Prompt copied to clipboard!
-    </div>
+      item.addEventListener("dragend", (e) => {
+        e.target.closest(".draggable-item").style.opacity = "1";
+      });
+    });
 
-    <footer>
-      © 2026 <strong>Wio</strong> by Make no mistake. All rights reserved.
-    </footer>
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("drag-over");
+    });
 
-    <script>
-      const dropZone = document.getElementById("dropZone");
-      const emptyState = document.getElementById("emptyState");
-      let blockIdCounter = 0;
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("drag-over");
+    });
 
-      // Component Configurations
-      const components = {
-        frontend: {
-          title: "Frontend",
-          icon: "🎨",
-          iconClass: "frontend",
-          fields: [
-            {
-              type: "select",
-              label: "Framework",
-              options: ["React", "Vue", "Svelte", "Vanilla HTML/JS"],
-            },
-            {
-              type: "select",
-              label: "Language",
-              options: ["TypeScript", "JavaScript"],
-            },
-            {
-              type: "text",
-              label: "Key Libraries (comma sep)",
-              placeholder: "e.g., Tailwind, Redux, Framer Motion",
-            },
-            {
-              type: "textarea",
-              label: "Specific Requirements",
-              placeholder:
-                "Describe the frontend logic, layout, or interactions...",
-            },
-          ],
-        },
-        backend: {
-          title: "Backend API",
-          icon: "⚡",
-          iconClass: "backend",
-          fields: [
-            {
-              type: "select",
-              label: "Runtime",
-              options: ["Node.js", "Bun", "Python", "Go"],
-            },
-            {
-              type: "select",
-              label: "Framework",
-              options: ["Express", "Fastify", "Hono", "Django", "FastAPI"],
-            },
-            {
-              type: "textarea",
-              label: "Endpoints / Logic",
-              placeholder: "List key endpoints or business logic...",
-            },
-          ],
-        },
-        database: {
-          title: "Database",
-          icon: "🗄️",
-          iconClass: "database",
-          fields: [
-            {
-              type: "select",
-              label: "Type",
-              options: ["PostgreSQL", "MySQL", "MongoDB", "SQLite", "Redis"],
-            },
-            {
-              type: "select",
-              label: "ORM",
-              options: ["Prisma", "Drizzle", "TypeORM", "Mongoose", "Raw SQL"],
-            },
-            {
-              type: "textarea",
-              label: "Schema Description",
-              placeholder: "Describe users, posts, relations...",
-            },
-          ],
-        },
-        auth: {
-          title: "Authentication",
-          icon: "🔐",
-          iconClass: "auth",
-          fields: [
-            {
-              type: "select",
-              label: "Method",
-              options: ["JWT", "Session", "OAuth", "Clerk", "Firebase"],
-            },
-            {
-              type: "textarea",
-              label: "Rules",
-              placeholder: "Who can access what? Role-based access?",
-            },
-          ],
-        },
-        websocket: {
-          title: "Websocket / Realtime",
-          icon: "🔌",
-          iconClass: "websocket",
-          fields: [
-            {
-              type: "select",
-              label: "Technology",
-              options: ["Socket.io", "ws", "Pusher"],
-            },
-            {
-              type: "textarea",
-              label: "Events",
-              placeholder: "Describe real-time events and channels...",
-            },
-          ],
-        },
-        "ui-style": {
-          title: "UI / Visual Style",
-          icon: "🎭",
-          iconClass: "ui-style",
-          fields: [
-            {
-              type: "select",
-              label: "Style",
-              options: [
-                "Minimalist",
-                "Brutalist",
-                "Corporate",
-                "Playful",
-                "Dark Mode",
-                "Glassmorphism",
-              ],
-            },
-            { type: "text", label: "Primary Color", placeholder: "#8b5cf6" },
-            {
-              type: "textarea",
-              label: "Design System Notes",
-              placeholder:
-                "Rounded corners, shadows, typography, animations...",
-            },
-          ],
-        },
-      };
-
-      function updateEmptyState() {
-        const hasBlocks = dropZone.querySelectorAll(".prompt-block").length > 0;
-        emptyState.style.display = hasBlocks ? "none" : "block";
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("drag-over");
+      const type = e.dataTransfer.getData("text/plain");
+      if (components[type]) {
+        addBlock(type);
       }
+    });
 
-      // Drag and Drop Listeners
-      document.querySelectorAll(".draggable-item").forEach((item) => {
-        item.addEventListener("dragstart", (e) => {
-          e.dataTransfer.setData(
-            "text/plain",
-            e.target.closest(".draggable-item").dataset.type,
-          );
-          e.dataTransfer.effectAllowed = "copy";
-          e.target.closest(".draggable-item").style.opacity = "0.5";
-        });
+    function addBlock(type) {
+      const config = components[type];
+      const id = `block-${blockIdCounter++}`;
 
-        item.addEventListener("dragend", (e) => {
-          e.target.closest(".draggable-item").style.opacity = "1";
-        });
-      });
+      const div = document.createElement("div");
+      div.className = "prompt-block";
+      div.id = id;
+      div.dataset.type = type;
 
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("drag-over");
-      });
+      let fieldsHtml = "";
+      config.fields.forEach((field, index) => {
+        const fieldId = `${id}-field-${index}`;
+        let inputHtml = "";
 
-      dropZone.addEventListener("dragleave", () => {
-        dropZone.classList.remove("drag-over");
-      });
-
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("drag-over");
-        const type = e.dataTransfer.getData("text/plain");
-        if (components[type]) {
-          addBlock(type);
+        if (field.type === "select") {
+          const options = field.options
+            .map((opt) => `<option value="${opt}">${opt}</option>`)
+            .join("");
+          inputHtml = `<select id="${fieldId}">${options}</select>`;
+        } else if (field.type === "textarea") {
+          inputHtml = `<textarea id="${fieldId}" placeholder="${field.placeholder || ""}"></textarea>`;
+        } else {
+          inputHtml = `<input type="text" id="${fieldId}" placeholder="${field.placeholder || ""}">`;
         }
-      });
 
-      function addBlock(type) {
-        const config = components[type];
-        const id = `block-${blockIdCounter++}`;
-
-        const div = document.createElement("div");
-        div.className = "prompt-block";
-        div.id = id;
-        div.dataset.type = type;
-
-        let fieldsHtml = "";
-        config.fields.forEach((field, index) => {
-          const fieldId = `${id}-field-${index}`;
-          let inputHtml = "";
-
-          if (field.type === "select") {
-            const options = field.options
-              .map((opt) => `<option value="${opt}">${opt}</option>`)
-              .join("");
-            inputHtml = `<select id="${fieldId}">${options}</select>`;
-          } else if (field.type === "textarea") {
-            inputHtml = `<textarea id="${fieldId}" placeholder="${field.placeholder || ""}"></textarea>`;
-          } else {
-            inputHtml = `<input type="text" id="${fieldId}" placeholder="${field.placeholder || ""}">`;
-          }
-
-          fieldsHtml += `
+        fieldsHtml += `
             <div class="input-group">
               <label for="${fieldId}">${field.label}</label>
               ${inputHtml}
             </div>
           `;
-        });
+      });
 
-        div.innerHTML = `
+      div.innerHTML = `
           <div class="block-header">
             <div class="block-title-wrapper">
               <div class="block-icon item-icon ${config.iconClass}">${config.icon}</div>
@@ -1052,146 +1049,147 @@
           ${fieldsHtml}
         `;
 
-        // Add event listeners to all inputs for live preview
-        div.querySelectorAll("input, select, textarea").forEach((input) => {
-          input.addEventListener("input", updatePreview);
-          input.addEventListener("change", updatePreview);
-        });
+      // Add event listeners to all inputs for live preview
+      div.querySelectorAll("input, select, textarea").forEach((input) => {
+        input.addEventListener("input", updatePreview);
+        input.addEventListener("change", updatePreview);
+      });
 
-        dropZone.appendChild(div);
+      dropZone.appendChild(div);
+      updateEmptyState();
+      updatePreview();
+    }
+
+    function removeBlock(id) {
+      const block = document.getElementById(id);
+      block.style.animation = "slideOut 0.3s ease forwards";
+      setTimeout(() => {
+        block.remove();
         updateEmptyState();
         updatePreview();
-      }
+      }, 280);
+    }
 
-      function removeBlock(id) {
-        const block = document.getElementById(id);
-        block.style.animation = "slideOut 0.3s ease forwards";
-        setTimeout(() => {
-          block.remove();
-          updateEmptyState();
-          updatePreview();
-        }, 280);
-      }
-
-      // Add slideOut animation
-      const styleSheet = document.createElement("style");
-      styleSheet.textContent = `
+    // Add slideOut animation
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `
         @keyframes slideOut {
           to { opacity: 0; transform: translateY(-10px) scale(0.95); }
         }
       `;
-      document.head.appendChild(styleSheet);
+    document.head.appendChild(styleSheet);
 
-      function clearCanvas() {
-        const blocks = dropZone.querySelectorAll(".prompt-block");
-        if (blocks.length === 0) return;
+    function clearCanvas() {
+      const blocks = dropZone.querySelectorAll(".prompt-block");
+      if (blocks.length === 0) return;
 
-        if (confirm("Are you sure you want to clear all blocks?")) {
-          blocks.forEach((block, index) => {
-            setTimeout(() => {
-              block.style.animation = "slideOut 0.3s ease forwards";
-              setTimeout(() => block.remove(), 280);
-            }, index * 50);
-          });
-          setTimeout(
-            () => {
-              updateEmptyState();
-              updatePreview();
-            },
-            blocks.length * 50 + 300,
-          );
-        }
-      }
-
-      function generatePrompt() {
-        const blocks = Array.from(dropZone.querySelectorAll(".prompt-block"));
-        if (blocks.length === 0) {
-          alert("Add some components first!");
-          return;
-        }
-
-        let prompt =
-          "I need you to build a web application with the following specifications:\n\n";
-
-        blocks.forEach((block) => {
-          const type = block.dataset.type;
-          const config = components[type];
-
-          prompt += `## ${config.title}\n`;
-
-          const inputs = block.querySelectorAll("input, select, textarea");
-          inputs.forEach((input, index) => {
-            const label = config.fields[index].label;
-            const value = input.value;
-            if (value && value.trim() !== "") {
-              prompt += `- **${label}**: ${value}\n`;
-            }
-          });
-          prompt += "\n";
+      if (confirm("Are you sure you want to clear all blocks?")) {
+        blocks.forEach((block, index) => {
+          setTimeout(() => {
+            block.style.animation = "slideOut 0.3s ease forwards";
+            setTimeout(() => block.remove(), 280);
+          }, index * 50);
         });
+        setTimeout(
+          () => {
+            updateEmptyState();
+            updatePreview();
+          },
+          blocks.length * 50 + 300,
+        );
+      }
+    }
 
-        prompt +=
-          "Please verify the consistency of these requirements and generate the necessary project files.";
-
-        navigator.clipboard
-          .writeText(prompt)
-          .then(() => {
-            showToast();
-          })
-          .catch((err) => {
-            console.error("Failed to copy: ", err);
-            alert("Failed to copy to clipboard. See console.");
-          });
+    function generatePrompt() {
+      const blocks = Array.from(dropZone.querySelectorAll(".prompt-block"));
+      if (blocks.length === 0) {
+        alert("Add some components first!");
+        return;
       }
 
-      function updatePreview() {
-        const previewContent = document.getElementById("previewContent");
-        const blocks = Array.from(dropZone.querySelectorAll(".prompt-block"));
+      let prompt =
+        "I need you to build a web application with the following specifications:\n\n";
 
-        if (blocks.length === 0) {
-          previewContent.innerHTML =
-            '<div class="preview-empty">Add components to see your prompt preview here...</div>';
-          return;
-        }
+      blocks.forEach((block) => {
+        const type = block.dataset.type;
+        const config = components[type];
 
-        let previewHtml =
-          '<span class="preview-intro">I need you to build a web application with the following specifications:</span>\n\n';
+        prompt += `## ${config.title}\n`;
 
-        blocks.forEach((block) => {
-          const type = block.dataset.type;
-          const config = components[type];
-
-          previewHtml += `<div class="preview-section">`;
-          previewHtml += `<span class="preview-heading">## ${config.title}</span>\n`;
-
-          const inputs = block.querySelectorAll("input, select, textarea");
-          inputs.forEach((input, index) => {
-            const label = config.fields[index].label;
-            const value = input.value;
-            if (value && value.trim() !== "") {
-              previewHtml += `<span class="preview-label">- ${label}:</span> <span class="preview-value">${escapeHtml(value)}</span>\n`;
-            }
-          });
-          previewHtml += "</div>";
+        const inputs = block.querySelectorAll("input, select, textarea");
+        inputs.forEach((input, index) => {
+          const label = config.fields[index].label;
+          const value = input.value;
+          if (value && value.trim() !== "") {
+            prompt += `- **${label}**: ${value}\n`;
+          }
         });
+        prompt += "\n";
+      });
 
-        previewHtml +=
-          '<span class="preview-outro">Please verify the consistency of these requirements and generate the necessary project files. Make no mistake.</span>';
+      prompt +=
+        "Please verify the consistency of these requirements and generate the necessary project files.";
 
-        previewContent.innerHTML = previewHtml;
+      navigator.clipboard
+        .writeText(prompt)
+        .then(() => {
+          showToast();
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+          alert("Failed to copy to clipboard. See console.");
+        });
+    }
+
+    function updatePreview() {
+      const previewContent = document.getElementById("previewContent");
+      const blocks = Array.from(dropZone.querySelectorAll(".prompt-block"));
+
+      if (blocks.length === 0) {
+        previewContent.innerHTML =
+          '<div class="preview-empty">Add components to see your prompt preview here...</div>';
+        return;
       }
 
-      function escapeHtml(text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      }
+      let previewHtml =
+        '<span class="preview-intro">I need you to build a web application with the following specifications:</span>\n\n';
 
-      function showToast() {
-        const toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 3000);
-      }
-    </script>
-  </body>
+      blocks.forEach((block) => {
+        const type = block.dataset.type;
+        const config = components[type];
+
+        previewHtml += `<div class="preview-section">`;
+        previewHtml += `<span class="preview-heading">## ${config.title}</span>\n`;
+
+        const inputs = block.querySelectorAll("input, select, textarea");
+        inputs.forEach((input, index) => {
+          const label = config.fields[index].label;
+          const value = input.value;
+          if (value && value.trim() !== "") {
+            previewHtml += `<span class="preview-label">- ${label}:</span> <span class="preview-value">${escapeHtml(value)}</span>\n`;
+          }
+        });
+        previewHtml += "</div>";
+      });
+
+      previewHtml +=
+        '<span class="preview-outro">Please verify the consistency of these requirements and generate the necessary project files. Make no mistake.</span>';
+
+      previewContent.innerHTML = previewHtml;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast() {
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+  </script>
+</body>
+
 </html>
