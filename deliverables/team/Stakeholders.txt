@@ -1,0 +1,14 @@
+# Stakeholders
+
+## Partner Organization
+This is an independent project with no external partner organization.
+
+## Teaching Team
+
+### Teaching Assistant (Primary Contact)
+- Name: Guan Huang
+- Email: gz.huang@mail.utoronto.ca
+
+### Lead TA
+- Name: Pritish Mishra
+- Email: pritish.mishra@mail.utoronto.ca
