@@ -167,6 +167,7 @@ This aligns with our goal of making Wio accessible to the developer community.
 | **Nicholas Koh** | Full Stack Developer | CLI development, integration testing, documentation | Balanced frontend/backend experience |
 | **Ivan Chepelev** | Backend Developer | AI integration, authentication system, API architecture | Strong backend experience, interest in AI systems |
 | **Milan Panta** | Full Stack Developer | Feature implementation, testing, code review | Eager to contribute across the stack |
+| **Jonathan Qiao** | Full Stack Developer | Feature development, testing, code review | Strong full-stack experience |
 
 **Partner Communications:** Since this is an independent project without an external partner, all team members share communication responsibilities with the TA.
 
