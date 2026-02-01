@@ -5,6 +5,7 @@
 When reviewing pull requests, focus **only** on the following categories:
 
 ### 1. Security Issues (High Priority)
+
 - XSS vulnerabilities (e.g., unsanitized user input in HTML)
 - SQL injection risks
 - Authentication/authorization bypasses
@@ -12,6 +13,7 @@ When reviewing pull requests, focus **only** on the following categories:
 - Insecure dependencies
 
 ### 2. Broken Code / Bugs
+
 - Syntax errors and typos that would cause runtime failures
 - Undefined variables or missing imports
 - Broken module references
@@ -19,6 +21,7 @@ When reviewing pull requests, focus **only** on the following categories:
 - Type mismatches in TypeScript
 
 ### 3. Unused / Dead Code
+
 - Unreachable code paths
 - Unused imports
 - Unused variables or functions
