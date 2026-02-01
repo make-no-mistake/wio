@@ -69,15 +69,15 @@ Tasks are managed using **GitHub Projects** (Kanban board) and **GitHub Issues**
 
 ## Team
 
-| Member | Role | GitHub |
-|--------|------|--------|
-| Omid Hemmati | Full Stack Developer | [@hemmatio](https://github.com/hemmatio) |
-| Mary Zhao | Frontend Developer | [@mariimao](https://github.com/mariimao) |
-| Yianni Culmone | Backend Developer | [@CulmoneY](https://github.com/CulmoneY) |
-| Nicholas Koh | Full Stack Developer | [@kohnicholas1](https://github.com/kohnicholas1) |
-| Ivan Chepelev | Backend Developer | [@ch-iv](https://github.com/ch-iv) |
-| Milan Panta | Full Stack Developer | [@milan-panta](https://github.com/milan-panta) |
-| Jonathan Qiao | Full Stack Developer | [@jonathanqiao1](https://github.com/jonathanqiao1) |
+| Member         | Role                 | GitHub                                             |
+| -------------- | -------------------- | -------------------------------------------------- |
+| Omid Hemmati   | Full Stack Developer | [@hemmatio](https://github.com/hemmatio)           |
+| Mary Zhao      | Frontend Developer   | [@mariimao](https://github.com/mariimao)           |
+| Yianni Culmone | Backend Developer    | [@CulmoneY](https://github.com/CulmoneY)           |
+| Nicholas Koh   | Full Stack Developer | [@kohnicholas1](https://github.com/kohnicholas1)   |
+| Ivan Chepelev  | Backend Developer    | [@ch-iv](https://github.com/ch-iv)                 |
+| Milan Panta    | Full Stack Developer | [@milan-panta](https://github.com/milan-panta)     |
+| Jonathan Qiao  | Full Stack Developer | [@jonathanqiao1](https://github.com/jonathanqiao1) |
 
 ## Technology Stack
 
@@ -98,4 +98,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-*CSC301 - Team 21: Make No Mistake*
+_CSC301 - Team 21: Make No Mistake_
