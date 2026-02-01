@@ -8,23 +8,21 @@
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "eslint": "latest",
-    "eslint-config-prettier": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "latest"
+    "eslint-config-prettier": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "typescript-eslint": "latest"
   },
   "dependencies": {
-    "fastify": "^5.7.1",
-    "prettier": "latest",
-    "typescript-eslint": "^8.53.0"
+    "fastify": "latest"
   },
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "up": "docker compose up -d",
+    "up": "docker compose up",
     "down": "docker compose down",
     "logs": "docker compose logs -f",
-    "lint": "bun eslint . && bun prettier --check --write .",
-    "lint:fix": "bun eslint . --fix && bun prettier --write ."
+    "lint": "bun eslint . --fix && bun prettier --write .",
+    "lint:check": "bun eslint . && bun prettier --check ."
   },
   "bin": {
     "wio": "cli/main.ts"

@@ -1,30 +1,27 @@
 name: CI
 
 on:
-  push:
-    branches: [main] # upon merge to main
   pull_request:
-    branches: [main] # upon PR targeting main
+  push:
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
 
-      - run: bun install
-      - run: bun run up
+      - run: bun install --frozen-lockfile
       - run: bun test
-    
+
   lint:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
 
-      - run: bun install
-      - run: bun run lint
-
+      - run: bun install --frozen-lockfile
+      - run: bun run lint:check
