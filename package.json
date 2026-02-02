@@ -22,7 +22,8 @@
     "down": "docker compose down",
     "logs": "docker compose logs -f",
     "lint": "bun eslint . --fix && bun prettier --write .",
-    "lint:check": "bun eslint . && bun prettier --check ."
+    "lint:check": "bun eslint . && bun prettier --check .",
+    "create-issues": "bash dev/scripts/create_issues.sh"
   },
   "bin": {
     "wio": "cli/main.ts"
