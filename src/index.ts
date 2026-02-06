@@ -4,6 +4,7 @@ import { initDatabase } from "./db/schema";
 import { initStorage } from "./storage";
 import { appRoutes } from "./app/routes";
 import { siteRoutes } from "./site/routes";
+import { initFastifySocket } from "./websocket";
 
 const fastify = Fastify({
   logger: true,
@@ -12,6 +13,7 @@ const fastify = Fastify({
 
 await initDatabase();
 await initStorage();
+await initFastifySocket(fastify);
 
 await fastify.register(appRoutes);
 await fastify.register(siteRoutes, { prefix: "/sites/:site" });

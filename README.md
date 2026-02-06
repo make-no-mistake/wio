@@ -63,6 +63,80 @@ bun run lint        # Check for issues
 bun run lint:fix    # Fix issues automatically
 ```
 
+## Hosting on teach.cs
+
+Wio can be deployed on UofT's teach.cs servers using `udocker` (a user-mode Docker alternative that doesn't require root access).
+
+### First-time Setup
+
+1. **SSH into teach.cs:**
+
+   ```bash
+   ssh <utorid>@teach.cs.toronto.edu
+   ```
+
+2. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/csc301-2026-s/project-make-no-mistake.git
+   cd project-make-no-mistake
+   ```
+
+3. **Install udocker:**
+
+   ```bash
+   ./install_udocker.sh
+   source ~/.bashrc
+   ```
+
+4. **Pull required images (first time only):**
+   ```bash
+   udocker pull postgres:16-alpine
+   udocker pull minio/minio:latest
+   udocker pull oven/bun:latest
+   udocker create --name=wio-web oven/bun:latest
+   ```
+
+### Running the Server
+
+Use the management script to start/stop the server:
+
+```bash
+./manage.sh
+```
+
+You'll see a menu with three options:
+
+| Option                 | Description                              |
+| ---------------------- | ---------------------------------------- |
+| **1) Start Server**    | Starts all services, keeps existing data |
+| **2) Full Restart**    | Wipes data folders, fresh start          |
+| **3) Nuclear Restart** | Wipes data AND recreates containers      |
+
+### Accessing the Server
+
+Once running, the server is accessible at:
+
+- **Web App:** `http://teach.cs.toronto.edu:3000`
+- **MinIO Console:** `http://teach.cs.toronto.edu:19001`
+
+### Viewing Logs
+
+Check the log files for debugging:
+
+```bash
+tail -f postgres.log   # PostgreSQL logs
+tail -f minio.log      # MinIO logs
+```
+
+### Stopping the Server
+
+The easiest way is to run `./manage.sh` again - it will clean up existing processes before starting new ones. Alternatively:
+
+```bash
+pkill -u $(whoami) -f "postgres|minio|bun"
+```
+
 ## Project Management
 
 Tasks are managed using **GitHub Projects** (Kanban board) and **GitHub Issues** for bug tracking and feature requests.
