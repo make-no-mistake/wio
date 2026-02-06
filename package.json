@@ -5,6 +5,7 @@
   "private": true,
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "eslint": "latest",
@@ -14,11 +15,18 @@
     "typescript-eslint": "latest"
   },
   "dependencies": {
-    "fastify": "latest"
+    "@fastify/websocket": "^11.2.0",
+    "fastify": "^5.7.1",
+    "fastify-plugin": "^5.1.0",
+    "fastify-socket.io": "^5.1.0",
+    "prettier": "latest",
+    "socket.io": "^4.8.3",
+    "typescript-eslint": "^8.53.0"
   },
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "up": "docker compose up",
+    "test": "bun test",
+    "up": "docker compose up -d",
     "down": "docker compose down",
     "logs": "docker compose logs -f",
     "lint": "bun eslint . --fix && bun prettier --write .",

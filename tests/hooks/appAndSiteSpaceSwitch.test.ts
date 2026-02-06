@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { extractLowestLevelDomain } from "../../src/callbacks/appAndSiteSpaceSwitch";
+import { extractLowestLevelDomain } from "../../src/helpers/extractLowestLevelDomain";
 
 test("production domain", () => {
   expect(extractLowestLevelDomain("hi.wio.dev")).toBe("hi");
@@ -27,4 +27,8 @@ test("no domain", () => {
 
 test("wio without subdomain", () => {
   expect(extractLowestLevelDomain("wio.dev")).toBeUndefined();
+});
+
+test("www subdomain should be ignored", () => {
+  expect(extractLowestLevelDomain("www.wio.dev")).toBeUndefined();
 });

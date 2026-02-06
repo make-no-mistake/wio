@@ -1,4 +1,5 @@
 import type { IncomingMessage } from "http";
+import { extractLowestLevelDomain } from "../helpers/extractLowestLevelDomain";
 
 // This hook serves as a switch between the app and site route space.
 // All requests that arrive through a subdomain (e.g mysite.wio.dev/example)
@@ -11,28 +12,4 @@ export function appAndSiteSpaceSwitch(req: IncomingMessage): string {
   if (!site) return url;
 
   return `/sites/${site}${url}`;
-}
-
-export function extractLowestLevelDomain(
-  host: string | undefined,
-): string | undefined {
-  if (!host) {
-    return undefined;
-  }
-
-  if (
-    host.startsWith("127.0.0.1") ||
-    host.startsWith("0.0.0.0") ||
-    host.startsWith("wio.dev")
-  ) {
-    return undefined;
-  }
-
-  const parts = host.split(".");
-
-  if (parts.length === 1) {
-    return undefined;
-  }
-
-  return parts[0];
 }
