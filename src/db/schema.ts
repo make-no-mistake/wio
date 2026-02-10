@@ -49,8 +49,9 @@ async function createSiteFiles() {
   await sql`
     CREATE TABLE IF NOT EXISTS site_files (
       id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      site_id INTEGER NOT NULL UNIQUE,
+      site_id INTEGER NOT NULL,
       s3_path TEXT NOT NULL,
+      file_name TEXT NOT NULL,
       mimetype TEXT NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
