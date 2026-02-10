@@ -25,6 +25,7 @@ async function createUsers() {
   await sql`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      unique_id TEXT NOT NULL UNIQUE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
   `;
