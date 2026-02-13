@@ -11,6 +11,7 @@ export async function seed() {
 
   const [site] = await sql<{ name: string; id: number }[]>`
     INSERT INTO sites ${sql(sites)}
+    ON CONFLICT DO NOTHING
     RETURNING name, id;`;
 
   const siteFiles = [
@@ -23,5 +24,6 @@ export async function seed() {
   ];
 
   await sql`
-    INSERT INTO site_files ${sql(siteFiles)};`;
+    INSERT INTO site_files ${sql(siteFiles)}
+    ON CONFLICT DO NOTHING;`;
 }
