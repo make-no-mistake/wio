@@ -26,7 +26,7 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "test": "bun test",
-    "up": "docker compose up -d",
+    "up": "docker compose up",
     "down": "docker compose down",
     "logs": "docker compose logs -f",
     "lint": "bun eslint . --fix && bun prettier --write .",
