@@ -42,7 +42,7 @@ describe("RoomManager", () => {
 
       roomManager.join("test-site", mockSocket);
 
-      expect(mockIo.to).toHaveBeenCalledWith("site:test-site");
+      expect(mockSocket.to).toHaveBeenCalledWith("site:test-site");
     });
   });
 

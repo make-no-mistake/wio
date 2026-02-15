@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { transpileSDK } from "../../src/client/transpiler";
+import { transpileSDK } from "../../src/sdk/transpiler";
 
 describe("transpileSDK", () => {
   test("successfully compiles the SDK", async () => {

@@ -5,8 +5,11 @@ import { retrieveSiteAsset } from "./assets";
 export async function siteRoutes(fastify: FastifyInstance) {
   // Serve wio.js client library
   fastify.get("/wio.js", async (_, reply) => {
-    const wioJs = await readFile(import.meta.dir + "/../static/wio.js");
-    reply.header("Content-Type", "application/javascript").send(wioJs);
+    const sdkDir = import.meta.dir + "/../sdk";
+    const ws = await readFile(sdkDir + "/websockets/index.js"); // TODO: Concatenate via compilation.
+    const entry = await readFile(sdkDir + "/wio.js");
+    const bundle = Buffer.concat([ws, entry]);
+    reply.header("Content-Type", "application/javascript").send(bundle);
   });
 
   // Serve demo page for testing

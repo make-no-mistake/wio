@@ -55,7 +55,7 @@ describe("Wio Client", () => {
       };
 
       // Load the Wio class
-      const { Wio } = await loadWioClass();
+      const { Wio } = loadWioClass();
       const wio = new Wio();
 
       expect(wio.siteId).toBe("mysite");
@@ -68,7 +68,7 @@ describe("Wio Client", () => {
         },
       };
 
-      const { Wio } = await loadWioClass();
+      const { Wio } = loadWioClass();
       new Wio();
 
       expect(capturedAuth).toEqual({ siteId: "testsite" });
@@ -81,7 +81,7 @@ describe("Wio Client", () => {
         },
       };
 
-      const { Wio } = await loadWioClass();
+      const { Wio } = loadWioClass();
       const wio = new Wio();
 
       expect(wio.siteId).toBe("my-awesome-site");
@@ -95,7 +95,7 @@ describe("Wio Client", () => {
         },
       };
 
-      const { Wio } = await loadWioClass();
+      const { Wio } = loadWioClass();
       const wio = new Wio();
 
       expect(wio.siteId).toBe("demo");
@@ -108,7 +108,7 @@ describe("Wio Client", () => {
         },
       };
 
-      const { Wio } = await loadWioClass();
+      const { Wio } = loadWioClass();
       const wio = new Wio();
 
       expect(wio.siteId).toBeUndefined();
@@ -121,31 +121,42 @@ describe("Wio Client", () => {
         },
       };
 
-      const { Wio } = await loadWioClass();
+      const { Wio } = loadWioClass();
       const wio = new Wio();
 
       expect(wio.siteId).toBeUndefined();
     });
   });
-});
 
-// Helper to load the Wio class fresh each time
-async function loadWioClass() {
-  // Define the class inline since the source is a client-side script
-  class Wio {
-    options: Record<string, unknown>;
-    handlers: Map<string, Array<(data: unknown) => void>>;
-    connectionHandlers: Record<string, Array<(data: unknown) => void>>;
-    siteId: string | undefined;
-    socket: typeof mockSocket;
-
-    constructor(options = {}) {
-      this.options = {
-        reconnectionDelayMax: 60000,
-        reconnectionDelay: 1000,
-        ...options,
+  describe("ws property", () => {
+    it("should expose a WioWebSocket instance on wio.ws", async () => {
+      (globalThis as unknown as Record<string, unknown>).window = {
+        location: {
+          hostname: "mysite.wio.dev",
+        },
       };
 
+      const { Wio } = loadWioClass();
+      const wio = new Wio();
+
+      expect(wio.ws).toBeDefined();
+      expect(wio.ws.socket).toBe(mockSocket);
+    });
+  });
+});
+
+/**
+ * Helper to create fresh Wio + WioWebSocket classes mirroring the split.
+ * TODO: Remove this when we move the client code to a separate package.
+ */
+function loadWioClass() {
+  // --- Mirrors wio-websocket.js ---
+  class WioWebSocket {
+    handlers: Map<string, Array<(data: unknown) => void>>;
+    connectionHandlers: Record<string, Array<(data: unknown) => void>>;
+    socket: typeof mockSocket;
+
+    constructor(siteId: string | undefined) {
       this.handlers = new Map();
       this.connectionHandlers = {
         connect: [],
@@ -154,6 +165,21 @@ async function loadWioClass() {
         error: [],
       };
 
+      const ioFn = (globalThis as unknown as { io: typeof mockIo }).io;
+      this.socket = ioFn({
+        randomizationFactor: 0.5,
+        path: "/wio-socket/",
+        auth: { siteId },
+      });
+    }
+  }
+
+  // --- Mirrors wio.js ---
+  class Wio {
+    siteId: string | undefined;
+    ws: WioWebSocket;
+
+    constructor() {
       this.siteId = this._extractSiteId(
         (
           globalThis as unknown as {
@@ -161,7 +187,7 @@ async function loadWioClass() {
           }
         ).window!.location.hostname,
       );
-      this.socket = this._initSocket(this.siteId);
+      this.ws = new WioWebSocket(this.siteId);
     }
 
     _extractSiteId(host: string): string | undefined {
@@ -184,20 +210,6 @@ async function loadWioClass() {
       }
 
       return parts[0];
-    }
-
-    _initSocket(siteId: string | undefined) {
-      const io = (globalThis as unknown as { io: typeof mockIo }).io;
-      return io({
-        reconnection: true,
-        reconnectionDelay: this.options.reconnectionDelay,
-        reconnectionDelayMax: this.options.reconnectionDelayMax,
-        randomizationFactor: 0.5,
-        path: "/wio-socket/",
-        auth: {
-          siteId: siteId,
-        },
-      });
     }
   }
 
