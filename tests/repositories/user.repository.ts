@@ -1,5 +1,5 @@
 import { createUser } from "../factories/user.factory";
-import { findUserByUniqueId } from "../../src/models/user.model";
+import { findUserByUniqueId } from "../../src/repositories/user.repository";
 import { describe, expect, test } from "bun:test";
 
 describe("findUserByUniqueId", () => {
