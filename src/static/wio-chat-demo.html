@@ -217,44 +217,44 @@
       const wio = new Wio();
 
       // Connection events
-      wio.onConnect(({ socketId }) => {
+      wio.ws.onConnect(({ socketId }) => {
         statusDot.classList.add("connected");
         statusText.textContent = "Connected";
         addSystemMessage(`You joined as ${username}`);
         console.log("Connected with ID:", socketId);
       });
 
-      wio.onDisconnect(({ reason }) => {
+      wio.ws.onDisconnect(({ reason }) => {
         statusDot.classList.remove("connected");
         statusText.textContent = "Disconnected";
         addSystemMessage("Disconnected from server");
       });
 
-      wio.onReconnect(({ attempt }) => {
+      wio.ws.onReconnect(({ attempt }) => {
         statusDot.classList.add("connected");
         statusText.textContent = "Connected";
         addSystemMessage(`Reconnected after ${attempt} attempt(s)`);
       });
 
-      wio.onError(({ message }) => {
+      wio.ws.onError(({ message }) => {
         addSystemMessage(`Error: ${message}`);
       });
 
       // Built-in events
-      wio.on("user-joined", ({ connectedCount }) => {
+      wio.ws.on("user-joined", ({ connectedCount }) => {
         userCount = connectedCount;
         updateUserCount();
         addSystemMessage("Someone joined the chat");
       });
 
-      wio.on("user-left", ({ connectedCount }) => {
+      wio.ws.on("user-left", ({ connectedCount }) => {
         userCount = connectedCount;
         updateUserCount();
         addSystemMessage("Someone left the chat");
       });
 
       // Custom chat events
-      wio.on("chat-message", ({ sender, text }) => {
+      wio.ws.on("chat-message", ({ sender, text }) => {
         addMessage(sender, text, "incoming");
       });
 
@@ -267,7 +267,7 @@
         addMessage(username, text, "outgoing");
 
         // Send to others
-        wio.emit("chat-message", { sender: username, text });
+        wio.ws.emit("chat-message", { sender: username, text });
 
         messageInput.value = "";
       }

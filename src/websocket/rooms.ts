@@ -27,7 +27,7 @@ export class RoomManager {
     const room = this.getRoomName(siteId);
     socket.join(room);
 
-    this.io.to(room).emit("user-joined", {
+    socket.to(room).emit("user-joined", {
       connectedCount: this.getRoomSize(siteId),
       socketId: socket.id,
     });
