@@ -5,6 +5,8 @@ export async function seed() {
 
   const [user] = await sql<{ id: number; unique_id: string }[]>`
     INSERT INTO users ${sql(users)}
+    ON CONFLICT (unique_id)
+    DO UPDATE SET unique_id = EXCLUDED.unique_id
     RETURNING id, unique_id;`;
 
   const sites = [{ name: `${user!.id}_mysite`, owner_id: user!.id }];
