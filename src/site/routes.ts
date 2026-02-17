@@ -1,15 +1,17 @@
 import type { FastifyInstance } from "fastify";
 import { readFile } from "node:fs/promises";
 import { retrieveSiteAsset } from "./assets";
+import { transpileSDK } from "../sdk/transpiler";
 
 export async function siteRoutes(fastify: FastifyInstance) {
-  // Serve wio.js client library
   fastify.get("/wio.js", async (_, reply) => {
-    const sdkDir = import.meta.dir + "/../sdk";
-    const ws = await readFile(sdkDir + "/websockets/index.js"); // TODO: Concatenate via compilation.
-    const entry = await readFile(sdkDir + "/wio.js");
-    const bundle = Buffer.concat([ws, entry]);
-    reply.header("Content-Type", "application/javascript").send(bundle);
+    const result = await transpileSDK();
+
+    if (!result.success) {
+      return reply.status(500).send(result.error);
+    }
+
+    reply.header("Content-Type", "application/javascript").send(result.body);
   });
 
   // Serve demo page for testing
