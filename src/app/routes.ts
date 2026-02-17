@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { readFile } from "node:fs/promises";
+import { userRoutes } from "./routes/user.routes";
 
 export async function appRoutes(fastify: FastifyInstance) {
   fastify.get("/", async (_, reply) => {
@@ -8,4 +9,6 @@ export async function appRoutes(fastify: FastifyInstance) {
     );
     reply.header("Content-Type", "text/html").send(index_content);
   });
+
+  await fastify.register(userRoutes);
 }
