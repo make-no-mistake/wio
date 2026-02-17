@@ -4,6 +4,9 @@ import { exists, mkdir, readFile, writeFile } from "fs/promises";
 import { parseArgs } from "util";
 import { YAML } from "bun";
 
+const API_URL = "http://localhost:3000";
+const MAX_ARCHIVE_SIZE = 50 * 1024 * 1024;
+
 const { positionals } = parseArgs({
   args: Bun.argv,
   allowPositionals: true,
@@ -36,7 +39,51 @@ if (last === "push") {
 
   const project_name = config.name;
 
-  console.log(`Pushing ${project_name} to remote`);
+  console.log(`Pushing ${project_name} to remote...`);
+  console.log(`Scanning project files...`);
+
+  // Scan for all files in the project directory
+  const glob = new Bun.Glob("**/*");
+  const files: Record<string, Blob> = {};
+
+  for await (const path of glob.scan({ cwd, onlyFiles: true })) {
+    files[path] = Bun.file(path);
+  }
+
+  const archive = new Bun.Archive(files, { compress: "gzip", level: 9 });
+  const blob = await archive.blob();
+
+  if (blob.size > MAX_ARCHIVE_SIZE) {
+    console.error(
+      `Archive exceeds the ${MAX_ARCHIVE_SIZE / 1024 / 1024} MB limit`,
+    );
+    process.exit(1);
+  }
+
+  console.log(`Sending to server...`);
+
+  const formData = new FormData();
+  formData.append("name", project_name);
+  formData.append("archive", blob, `${project_name}.tar.gz`);
+
+  try {
+    const response = await fetch(`${API_URL}/api/site`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      console.error(`Server error: ${response.status} ${response.statusText}`);
+      process.exit(1);
+    }
+
+    const result = await response.json();
+    console.log("Push successful!", result);
+  } catch (err) {
+    console.error("Failed to connect to server:", (err as Error).message);
+    process.exit(1);
+  }
+
   process.exit(0);
 }
 
@@ -44,7 +91,7 @@ if (last === "push") {
 if (second_last === "init") {
   const project_name = last;
 
-  console.log(`Initializing project ${project_name}`);
+  console.log(`Initializing project ${project_name}...`);
 
   if (await exists(`${project_name}`)) {
     console.error(`Project ${project_name} already exists`);
@@ -66,4 +113,5 @@ if (second_last === "init") {
 
 console.log(`Commands:`);
 console.log(`  init <project_name> - Initialize a new project`);
-console.log(`  push <project_name> - Push a project to remote`);
+console.log(`  push - Push current project to remote`);
+process.exit(0);
