@@ -2,6 +2,7 @@ import fastifyIO from "fastify-socket.io";
 import type { FastifyInstance } from "fastify";
 import { Socket } from "socket.io";
 import { RoomManager } from "./rooms";
+import { extractLowestLevelDomain } from "../helpers/extractLowestLevelDomain";
 
 export async function initFastifySocket(fastify: FastifyInstance) {
   await fastify.register(fastifyIO, {
@@ -15,10 +16,11 @@ export async function initFastifySocket(fastify: FastifyInstance) {
 
     // Middleware to extract and validate siteId before connection
     io.use((socket, next) => {
-      const siteId = socket.handshake.auth.siteId;
+      const host = socket.handshake.headers.host;
+      const siteId = extractLowestLevelDomain(host);
 
       if (!siteId) {
-        return next(new Error("Invalid siteId"));
+        return next(new Error("Could not extract siteId from host"));
       }
 
       socket.data.siteId = siteId;
