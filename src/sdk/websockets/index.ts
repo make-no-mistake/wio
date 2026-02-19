@@ -1,11 +1,23 @@
-/* global io */
+import { io, type Socket } from "socket.io-client";
+
+type EventHandler = (data: unknown) => void;
+type ConnectionType = "connect" | "disconnect" | "reconnect" | "error";
+declare const window: {
+  location: {
+    hostname: string;
+  };
+};
+
 /**
  * Wio WebSocket API
  * Handles real-time communication via Socket.IO
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-class WioWebSocket {
-  constructor(siteId) {
+export class WioWebSocket {
+  private handlers: Map<string, EventHandler[]>;
+  private connectionHandlers: Record<ConnectionType, EventHandler[]>;
+  private socket: Socket;
+
+  constructor() {
     this.handlers = new Map();
     this.connectionHandlers = {
       connect: [],
@@ -14,15 +26,11 @@ class WioWebSocket {
       error: [],
     };
 
-    this._initSocket(siteId);
-  }
-
-  _initSocket(siteId) {
     this.socket = io({
       randomizationFactor: 0.5,
       path: "/wio-socket/",
       auth: {
-        siteId: siteId,
+        siteId: window.location.hostname,
       },
     });
 
@@ -43,32 +51,32 @@ class WioWebSocket {
     });
 
     // Forward all events to registered handlers
-    this.socket.onAny((event, data) => {
+    this.socket.onAny((event: string, data: unknown) => {
       this._triggerEvent(event, data);
     });
   }
 
   /**
    * Register an event handler
-   * @param {string} event - Event name
-   * @param {function} callback - Handler function
-   * @returns {WioWebSocket} this for chaining
+   * @param event - Event name
+   * @param callback - Handler function
+   * @returns this for chaining
    */
-  on(event, callback) {
+  on(event: string, callback: EventHandler): this {
     if (!this.handlers.has(event)) {
       this.handlers.set(event, []);
     }
-    this.handlers.get(event).push(callback);
+    this.handlers.get(event)!.push(callback);
     return this;
   }
 
   /**
    * Remove an event handler
-   * @param {string} event - Event name
-   * @param {function} callback - Handler function to remove
-   * @returns {WioWebSocket} this for chaining
+   * @param event - Event name
+   * @param callback - Handler function to remove
+   * @returns this for chaining
    */
-  off(event, callback) {
+  off(event: string, callback: EventHandler): this {
     const handlers = this.handlers.get(event);
     if (handlers) {
       const index = handlers.indexOf(callback);
@@ -80,7 +88,7 @@ class WioWebSocket {
   /**
    * Called when connection is established
    */
-  onConnect(callback) {
+  onConnect(callback: EventHandler): this {
     this.connectionHandlers.connect.push(callback);
     return this;
   }
@@ -88,7 +96,7 @@ class WioWebSocket {
   /**
    * Called when disconnected
    */
-  onDisconnect(callback) {
+  onDisconnect(callback: EventHandler): this {
     this.connectionHandlers.disconnect.push(callback);
     return this;
   }
@@ -96,7 +104,7 @@ class WioWebSocket {
   /**
    * Called after successful reconnection
    */
-  onReconnect(callback) {
+  onReconnect(callback: EventHandler): this {
     this.connectionHandlers.reconnect.push(callback);
     return this;
   }
@@ -104,18 +112,18 @@ class WioWebSocket {
   /**
    * Called on connection error
    */
-  onError(callback) {
+  onError(callback: EventHandler): this {
     this.connectionHandlers.error.push(callback);
     return this;
   }
 
   /**
    * Emit an event to others in the room
-   * @param {string} event - Event name
-   * @param {*} data - Data to send
-   * @returns {WioWebSocket} this for chaining
+   * @param event - Event name
+   * @param data - Data to send
+   * @returns this for chaining
    */
-  emit(event, data) {
+  emit(event: string, data: unknown): this {
     this.socket.emit(event, data);
     return this;
   }
@@ -123,32 +131,32 @@ class WioWebSocket {
   /**
    * Disconnect from the server
    */
-  disconnect() {
+  disconnect(): void {
     this.socket.disconnect();
   }
 
   /**
    * Get the current socket ID
    */
-  get id() {
+  get id(): string | undefined {
     return this.socket.id;
   }
 
   /**
    * Check if connected
    */
-  get connected() {
+  get connected(): boolean {
     return this.socket.connected;
   }
 
   // Internal: trigger event handlers
-  _triggerEvent(event, data) {
+  private _triggerEvent(event: string, data: unknown): void {
     const handlers = this.handlers.get(event) || [];
     handlers.forEach((h) => h(data));
   }
 
   // Internal: trigger connection handlers
-  _trigger(type, data) {
+  private _trigger(type: ConnectionType, data: unknown): void {
     this.connectionHandlers[type].forEach((h) => h(data));
   }
 }

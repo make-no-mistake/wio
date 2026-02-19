@@ -196,12 +196,9 @@
       </div>
     </div>
 
-    <!-- Socket.IO from CDN -->
-    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
-    <!-- Wio client library -->
-    <script src="/wio.js"></script>
+    <script type="module">
+      import wio from "/wio.js";
 
-    <script>
       const messagesEl = document.getElementById("messages");
       const messageInput = document.getElementById("messageInput");
       const sendBtn = document.getElementById("sendBtn");
@@ -212,9 +209,6 @@
       // Generate random username
       const username = "User-" + Math.random().toString(36).substring(2, 6);
       let userCount = 1;
-
-      // Initialize Wio
-      const wio = new Wio();
 
       // Connection events
       wio.ws.onConnect(({ socketId }) => {
