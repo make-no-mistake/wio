@@ -2,11 +2,6 @@ import { io, type Socket } from "socket.io-client";
 
 type EventHandler = (data: unknown) => void;
 type ConnectionType = "connect" | "disconnect" | "reconnect" | "error";
-declare const window: {
-  location: {
-    hostname: string;
-  };
-};
 
 /**
  * Wio WebSocket API
@@ -29,9 +24,6 @@ export class WioWebSocket {
     this.socket = io({
       randomizationFactor: 0.5,
       path: "/wio-socket/",
-      auth: {
-        siteId: window.location.hostname,
-      },
     });
 
     this.socket.on("connect", () => {
