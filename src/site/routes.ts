@@ -1,7 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import { readFile } from "node:fs/promises";
-import { retrieveSiteAsset } from "./assets";
 import { transpileSDK } from "../sdk/transpiler";
+import { SiteAssetRepositoryImpl } from "../repositories/site_asset.repository";
 
 export async function siteRoutes(fastify: FastifyInstance) {
   fastify.get("/wio.js", async (_, reply) => {
@@ -14,18 +13,27 @@ export async function siteRoutes(fastify: FastifyInstance) {
     reply.header("Content-Type", "application/javascript").send(result.body);
   });
 
-  // Serve demo page for testing
-  fastify.get("/demo", async (_, reply) => {
-    const demo = await readFile(
-      import.meta.dir + "/../static/wio-chat-demo.html",
-    );
-    reply.header("Content-Type", "text/html").send(demo);
+  fastify.get("/", async (request, reply) => {
+    const { site } = request.params as { site: string };
+
+    const { bytes, mimetype } =
+      await new SiteAssetRepositoryImpl().retrieveAssetBySiteAndName(
+        site,
+        "index.html",
+      );
+
+    return reply.header("Content-Type", mimetype).send(bytes);
   });
 
   fastify.get("/:asset", async (request, reply) => {
     const { site, asset } = request.params as { site: string; asset: string };
 
-    const { bytes, mimetype } = await retrieveSiteAsset(site, asset);
+    const { bytes, mimetype } =
+      await new SiteAssetRepositoryImpl().retrieveAssetBySiteAndName(
+        site,
+        asset,
+      );
+
     return reply.header("Content-Type", mimetype).send(bytes);
   });
 }
