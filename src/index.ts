@@ -1,7 +1,6 @@
 import Fastify from "fastify";
 import { appAndSiteSpaceSwitch } from "./callbacks/appAndSiteSpaceSwitch";
 import { initDatabase } from "./db/schema";
-import { initStorage } from "./storage";
 import { appRoutes } from "./app/routes";
 import { siteRoutes } from "./site/routes";
 import { initFastifySocket } from "./websocket";
@@ -12,7 +11,6 @@ const fastify = Fastify({
 });
 
 await initDatabase();
-await initStorage();
 await initFastifySocket(fastify);
 
 await fastify.register(appRoutes);

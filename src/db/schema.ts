@@ -36,7 +36,7 @@ async function createSites() {
   await sql`
     CREATE TABLE IF NOT EXISTS sites (
       id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      name TEXT NOT NULL,
+      name VARCHAR(32) NOT NULL UNIQUE,
       owner_id INTEGER NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
@@ -50,9 +50,8 @@ async function createSiteFiles() {
     CREATE TABLE IF NOT EXISTS site_files (
       id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
       site_id INTEGER NOT NULL,
-      s3_path TEXT NOT NULL,
+      s3_path TEXT NOT NULL UNIQUE,
       file_name TEXT NOT NULL,
-      mimetype TEXT NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
     );
