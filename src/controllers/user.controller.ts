@@ -12,7 +12,7 @@ export async function create(_: FastifyRequest, reply: FastifyReply) {
   if (!user) {
     return reply.code(422).send({ error: "Unable to create user" });
   }
-  return reply.code(201).send({ unique_id: user.unique_id });
+  return reply.code(201).send({ tag: user.tag });
 }
 
 function generateSixteenDigit(): string {

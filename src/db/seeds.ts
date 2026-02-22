@@ -6,26 +6,26 @@ const static_dir = `${import.meta.dir}/../static`;
 
 const users = [
   {
-    unique_id: "1234",
+    tag: "1234",
   },
 ];
 
 const sites = [
   {
     name: "cat",
-    owner_unique_id: "1234",
+    owner_tag: "1234",
   },
   {
     name: "chat",
-    owner_unique_id: "1234",
+    owner_tag: "1234",
   },
   {
     name: "cli_simulator",
-    owner_unique_id: "1234",
+    owner_tag: "1234",
   },
   {
     name: "prompt_maker",
-    owner_unique_id: "1234",
+    owner_tag: "1234",
   },
   {
     name: "ai",
@@ -81,19 +81,19 @@ export async function seed() {
 async function seedUsers() {
   for (const user of users) {
     await sql`
-      INSERT INTO users (unique_id) VALUES (${user.unique_id})
-      ON CONFLICT (unique_id) DO NOTHING;`;
+      INSERT INTO users (tag) VALUES (${user.tag})
+      ON CONFLICT (tag) DO NOTHING;`;
   }
 }
 
 async function seedSites() {
   for (const site of sites) {
     const [owner] = await sql<{ id: number }[]>`
-      SELECT id FROM users WHERE unique_id = ${site.owner_unique_id};`;
+      SELECT id FROM users WHERE tag = ${site.owner_tag};`;
 
     if (!owner) {
       console.warn(
-        `Seed: user with unique_id '${site.owner_unique_id}' not found, skipping site '${site.name}'`,
+        `Seed: user with tag '${site.owner_tag}' not found, skipping site '${site.name}'`,
       );
       continue;
     }
