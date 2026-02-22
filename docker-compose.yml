@@ -71,6 +71,7 @@ services:
       - S3_SECRET_ACCESS_KEY=minioadmin
       - S3_BUCKET=wio-assets
       - S3_REGION=us-east-1
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
       postgres:
         condition: service_healthy

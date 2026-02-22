@@ -27,6 +27,10 @@ const sites = [
     name: "prompt_maker",
     owner_unique_id: "1234",
   },
+  {
+    name: "ai",
+    owner_unique_id: "1234",
+  },
 ];
 
 const files = [
@@ -59,6 +63,12 @@ const files = [
     site_name: "prompt_maker",
     mimetype: "text/html",
     path: `${static_dir}/prompt_maker.html`,
+  },
+  {
+    file_name: "index.html",
+    site_name: "ai",
+    mimetype: "text/html",
+    path: `${static_dir}/wio-ai-demo.html`,
   },
 ];
 

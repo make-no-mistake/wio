@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wio AI Demo</title>
+  </head>
+
+  <body>
+    <h1>AI Prompt</h1>
+    <textarea
+      id="prompt"
+      rows="4"
+      cols="60"
+      placeholder="Enter your prompt..."
+    ></textarea>
+    <br />
+    <button id="send">Send</button>
+    <pre id="response"></pre>
+
+    <script type="module">
+      import wio from "/wio.js";
+
+      const promptEl = document.getElementById("prompt");
+      const responseEl = document.getElementById("response");
+      const sendBtn = document.getElementById("send");
+
+      sendBtn.addEventListener("click", async () => {
+        responseEl.textContent = "Loading...";
+        try {
+          const result = await wio.ask(promptEl.value);
+          responseEl.textContent = result;
+        } catch (err) {
+          responseEl.textContent = "Error: " + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

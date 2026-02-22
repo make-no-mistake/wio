@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@fastify/websocket": "^11.2.0",
+    "@google/genai": "^1.41.0",
     "fastify": "^5.7.1",
     "fastify-plugin": "^5.1.0",
     "fastify-socket.io": "^5.1.0",
@@ -27,6 +28,8 @@
     "test": "bun test",
     "up": "docker compose up",
     "down": "docker compose down",
+    "rebuild": "docker compose down && docker compose up --build --renew-anon-volumes",
+    "nuke": "docker compose down -v && docker compose up --build --renew-anon-volumes",
     "logs": "docker compose logs -f",
     "lint": "bun eslint . --fix && bun prettier --write .",
     "lint:check": "bun eslint . && bun prettier --check .",
