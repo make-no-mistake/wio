@@ -1,8 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { transpileSDK } from "../sdk/transpiler";
 import { SiteAssetRepositoryImpl } from "../repositories/site_asset.repository";
+import { llmRoutes } from "../llm/routes";
 
 export async function siteRoutes(fastify: FastifyInstance) {
+  await fastify.register(llmRoutes);
+
   fastify.get("/wio.js", async (_, reply) => {
     const result = await transpileSDK();
 
