@@ -1,12 +1,12 @@
 import { createUser } from "../factories/user.factory";
-import { findUserByUniqueId } from "../../src/repositories/user.repository";
+import { findUserByTag } from "../../src/repositories/user.repository";
 import { describe, expect, test } from "bun:test";
 
-describe("findUserByUniqueId", () => {
+describe("findUserByTag", () => {
   test("returns a created user", async () => {
     const user = await createUser();
-    const found = await findUserByUniqueId(user.unique_id);
+    const found = await findUserByTag(user.tag);
 
-    expect(found?.unique_id).toBe(user.unique_id);
+    expect(found?.tag).toBe(user.tag);
   });
 });
