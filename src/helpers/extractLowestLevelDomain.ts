@@ -15,7 +15,7 @@ export function extractLowestLevelDomain(
   if (
     host.startsWith("127.0.0.1") ||
     host.startsWith("0.0.0.0") ||
-    host.startsWith("wio.dev")
+    host.startsWith("noivan.dev")
   ) {
     return undefined;
   }
