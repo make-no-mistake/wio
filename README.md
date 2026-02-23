@@ -4,6 +4,8 @@
 
 **A backend-as-a-service platform for low-code and no-code developers, powered by AI.**
 
+**[Landing page](https://wio.netlify.app)**
+
 ## Overview
 
 Wio is a platform that enables aspiring developers and entrepreneurs to build full-stack web applications without traditional programming expertise. By providing a simple, AI-agent-friendly API, Wio handles all backend complexity—database operations, authentication, real-time features, and deployment.
