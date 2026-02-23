@@ -11,12 +11,12 @@ describe("extractLowestLevelDomain (websocket logic)", () => {
       expect(extractLowestLevelDomain("mysite.lvh.me:3000")).toBe("mysite");
     });
 
-    it("should extract site from subdomain.wio.dev", () => {
-      expect(extractLowestLevelDomain("test.wio.dev")).toBe("test");
+    it("should extract site from subdomain.noivan.dev", () => {
+      expect(extractLowestLevelDomain("test.noivan.dev")).toBe("test");
     });
 
     it("should handle hyphenated site names", () => {
-      expect(extractLowestLevelDomain("my-site.wio.dev")).toBe("my-site");
+      expect(extractLowestLevelDomain("my-site.noivan.dev")).toBe("my-site");
     });
   });
 
@@ -26,7 +26,7 @@ describe("extractLowestLevelDomain (websocket logic)", () => {
     });
 
     it("should return undefined for www subdomain", () => {
-      expect(extractLowestLevelDomain("www.wio.dev")).toBe(undefined);
+      expect(extractLowestLevelDomain("www.noivan.dev")).toBe(undefined);
     });
 
     it("should return undefined for single-part hostname", () => {
