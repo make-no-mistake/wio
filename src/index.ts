@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyView from "@fastify/view";
 import ejs from "ejs";
+import multipart from "@fastify/multipart";
 import { appAndSiteSpaceSwitch } from "./callbacks/appAndSiteSpaceSwitch";
 import { initDatabase } from "./db/schema";
 import { appRoutes } from "./app/routes";
@@ -11,6 +12,12 @@ import { initFastifySocket } from "./websocket";
 const fastify = Fastify({
   logger: true,
   rewriteUrl: appAndSiteSpaceSwitch,
+});
+
+await fastify.register(multipart, {
+  limits: {
+    fileSize: 50 * 1024 * 1024,
+  },
 });
 
 await initDatabase();
