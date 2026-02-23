@@ -1,4 +1,6 @@
-import { sql, s3 } from "bun";
+import { findSiteByName } from "./site.repository";
+import { getSiteFileByName } from "./file.repository";
+import { readS3File } from "./s3.repository";
 
 class AssetNotFoundError extends Error {
   constructor(message: string) {
@@ -20,24 +22,18 @@ export class SiteAssetRepositoryImpl implements SiteAssetRepository {
     site: string,
     name: string,
   ): Promise<SiteAsset> {
-    const [siteRow] = await sql<
-      { id: number }[]
-    >`SELECT id FROM sites WHERE name = ${site};`;
+    const siteRow = await findSiteByName(site);
 
     if (!siteRow) {
       throw new AssetNotFoundError(`Site ${site} not found`);
     }
 
-    const [asset] = await sql<
-      { s3_path: string; file_name: string }[]
-    >`SELECT s3_path, file_name FROM site_files WHERE site_id = ${siteRow.id} AND file_name = ${name}`;
+    const asset = await getSiteFileByName(siteRow.id, name);
 
     if (!asset) {
       throw new AssetNotFoundError(`Asset ${name} not found for site ${site}`);
     }
 
-    const s3_asset = s3.file(asset.s3_path);
-
-    return { bytes: await s3_asset.bytes(), mimetype: s3_asset.type };
+    return await readS3File(asset.s3_path);
   }
 }

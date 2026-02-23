@@ -44,10 +44,10 @@ if (last === "push") {
 
   // Scan for all files in the project directory
   const glob = new Bun.Glob("**/*");
-  const files: Record<string, Blob> = {};
+  const files: Record<string, ArrayBuffer> = {};
 
   for await (const path of glob.scan({ cwd, onlyFiles: true })) {
-    files[path] = Bun.file(path);
+    files[path] = await Bun.file(`${cwd}/${path}`).arrayBuffer();
   }
 
   const archive = new Bun.Archive(files, { compress: "gzip", level: 9 });
