@@ -67,8 +67,7 @@ async function createRelations() {
       table_name TEXT NOT NULL,
       data JSONB NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE,
-      UNIQUE (site_id, table_name)
+      FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
     );
   `;
 }
