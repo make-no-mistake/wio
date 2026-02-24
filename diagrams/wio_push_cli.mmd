@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant Dev as Developer
+    participant CLI as Wio CLI
+    participant FS as Local Filesystem
+    
+    Dev->>CLI: run `wio push`
+    CLI->>FS: Read wio.yaml
+    FS-->>CLI: Project name
+    CLI->>FS: Glob all project files
+    FS-->>CLI: List of files
+    CLI->>CLI: Bundle into .tar.gz archive
+    CLI->>+Network: POST /api/site (FormData: archive + name)
+    Note over CLI,Network: Hand-off to Wio Cloud backend

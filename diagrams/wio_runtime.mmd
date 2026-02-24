@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant Browser as Deployed Client (Browser)
+    participant SDK as wio.js SDK
+    participant Socket as WebSockets (Socket.IO)
+    participant HTTP as Backend HTTP API
+    participant Repo as Backend Repositories
+    participant DB as Postgres
+    participant LLM as Gemini API
+    
+    Note over Browser,LLM: Real-Time Events (via WebSocket)
+    Browser->>SDK: wio.ws.emit('chat-msg', {text: 'Hello'})
+    SDK->>Socket: Emit event to server
+    Socket->>Socket: Broadcast to site room (excluding sender)
+    Socket-->>SDK: Other clients receive event
+    SDK-->>Browser: Event handler fires
+
+    Note over Browser,LLM: Database Operations (via SDK)
+    Browser->>SDK: wio.useRelation('users').insert({name: 'Alice'})
+    SDK->>SDK: Build validated query payload
+
+    Note over Browser,LLM: AI Operations (via HTTP)
+    Browser->>SDK: wio.ask('Summarize these logs')
+    SDK->>HTTP: POST /llm/prompt {prompt: '...'}
+    HTTP->>LLM: Pass prompt to Gemini
+    LLM-->>HTTP: Return AI inference
+    HTTP-->>SDK: {response: '...'}
+    SDK-->>Browser: Resolves to string result
