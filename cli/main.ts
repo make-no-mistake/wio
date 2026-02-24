@@ -4,7 +4,7 @@ import { exists, mkdir, readFile, writeFile } from "fs/promises";
 import { parseArgs } from "util";
 import { YAML } from "bun";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://noivan.dev";
 const MAX_ARCHIVE_SIZE = 50 * 1024 * 1024;
 
 const { positionals } = parseArgs({
