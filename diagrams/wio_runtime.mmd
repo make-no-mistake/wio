@@ -5,7 +5,7 @@ sequenceDiagram
     participant HTTP as Backend HTTP API
     participant Repo as Backend Repositories
     participant DB as Postgres
-    participant LLM as Gemini API
+    participant LLM as Gen AI API
     
     Note over Browser,LLM: Real-Time Events (via WebSocket)
     Browser->>SDK: wio.ws.emit('chat-msg', {text: 'Hello'})
@@ -21,7 +21,7 @@ sequenceDiagram
     Note over Browser,LLM: AI Operations (via HTTP)
     Browser->>SDK: wio.ask('Summarize these logs')
     SDK->>HTTP: POST /llm/prompt {prompt: '...'}
-    HTTP->>LLM: Pass prompt to Gemini
+    HTTP->>LLM: Pass prompt to Gemma
     LLM-->>HTTP: Return AI inference
     HTTP-->>SDK: {response: '...'}
     SDK-->>Browser: Resolves to string result

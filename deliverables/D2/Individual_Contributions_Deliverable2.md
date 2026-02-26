@@ -44,7 +44,7 @@ We split the work for this deliverable by **Architecture** (Backend Server, Web 
 - **Role:** Client SDK & Integrations Subteam Member
 - **Contributions:**
   - Integrated server-side Socket.IO wrappers utilizing secure per-site rooms for isolated real-time infrastructure (PR [#36](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/36), [#55](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/55), [#73](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/73)).
-  - Engineered the `src/llm/gemini` API endpoint and proxy layer, exposing native Gemini 3 Flash generation securely to the client SDK via `wio.ask()` (PR [#69](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/69)).
+  - Engineered the `src/llm/gemma` API endpoint and proxy layer, exposing native Gemma 3 27B generation securely to the client SDK via `wio.ask()` (PR [#69](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/69)).
   - Coordinated the overarching system architecture breakdown and led the planning/documentation for Deliverables 1 & 2, including the project `README.md` (PR [#5](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/5), [#85](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/85)).
   - Conducted 6 code reviews on GitHub.
 
