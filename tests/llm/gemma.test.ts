@@ -15,7 +15,7 @@ mock.module("@google/genai", () => ({
 }));
 
 // Must import AFTER the mock is set up
-const { generateText } = await import("../../src/llm/gemini");
+const { generateText } = await import("../../src/llm/gemma");
 
 describe("generateText", () => {
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe("generateText", () => {
       response: "Mocked AI response",
     });
     expect(generateContentMock).toHaveBeenCalledWith({
-      model: "gemini-3-flash-preview",
+      model: "gemma-3-27b-it",
       contents: "What is 2+2?",
     });
   });

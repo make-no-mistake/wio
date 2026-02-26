@@ -10,7 +10,7 @@ if (!apiKey) {
 
 const ai = new GoogleGenAI({ apiKey });
 
-const MODEL = "gemini-3-flash-preview";
+const MODEL = "gemma-3-27b-it";
 
 export interface LLMResult {
   success: boolean;

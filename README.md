@@ -15,7 +15,7 @@ Wio is a platform that enables aspiring developers and entrepreneurs to build fu
 Our platform is actively deployed. No installation required to explore:
 
 - **Landing Page:** https://noivan.dev/
-- **AI Demo:** https://ai.noivan.dev/ — enter a prompt and receive a Gemini-powered AI response.
+- **AI Demo:** https://ai.noivan.dev/ — enter a prompt and receive a Gemma-powered AI response.
 - **Real-Time Chat Demo:** https://chat.noivan.dev/ — open in two tabs to see live WebSocket messaging.
 
 ### Developer Workflow
@@ -158,12 +158,12 @@ Wio intercepts SDK commands on the frontend and translates them into secure, iso
 
 ### Integrated AI Functionality
 
-The Wio platform acts as a secure proxy for the Google Gemini API. Developers can execute LLM prompts natively through the frontend SDK without having to set up or secure their own API keys.
+The Wio platform acts as a secure proxy for the Google Gen AI API. Developers can execute LLM prompts natively through the frontend SDK without having to set up or secure their own API keys.
 
 **Key Features:**
 
 - Built-in `ask("prompt")` SDK method that returns a Promise resolving to the AI response.
-- Secure proxying ensures client applications cannot expose root Gemini API keys.
+- Secure proxying ensures client applications cannot expose root Gen AI API keys.
 
 ## Feature Testing Walkthrough
 
@@ -340,7 +340,7 @@ pkill -u $(whoami) -f "postgres|minio|bun"
 
 ## External Dependencies
 
-- Google Gemini API (for AI features)
+- Google Gen AI API (for AI features)
 - PostgreSQL (database)
 
 ## License

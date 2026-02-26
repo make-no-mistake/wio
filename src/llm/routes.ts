@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { generateText } from "./gemini";
+import { generateText } from "./gemma";
 
 export async function llmRoutes(fastify: FastifyInstance) {
   fastify.post("/llm/prompt", async (request, reply) => {
