@@ -72,10 +72,46 @@ const files = [
   },
 ];
 
+const relations = [
+  {
+    site_name: "cat",
+    relation_name: "comments",
+    data: {
+      post_title: "My First Cat",
+      text: "Great post!",
+      commenter: "user1",
+    },
+  },
+  {
+    site_name: "chat",
+    relation_name: "messages",
+    data: {
+      sender: "user1",
+      content: "Hello, world!",
+      timestamp: "2026-01-15T10:30:00Z",
+    },
+  },
+  {
+    site_name: "chat",
+    relation_name: "messages",
+    data: {
+      sender: "user2",
+      content: "Hey! How are you?",
+      timestamp: "2026-01-15T10:31:00Z",
+    },
+  },
+  {
+    site_name: "chat",
+    relation_name: "channels",
+    data: { name: "general", description: "General discussion channel" },
+  },
+];
+
 export async function seed() {
   await seedUsers();
   await seedSites();
   await seedFiles();
+  await seedRelations();
 }
 
 async function seedUsers() {
@@ -126,5 +162,24 @@ async function seedFiles() {
       INSERT INTO site_files (site_id, s3_path, file_name)
       VALUES (${site.id}, ${s3Path}, ${file.file_name})
       ON CONFLICT (s3_path) DO NOTHING;`;
+  }
+}
+
+async function seedRelations() {
+  for (const relation of relations) {
+    const [site] = await sql<{ id: number }[]>`
+      SELECT id FROM sites WHERE name = ${relation.site_name};`;
+
+    if (!site) {
+      console.warn(
+        `Seed: site with name '${relation.site_name}' not found, skipping relation '${relation.relation_name}'`,
+      );
+      continue;
+    }
+
+    await sql`
+      INSERT INTO relations (site_id, relation_name, data)
+      VALUES (${site.id}, ${relation.relation_name}, ${JSON.stringify(relation.data)}::jsonb)
+      ON CONFLICT DO NOTHING;`;
   }
 }

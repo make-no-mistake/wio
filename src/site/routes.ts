@@ -5,6 +5,7 @@ import { transpileSDK } from "../sdk/transpiler";
 import { SiteAssetRepositoryImpl } from "../repositories/site_asset.repository";
 import { llmRoutes } from "../llm/routes";
 import { markdownRoutes } from "../markdown/routes";
+import { dbRoutes } from "./db/routes";
 
 const SiteParams = Type.Object({
   site: Type.String(),
@@ -16,8 +17,9 @@ const SiteAssetParams = Type.Object({
 });
 
 export async function siteRoutes(fastify: FastifyInstance) {
-  await fastify.register(llmRoutes);
-  await fastify.register(markdownRoutes);
+  await fastify.register(llmRoutes, { prefix: "/llm" });
+  await fastify.register(dbRoutes, { prefix: "/db" });
+  await fastify.register(markdownRoutes, { prefix: "/markdown" });
 
   const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
 

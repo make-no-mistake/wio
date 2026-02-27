@@ -64,7 +64,7 @@ async function createRelations() {
     CREATE TABLE IF NOT EXISTS relations (
       id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
       site_id INTEGER NOT NULL,
-      table_name TEXT NOT NULL,
+      relation_name TEXT NOT NULL,
       data JSONB NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
