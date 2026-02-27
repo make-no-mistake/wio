@@ -28,7 +28,8 @@
         responseEl.textContent = "Loading...";
         try {
           const result = await wio.ask(promptEl.value);
-          responseEl.textContent = result;
+          const html = await wio.renderMarkdown(result);
+          responseEl.innerHTML = html;
         } catch (err) {
           responseEl.textContent = "Error: " + err.message;
         }
