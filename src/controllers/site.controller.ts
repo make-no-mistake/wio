@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
-import { getS3Path } from "../storage";
+import { getS3Path } from "../helpers/storage";
 import { findSiteByName, createSite } from "../repositories/site.repository";
 import {
   clearSiteFiles,
