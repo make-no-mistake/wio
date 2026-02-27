@@ -4,6 +4,7 @@ import { Type } from "@sinclair/typebox";
 import { transpileSDK } from "../sdk/transpiler";
 import { SiteAssetRepositoryImpl } from "../repositories/site_asset.repository";
 import { llmRoutes } from "../llm/routes";
+import { markdownRoutes } from "../markdown/routes";
 
 const SiteParams = Type.Object({
   site: Type.String(),
@@ -16,6 +17,7 @@ const SiteAssetParams = Type.Object({
 
 export async function siteRoutes(fastify: FastifyInstance) {
   await fastify.register(llmRoutes);
+  await fastify.register(markdownRoutes);
 
   const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
