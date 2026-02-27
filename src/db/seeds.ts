@@ -1,6 +1,6 @@
 import { sql } from "bun";
 import { s3 } from "bun";
-import { getS3Path } from "../storage";
+import { getS3Path } from "../helpers/storage";
 
 const static_dir = `${import.meta.dir}/../static`;
 
