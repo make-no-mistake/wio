@@ -27,6 +27,23 @@ describe("insertRelations", () => {
     expect(result.success).toBe(true);
     expect(result.records).toHaveLength(2);
   });
+
+  test("stores data as JSONB and returns it", async () => {
+    const site = await createSite();
+    const data = { name: "CSC301", semester: "Winter", year: 2026 };
+    const result = await repo.insertRelations("courses", site.id, [data]);
+
+    expect(result.records![0]?.data).toEqual(data);
+  });
+
+  test("sets relation_name on inserted records", async () => {
+    const site = await createSite();
+    const result = await repo.insertRelations("labs", site.id, [
+      { name: "Lab1" },
+    ]);
+
+    expect(result.records![0]?.relation_name).toBe("labs");
+  });
 });
 
 describe("deleteRelations", () => {
