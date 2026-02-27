@@ -50,7 +50,7 @@ describe("Wio Client", () => {
       // Mock window.location
       (globalThis as unknown as Record<string, unknown>).window = {
         location: {
-          hostname: "mysite.noivan.dev",
+          hostname: "mysite.wio.onl",
         },
       };
 
@@ -77,7 +77,7 @@ describe("Wio Client", () => {
     it("should handle hyphenated subdomains", async () => {
       (globalThis as unknown as Record<string, unknown>).window = {
         location: {
-          hostname: "my-awesome-site.noivan.dev",
+          hostname: "my-awesome-site.wio.onl",
         },
       };
 
@@ -101,10 +101,10 @@ describe("Wio Client", () => {
       expect(wio.siteId).toBe("demo");
     });
 
-    it("should return undefined for noivan.dev without subdomain", async () => {
+    it("should return undefined for wio.onl without subdomain", async () => {
       (globalThis as unknown as Record<string, unknown>).window = {
         location: {
-          hostname: "noivan.dev",
+          hostname: "wio.onl",
         },
       };
 
@@ -117,7 +117,7 @@ describe("Wio Client", () => {
     it("should return undefined for www subdomain", async () => {
       (globalThis as unknown as Record<string, unknown>).window = {
         location: {
-          hostname: "www.noivan.dev",
+          hostname: "www.wio.onl",
         },
       };
 
@@ -132,7 +132,7 @@ describe("Wio Client", () => {
     it("should expose a WioWebSocket instance on wio.ws", async () => {
       (globalThis as unknown as Record<string, unknown>).window = {
         location: {
-          hostname: "mysite.noivan.dev",
+          hostname: "mysite.wio.onl",
         },
       };
 
@@ -198,7 +198,7 @@ function loadWioClass() {
       if (
         host.startsWith("127.0.0.1") ||
         host.startsWith("0.0.0.0") ||
-        host.startsWith("noivan.dev")
+        host.startsWith("wio.onl")
       ) {
         return undefined;
       }
