@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { extractLowestLevelDomain } from "../../src/helpers/extractLowestLevelDomain";
 
 test("production domain", () => {
-  expect(extractLowestLevelDomain("hi.noivan.dev")).toBe("hi");
+  expect(extractLowestLevelDomain("hi.wio.onl")).toBe("hi");
 });
 
 test("local domain", () => {
@@ -26,9 +26,9 @@ test("no domain", () => {
 });
 
 test("noivan without subdomain", () => {
-  expect(extractLowestLevelDomain("noivan.dev")).toBeUndefined();
+  expect(extractLowestLevelDomain("wio.onl")).toBeUndefined();
 });
 
 test("www subdomain should be ignored", () => {
-  expect(extractLowestLevelDomain("www.noivan.dev")).toBeUndefined();
+  expect(extractLowestLevelDomain("www.wio.onl")).toBeUndefined();
 });

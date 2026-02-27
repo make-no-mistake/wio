@@ -2,7 +2,7 @@
 
 **A backend-as-a-service platform for low-code and no-code developers, powered by AI.**
 
-**[Landing page](https://noivan.dev/)**
+**[Landing page](https://wio.onl/)**
 
 ## Overview & Value Proposition
 
@@ -14,9 +14,9 @@ Wio is a platform that enables aspiring developers and entrepreneurs to build fu
 
 Our platform is actively deployed. No installation required to explore:
 
-- **Landing Page:** https://noivan.dev/
-- **AI Demo:** https://ai.noivan.dev/ — enter a prompt and receive a Gemma-powered AI response.
-- **Real-Time Chat Demo:** https://chat.noivan.dev/ — open in two tabs to see live WebSocket messaging.
+- **Landing Page:** https://wio.onl/
+- **AI Demo:** https://ai.wio.onl/ — enter a prompt and receive a Gemma-powered AI response.
+- **Real-Time Chat Demo:** https://chat.wio.onl/ — open in two tabs to see live WebSocket messaging.
 
 ### Developer Workflow
 
