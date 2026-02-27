@@ -8,11 +8,12 @@ import { initDatabase } from "./db/schema";
 import { appRoutes } from "./app/routes";
 import { siteRoutes } from "./site/routes";
 import { initFastifySocket } from "./websocket";
+import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
 const fastify = Fastify({
   logger: true,
   rewriteUrl: appAndSiteSpaceSwitch,
-});
+}).withTypeProvider<TypeBoxTypeProvider>();
 
 await fastify.register(multipart, {
   limits: {
