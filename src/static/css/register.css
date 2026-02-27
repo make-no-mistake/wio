@@ -1,0 +1,152 @@
+:root {
+  color-scheme: light;
+  --ink: #1a1b22;
+  --muted: #5b5f6b;
+  --card: #fff7ed;
+  --accent: #d84b2a;
+  --accent-ink: #fff4ec;
+  --border: #f0d8c2;
+  --bg: radial-gradient(
+    1000px 600px at 10% 10%,
+    #ffe9d4 0%,
+    #fff6ec 35%,
+    #f7f1ea 70%,
+    #f2efe9 100%
+  );
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family:
+    "IBM Plex Sans",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  padding: 48px 20px;
+}
+
+.page {
+  width: min(720px, 100%);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: 0 20px 60px rgba(47, 31, 10, 0.12);
+}
+
+.eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+h1 {
+  font-family: "Instrument Serif", serif;
+  font-size: clamp(32px, 3vw, 44px);
+  margin: 0 0 8px;
+}
+
+.subhead {
+  margin: 0 0 28px;
+  color: var(--muted);
+}
+
+.tag-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 18px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  background: #ffffff;
+  min-width: 240px;
+  text-align: center;
+}
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--accent);
+  color: var(--accent-ink);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+  box-shadow: 0 10px 24px rgba(216, 75, 42, 0.25);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.link {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.link:hover {
+  border-color: currentColor;
+}
+
+.status {
+  margin-top: 18px;
+  color: var(--muted);
+  min-height: 20px;
+  font-size: 14px;
+}
+
+@media (max-width: 520px) {
+  .card {
+    padding: 28px;
+  }
+
+  .tag {
+    width: 100%;
+  }
+}
