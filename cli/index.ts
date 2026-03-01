@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-
 import { exists, mkdir, readFile, writeFile } from "fs/promises";
 import { parseArgs } from "util";
 import { YAML } from "bun";
