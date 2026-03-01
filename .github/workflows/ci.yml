@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  statuses: write
 
 jobs:
   test:
@@ -28,6 +29,25 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: refs/pull/${{ github.event.issue.number }}/head
+
+      - name: Get PR HEAD SHA
+        id: pr
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Set commit status to pending
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.pr.outputs.sha }}',
+              state: 'pending',
+              context: 'CI / test (chatops)',
+              description: 'Running tests...',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            })
+
       - uses: oven-sh/setup-bun@v2
 
       - run: bun install --frozen-lockfile
@@ -52,6 +72,21 @@ jobs:
 
       - run: bun test
 
+      - name: Set commit status to final
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ job.status }}' === 'success' ? 'success' : '${{ job.status }}' === 'cancelled' ? 'error' : 'failure';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.pr.outputs.sha }}',
+              state: state,
+              context: 'CI / test (chatops)',
+              description: `Finished with status: ${{ job.status }}`,
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            })
   lint:
     if: >
       github.event.issue.pull_request &&
@@ -61,7 +96,42 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: refs/pull/${{ github.event.issue.number }}/head
+
+      - name: Get PR HEAD SHA
+        id: pr
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Set commit status to pending
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.pr.outputs.sha }}',
+              state: 'pending',
+              context: 'CI / lint (chatops)',
+              description: 'Running lint...',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            })
+
       - uses: oven-sh/setup-bun@v2
 
       - run: bun install --frozen-lockfile
       - run: bun run lint:check
+
+      - name: Set commit status to final
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ job.status }}' === 'success' ? 'success' : '${{ job.status }}' === 'cancelled' ? 'error' : 'failure';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.pr.outputs.sha }}',
+              state: state,
+              context: 'CI / lint (chatops)',
+              description: `Finished with status: ${{ job.status }}`,
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            })
