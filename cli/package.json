@@ -1,0 +1,15 @@
+{
+  "version": "0.0.3",
+  "name": "create-wio-app",
+  "module": "index.ts",
+  "type": "module",
+  "bin": {
+    "create-wio-app": "./index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
