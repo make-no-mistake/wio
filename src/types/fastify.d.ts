@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import type { User } from "../repositories/user.repository";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -8,5 +9,10 @@ declare module "fastify" {
       InterServerEvents,
       SocketData
     >;
+    authorize: (req: FastifyRequest) => Promise<void>;
+    issueUserToken: (user: User) => string;
+  }
+  interface FastifyRequest {
+    user: User | null;
   }
 }
