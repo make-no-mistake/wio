@@ -11,7 +11,7 @@ export async function llmRoutes(fastify: FastifyInstance) {
   const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
   app.post(
-    "/llm/prompt",
+    "/prompt",
     { schema: { body: PromptBody } },
     async (request, reply) => {
       const { prompt } = request.body;
