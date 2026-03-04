@@ -9,13 +9,9 @@ const MarkdownBody = Type.Object({
 
 export async function markdownRoutes(fastify: FastifyInstance) {
   const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
-  app.post(
-    "/markdown",
-    { schema: { body: MarkdownBody } },
-    async (request, reply) => {
-      const { markdown } = request.body;
-      const html = await convertToHtml(markdown);
-      return reply.send({ html });
-    },
-  );
+  app.post("/", { schema: { body: MarkdownBody } }, async (request, reply) => {
+    const { markdown } = request.body;
+    const html = await convertToHtml(markdown);
+    return reply.send({ html });
+  });
 }

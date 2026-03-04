@@ -75,7 +75,7 @@ export async function dbRoutes(fastify: FastifyInstance) {
                 site_id: Type.Number(),
                 relation_name: Type.String(),
                 data: Type.Record(Type.String(), Type.Unknown()),
-                created_at: Type.Date(),
+                created_at: Type.Any(),
               }),
             ),
           }),
