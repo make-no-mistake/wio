@@ -7,6 +7,7 @@ export async function initDatabase() {
 }
 
 export async function clearDatabase() {
+  await sql`DROP TABLE IF EXISTS observability_events`;
   await sql`DROP TABLE IF EXISTS relations`;
   await sql`DROP TABLE IF EXISTS site_files`;
   await sql`DROP TABLE IF EXISTS sites`;
@@ -18,6 +19,7 @@ async function applySchema() {
   await createSites();
   await createRelations();
   await createSiteFiles();
+  await createObservabilityEvents();
 }
 
 /* ===================== USERS ===================== */
@@ -69,5 +71,27 @@ async function createRelations() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
     );
+  `;
+}
+
+/* ===================== OBSERVABILITY ===================== */
+async function createObservabilityEvents() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS observability_events (
+      id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      site_id INTEGER,
+      type TEXT NOT NULL,
+      path TEXT,
+      metadata JSONB DEFAULT '{}',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
+    );
+  `;
+
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_obs_events_site_type_time ON observability_events(site_id, type, created_at DESC);
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_obs_events_created_at ON observability_events(created_at DESC);
   `;
 }
