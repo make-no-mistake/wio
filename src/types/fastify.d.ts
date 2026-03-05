@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import type { User } from "../repositories/user.repository";
+import type { Site } from "../repositories/site.repository";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -14,5 +15,6 @@ declare module "fastify" {
   }
   interface FastifyRequest {
     user: User | null;
+    site: Site | null;
   }
 }

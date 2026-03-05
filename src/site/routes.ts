@@ -6,6 +6,7 @@ import { SiteAssetRepositoryImpl } from "../repositories/site_asset.repository";
 import { llmRoutes } from "../llm/routes";
 import { markdownRoutes } from "../markdown/routes";
 import { dbRoutes } from "./db/routes";
+import { findSiteByName } from "../repositories/site.repository";
 
 const SiteParams = Type.Object({
   site: Type.String(),
@@ -17,11 +18,29 @@ const SiteAssetParams = Type.Object({
 });
 
 export async function siteRoutes(fastify: FastifyInstance) {
+  const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
+
+  // We want to associate a request with a Site instantce for all *site* requests.
+  app.decorateRequest("site", null);
+
+  /**
+   * Before the handling of any site request, we ensure that the provided site
+   * is valid and assign it to the request instance.
+   **/
+  await app.addHook("onRequest", async (request, reply) => {
+    // TODO: The site lookup should be cashed to avoid a database read on every request.
+    // @ts-expect-error: The presence of the site param is enforced by the type provider.
+    const site = await findSiteByName(request.params.site);
+
+    // This rejects any request to any site route for which a site is invalid.
+    if (!site) reply.code(500).send({ message: "Site not found" });
+
+    request.site = site;
+  });
+
   await fastify.register(llmRoutes, { prefix: "/llm" });
   await fastify.register(dbRoutes, { prefix: "/db" });
   await fastify.register(markdownRoutes, { prefix: "/markdown" });
-
-  const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
   app.get("/wio.js", async (_, reply) => {
     const result = await transpileSDK();
