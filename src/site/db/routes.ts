@@ -2,7 +2,6 @@ import type { FastifyInstance } from "fastify";
 import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
 import { RelationRepositoryImpl } from "../../repositories/relation.repository";
-import { findSiteOrReply404 } from "../../helpers/findSiteOrReply404";
 
 export async function dbRoutes(fastify: FastifyInstance) {
   const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
@@ -23,10 +22,6 @@ export async function dbRoutes(fastify: FastifyInstance) {
             success: Type.Boolean(),
             deleted_ids: Type.Array(Type.Number()),
           }),
-          404: Type.Object({
-            success: Type.Boolean(),
-            error: Type.String(),
-          }),
           500: Type.Object({
             success: Type.Boolean(),
             error: Type.String(),
@@ -35,9 +30,6 @@ export async function dbRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const site = await findSiteOrReply404(request.params.site, reply);
-      if (!site) return;
-
       const ids = request.query.ids
         .split(",")
         .map((id) => Number(id.trim()))
@@ -45,7 +37,7 @@ export async function dbRoutes(fastify: FastifyInstance) {
 
       const result = await new RelationRepositoryImpl().deleteRelations(
         request.params.relation,
-        site.id,
+        request.site!.id,
         ids,
       );
 
@@ -79,10 +71,6 @@ export async function dbRoutes(fastify: FastifyInstance) {
               }),
             ),
           }),
-          404: Type.Object({
-            success: Type.Boolean(),
-            error: Type.String(),
-          }),
           500: Type.Object({
             success: Type.Boolean(),
             error: Type.String(),
@@ -91,12 +79,9 @@ export async function dbRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const site = await findSiteOrReply404(request.params.site, reply);
-      if (!site) return;
-
       const result = await new RelationRepositoryImpl().insertRelations(
         request.params.relation,
-        site.id,
+        request.site!.id,
         request.body,
       );
 

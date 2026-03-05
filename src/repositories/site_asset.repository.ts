@@ -1,4 +1,3 @@
-import { findSiteByName } from "./site.repository";
 import { getSiteFileByName } from "./file.repository";
 import { readS3File } from "./s3.repository";
 
@@ -14,24 +13,23 @@ interface SiteAsset {
 }
 
 interface SiteAssetRepository {
-  retrieveAssetBySiteAndName(site: string, name: string): Promise<SiteAsset>;
+  retrieveAssetBySiteIdAndName(
+    siteId: number,
+    name: string,
+  ): Promise<SiteAsset>;
 }
 
 export class SiteAssetRepositoryImpl implements SiteAssetRepository {
-  async retrieveAssetBySiteAndName(
-    site: string,
+  async retrieveAssetBySiteIdAndName(
+    siteId: number,
     name: string,
   ): Promise<SiteAsset> {
-    const siteRow = await findSiteByName(site);
-
-    if (!siteRow) {
-      throw new AssetNotFoundError(`Site ${site} not found`);
-    }
-
-    const asset = await getSiteFileByName(siteRow.id, name);
+    const asset = await getSiteFileByName(siteId, name);
 
     if (!asset) {
-      throw new AssetNotFoundError(`Asset ${name} not found for site ${site}`);
+      throw new AssetNotFoundError(
+        `Asset ${name} not found for site ${siteId}`,
+      );
     }
 
     return await readS3File(asset.s3_path);

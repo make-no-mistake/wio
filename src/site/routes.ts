@@ -53,11 +53,9 @@ export async function siteRoutes(fastify: FastifyInstance) {
   });
 
   app.get("/", { schema: { params: SiteParams } }, async (request, reply) => {
-    const { site } = request.params;
-
     const { bytes, mimetype } =
-      await new SiteAssetRepositoryImpl().retrieveAssetBySiteAndName(
-        site,
+      await new SiteAssetRepositoryImpl().retrieveAssetBySiteIdAndName(
+        request.site!.id,
         "index.html",
       );
 
@@ -68,11 +66,11 @@ export async function siteRoutes(fastify: FastifyInstance) {
     "/:asset",
     { schema: { params: SiteAssetParams } },
     async (request, reply) => {
-      const { site, asset } = request.params;
+      const { asset } = request.params;
 
       const { bytes, mimetype } =
-        await new SiteAssetRepositoryImpl().retrieveAssetBySiteAndName(
-          site,
+        await new SiteAssetRepositoryImpl().retrieveAssetBySiteIdAndName(
+          request.site!.id,
           asset,
         );
 
