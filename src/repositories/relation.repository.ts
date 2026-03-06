@@ -22,6 +22,12 @@ export declare type RelationsInsertionsResult = {
   records?: RelationRecord[];
 };
 
+export declare type RelationsUpdateResult = {
+  success: boolean;
+  error?: string;
+  records?: RelationRecord[];
+};
+
 export declare interface RelationRepository {
   /**
    * Delete one or more records from the relations table.
@@ -49,6 +55,19 @@ export declare interface RelationRepository {
     siteId: number,
     records: RecordInsertPayload[],
   ): Promise<RelationsInsertionsResult>;
+
+  /**
+   * Update one or more records in the relations table.
+   * @param relation The name of the relation to update records in.
+   * @param siteId The ID of the site to update records in.
+   * @param updates The updates to apply, each with an id and new data.
+   * @returns A promise that resolves to an object with a success boolean and an optional error string.
+   */
+  updateRelations(
+    relation: string,
+    siteId: number,
+    updates: { id: number; data: Record<string, unknown> }[],
+  ): Promise<RelationsUpdateResult>;
 }
 
 export class RelationRepositoryImpl implements RelationRepository {
@@ -99,5 +118,35 @@ export class RelationRepositoryImpl implements RelationRepository {
     }
 
     return { success: true, records: inserted };
+  }
+
+  async updateRelations(
+    relation: string,
+    siteId: number,
+    updates: { id: number; data: Record<string, unknown> }[],
+  ): Promise<RelationsUpdateResult> {
+    try {
+      const updated: RelationRecord[] = [];
+
+      await sql.begin(async (tx) => {
+        for (const update of updates) {
+          const result = await tx<RelationRecord[]>`
+            UPDATE relations
+            SET data = ${update.data}::jsonb
+            WHERE id = ${update.id}
+            AND site_id = ${siteId}
+            AND relation_name = ${relation}
+            RETURNING id, site_id, relation_name, data, created_at`;
+          if (result[0]) updated.push(result[0]);
+        }
+      });
+
+      return { success: true, records: updated };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
   }
 }

@@ -85,3 +85,65 @@ describe("deleteRelations", () => {
     expect(remaining).toHaveLength(1);
   });
 });
+
+describe("updateRelations", () => {
+  test("updates a single record", async () => {
+    const site = await createSite();
+    const inserted = await repo.insertRelations("courses", site.id, [
+      { name: "CSC301", year: 2025 },
+    ]);
+
+    const result = await repo.updateRelations("courses", site.id, [
+      { id: inserted.records![0]!.id, data: { name: "CSC301", year: 2026 } },
+    ]);
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(1);
+    expect(result.records![0]?.data).toEqual({ name: "CSC301", year: 2026 });
+  });
+
+  test("updates multiple records", async () => {
+    const site = await createSite();
+    const inserted = await repo.insertRelations("courses", site.id, [
+      { name: "CSC209" },
+      { name: "CSC263" },
+    ]);
+
+    const result = await repo.updateRelations("courses", site.id, [
+      { id: inserted.records![0]!.id, data: { name: "CSC209", updated: true } },
+      { id: inserted.records![1]!.id, data: { name: "CSC263", updated: true } },
+    ]);
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(2);
+  });
+
+  test("returns empty records when id does not exist", async () => {
+    const site = await createSite();
+    const result = await repo.updateRelations("courses", site.id, [
+      { id: 99999, data: { name: "ghost" } },
+    ]);
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(0);
+  });
+
+  test("only updates records for the specified relation", async () => {
+    const site = await createSite();
+    const courses = await repo.insertRelations("courses", site.id, [
+      { name: "CSC301" },
+    ]);
+    const labs = await repo.insertRelations("labs", site.id, [
+      { name: "Lab1" },
+    ]);
+
+    await repo.updateRelations("courses", site.id, [
+      { id: courses.records![0]!.id, data: { name: "Updated" } },
+    ]);
+
+    const labResult = await sql`
+      SELECT data FROM relations
+      WHERE id = ${labs.records![0]!.id}`;
+    expect(labResult[0]?.data).toEqual({ name: "Lab1" });
+  });
+});
