@@ -96,4 +96,57 @@ export async function dbRoutes(fastify: FastifyInstance) {
       });
     },
   );
+
+  app.patch(
+    "/:relation",
+    {
+      schema: {
+        params: Type.Object({
+          relation: Type.String(),
+          site: Type.String(),
+        }),
+        body: Type.Array(
+          Type.Object({
+            id: Type.Number(),
+            data: Type.Record(Type.String(), Type.Unknown()),
+          }),
+        ),
+        response: {
+          200: Type.Object({
+            success: Type.Boolean(),
+            records: Type.Array(
+              Type.Object({
+                id: Type.Number(),
+                site_id: Type.Number(),
+                relation_name: Type.String(),
+                data: Type.Record(Type.String(), Type.Unknown()),
+                created_at: Type.Any(),
+              }),
+            ),
+          }),
+          500: Type.Object({
+            success: Type.Boolean(),
+            error: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const result = await new RelationRepositoryImpl().updateRelations(
+        request.params.relation,
+        request.site!.id,
+        request.body,
+      );
+
+      if (!result.success)
+        return reply
+          .status(500)
+          .send({ success: false, error: String(result.error) });
+
+      return reply.status(200).send({
+        success: true,
+        records: result.records!,
+      });
+    },
+  );
 }
