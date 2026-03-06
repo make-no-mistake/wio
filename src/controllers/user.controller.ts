@@ -19,6 +19,10 @@ export async function renderRegister(_: FastifyRequest, reply: FastifyReply) {
   return reply.viewAsync("register.ejs");
 }
 
+export async function renderLogin(_: FastifyRequest, reply: FastifyReply) {
+  return reply.viewAsync("login.ejs");
+}
+
 function generateSixteenDigit(): string {
   const range = 10n ** 16n;
   const offset = 10n ** 15n;

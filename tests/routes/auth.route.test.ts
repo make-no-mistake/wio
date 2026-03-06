@@ -2,6 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { createUser } from "../factories/user.factory";
 import { createTestApp } from "../helpers";
 
+Bun.env.JWT_SECRET ??= "test-secret";
+
 describe("Auth Routes", () => {
   test("POST /login returns 401 for unknown tag", async () => {
     const fastify = await createTestApp();

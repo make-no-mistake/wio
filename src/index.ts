@@ -8,6 +8,7 @@ import { initDatabase } from "./db/schema";
 import { appRoutes } from "./app/routes";
 import { siteRoutes } from "./site/routes";
 import { initFastifySocket } from "./websocket";
+import fastifyCookie from "@fastify/cookie";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
 const fastify = Fastify({
@@ -23,6 +24,7 @@ await fastify.register(multipart, {
 
 await initDatabase();
 await initFastifySocket(fastify);
+await fastify.register(fastifyCookie);
 
 await fastify.register(fastifyStatic, {
   root: `${import.meta.dir}/static`,
