@@ -15,14 +15,14 @@ async function authorization(fastify: FastifyInstance) {
     cookie: { cookieName: SESSION_COOKIE_NAME },
   });
 
-  fastify.decorateRequest("user", null);
+  fastify.decorateRequest("currentUser", null);
   fastify.decorate("authorize", authorize);
   fastify.decorate("issueUserToken", issueUserToken);
 
   async function authorize(req: FastifyRequest) {
     const payload = await req.jwtVerify<{ tag: string }>();
     const user = await findUserByTag(payload.tag);
-    req.user = user;
+    req.currentUser = user;
   }
 
   function issueUserToken(user: User) {

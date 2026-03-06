@@ -7,36 +7,38 @@ import {
   getSiteFiles,
 } from "../repositories/file.repository";
 import { deleteS3File, writeS3File } from "../repositories/s3.repository";
-import { findUserByTag } from "../repositories/user.repository";
-
-const DEFAULT_OWNER_UNIQUE_ID = "1234";
+import type { User } from "../repositories/user.repository";
 
 /**
  * Looks up a site by name. If it doesn't exist, creates a new site
  * owned by the user (default for now)
- * Returns { site, isNew, error } where error is a string if something failed.
+ * Returns { site, isNew, error, status } where error is a string if something failed.
  */
-async function findOrCreateSite(siteName: string) {
-  // FIX THIS AFTER: Recieve entire user object in request
-  const owner = await findUserByTag(DEFAULT_OWNER_UNIQUE_ID);
-  if (!owner) {
-    return { site: null, isNew: false, error: "Owner user not found" };
-  }
-
+async function findOrCreateSite(siteName: string, owner: User) {
   const existing = await findSiteByName(siteName);
   if (existing) {
     if (existing.owner_id !== owner.id) {
-      return { site: null, isNew: false, error: "You do not own this site" };
+      return {
+        site: null,
+        isNew: false,
+        error: "You do not own this site",
+        status: 401,
+      };
     }
-    return { site: existing, isNew: false, error: null };
+    return { site: existing, isNew: false, error: null, status: 200 };
   }
 
   const created = await createSite(siteName, owner.id);
   if (!created) {
-    return { site: null, isNew: false, error: "Failed to create site" };
+    return {
+      site: null,
+      isNew: false,
+      error: "Failed to create site",
+      status: 500,
+    };
   }
 
-  return { site: created, isNew: true, error: null };
+  return { site: created, isNew: true, error: null, status: 201 };
 }
 
 /**
@@ -75,9 +77,12 @@ export async function push(request: FastifyRequest, reply: FastifyReply) {
 
   const siteName = (formData.fields.name as unknown as { value: string }).value;
 
-  const { site, isNew, error } = await findOrCreateSite(siteName);
+  const { site, isNew, error, status } = await findOrCreateSite(
+    siteName,
+    request.currentUser!,
+  );
   if (error || !site) {
-    return reply.code(500).send({ error });
+    return reply.code(status).send({ error });
   }
 
   if (!isNew) {
@@ -90,7 +95,6 @@ export async function push(request: FastifyRequest, reply: FastifyReply) {
 
   await uploadExtractedFiles(site.id, siteName, extracted);
 
-  const status = isNew ? 201 : 200;
   return reply.code(status).send({
     site: siteName,
   });
