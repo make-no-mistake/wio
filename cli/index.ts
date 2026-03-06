@@ -7,6 +7,7 @@ import {
   writeWioConfig,
 } from "./helpers/config";
 import { fetchWithAuth } from "./helpers/authentication";
+import { Colours, pp } from "./helpers/pretty_print";
 
 const API_URL = "https://wio.onl";
 const MAX_ARCHIVE_SIZE = 50 * 1024 * 1024;
@@ -16,8 +17,12 @@ const { positionals } = parseArgs({
   allowPositionals: true,
 });
 
+const printError = (text: string) => pp({ text, colour: Colours.Red });
+const printSuccess = (text: string) => pp({ text, colour: Colours.Green });
+const printInfo = (text: string) => pp({ text, colour: Colours.Gray });
+
 if (positionals.length === 0) {
-  console.error("No command provided");
+  printError("No command provided");
   process.exit(1);
 }
 
@@ -35,7 +40,7 @@ if (second_last === "login") {
   });
 
   if (!response.ok) {
-    console.error("Unauthorized: user tag not recognized");
+    printError("Unauthorized: user tag not recognized");
     process.exit(1);
   }
 
@@ -46,7 +51,7 @@ if (second_last === "login") {
     token: body.token,
   };
   await writeWioConfig(config);
-  console.log(`Login successful. Token saved to ${CONFIG_FILE_NAME}.`);
+  printSuccess(`Login successful. Token saved to ${CONFIG_FILE_NAME}.`);
 
   process.exit(0);
 }
@@ -55,14 +60,14 @@ if (second_last === "login") {
 if (last === "push") {
   const config = await readWioConfig();
   if (!config.name) {
-    console.error(`No name found in ${CONFIG_FILE_NAME}`);
+    printError(`No name found in ${CONFIG_FILE_NAME}`);
     process.exit(1);
   }
 
   const project_name = config.name;
 
-  console.log(`Pushing ${project_name} to remote...`);
-  console.log(`Scanning project files...`);
+  printInfo(`Pushing ${project_name} to remote...`);
+  printInfo(`Scanning project files...`);
 
   // Scan for all files in the project directory
   const glob = new Bun.Glob("**/*");
@@ -76,13 +81,13 @@ if (last === "push") {
   const blob = await archive.blob();
 
   if (blob.size > MAX_ARCHIVE_SIZE) {
-    console.error(
+    printError(
       `Archive exceeds the ${MAX_ARCHIVE_SIZE / 1024 / 1024} MB limit`,
     );
     process.exit(1);
   }
 
-  console.log(`Sending to server...`);
+  printInfo(`Sending to server...`);
 
   const formData = new FormData();
   formData.append("name", project_name);
@@ -95,14 +100,14 @@ if (last === "push") {
     });
 
     if (!response.ok) {
-      console.error(`Server error: ${response.status} ${response.statusText}`);
+      printError(`Server error: ${response.status} ${response.statusText}`);
       process.exit(1);
     }
 
     const result = await response.json();
-    console.log("Push successful!", result);
+    printSuccess(`Push successful! ${JSON.stringify(result)}`);
   } catch (err) {
-    console.error("Failed to connect to server:", (err as Error).message);
+    printError(`Failed to connect to server: ${(err as Error).message}`);
     process.exit(1);
   }
 
@@ -113,10 +118,10 @@ if (last === "push") {
 if (second_last === "init") {
   const project_name = last;
 
-  console.log(`Initializing project ${project_name}...`);
+  printInfo(`Initializing project ${project_name}...`);
 
   if (await exists(`${project_name}`)) {
-    console.error(`Project ${project_name} already exists`);
+    printError(`Project ${project_name} already exists`);
     process.exit(1);
   }
 
@@ -130,12 +135,12 @@ if (second_last === "init") {
     `;
 
   await writeFile(`${project_name}/${CONFIG_FILE_NAME}`, wio_yaml_content);
-  console.log(`Project ${project_name} initialized successfully!`);
+  printSuccess(`Project ${project_name} initialized successfully!`);
   process.exit(0);
 }
 
-console.log(`Commands:`);
-console.log(`  init <project_name> - Initialize a new project`);
-console.log(`  push - Push current project to remote`);
-console.log(`  login <user-tag> - Authenticate and store token in wio.yaml`);
+printInfo(`Commands:`);
+printInfo(`  init <project_name> - Initialize a new project`);
+printInfo(`  push - Push current project to remote`);
+printInfo(`  login <user-tag> - Authenticate and store token in wio.yaml`);
 process.exit(0);
