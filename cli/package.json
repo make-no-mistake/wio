@@ -1,5 +1,5 @@
 {
-  "version": "0.0.4",
+  "version": "0.0.5",
   "name": "wio-create-app",
   "module": "index.ts",
   "type": "module",
@@ -8,7 +8,8 @@
     "AGENTS.sample.md"
   ],
   "bin": {
-    "wio-create-app": "./index.ts"
+    "wio-create-app": "./index.ts",
+    "wio": "./index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
