@@ -1,6 +1,6 @@
 {
-  "version": "0.0.5",
-  "name": "wio-create-app",
+  "version": "0.0.6",
+  "name": "wio-cli",
   "module": "index.ts",
   "type": "module",
   "files": [
@@ -8,8 +8,8 @@
     "AGENTS.sample.md"
   ],
   "bin": {
-    "wio-create-app": "./index.ts",
-    "wio": "./index.ts"
+    "wio": "./index.ts",
+    "wio-cli": "./index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

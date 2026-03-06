@@ -12,14 +12,14 @@ const { positionals } = parseArgs({
 });
 
 if (positionals.length === 0) {
-  console.log(`Usage:`);
-  console.log(`  npx wio <project-name>  Create a new project`);
-  console.log(`  npx wio push             Push current project to remote`);
-  process.exit(0);
+  console.error("No command provided");
+  process.exit(1);
 }
 
 const last = positionals[positionals.length - 1];
+const second_last = positionals[positionals.length - 2];
 
+// Handle push command
 if (last === "push") {
   const cwd = process.cwd();
 
@@ -41,6 +41,7 @@ if (last === "push") {
   console.log(`Pushing ${project_name} to remote...`);
   console.log(`Scanning project files...`);
 
+  // Scan for all files in the project directory
   const glob = new Bun.Glob("**/*");
   const files: Record<string, ArrayBuffer> = {};
 
@@ -85,24 +86,32 @@ if (last === "push") {
   process.exit(0);
 }
 
-const project_name = last;
+// Handle init command
+if (second_last === "init") {
+  const project_name = last;
 
-console.log(`Initializing project ${project_name}...`);
+  console.log(`Initializing project ${project_name}...`);
 
-if (await exists(`${project_name}`)) {
-  console.error(`Project ${project_name} already exists`);
-  process.exit(1);
-}
+  if (await exists(`${project_name}`)) {
+    console.error(`Project ${project_name} already exists`);
+    process.exit(1);
+  }
 
-await mkdir(`${project_name}`);
+  await mkdir(`${project_name}`);
 
-const agents_md = await readFile(`${import.meta.dir}/AGENTS.sample.md`);
+  const agents_md = await readFile(`${import.meta.dir}/AGENTS.sample.md`);
 
-await writeFile(`${project_name}/AGENTS.md`, agents_md);
+  await writeFile(`${project_name}/AGENTS.md`, agents_md);
 
-const wio_yaml_content = `name: ${project_name}
+  const wio_yaml_content = `name: ${project_name}
     `;
 
-await writeFile(`${project_name}/wio.yaml`, wio_yaml_content);
-console.log(`Project ${project_name} created successfully!`);
+  await writeFile(`${project_name}/wio.yaml`, wio_yaml_content);
+  console.log(`Project ${project_name} initialized successfully!`);
+  process.exit(0);
+}
+
+console.log(`Commands:`);
+console.log(`  init <project_name> - Initialize a new project`);
+console.log(`  push - Push current project to remote`);
 process.exit(0);
