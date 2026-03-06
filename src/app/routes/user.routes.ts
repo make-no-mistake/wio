@@ -37,6 +37,6 @@ export async function userRoutes(fastify: FastifyInstance) {
   );
 
   app.get("/me", { preHandler: fastify.authorize }, async (request) => {
-    return { user: request.user };
+    return { user: request.currentUser };
   });
 }

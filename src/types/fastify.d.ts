@@ -14,7 +14,7 @@ declare module "fastify" {
     issueUserToken: (user: User) => string;
   }
   interface FastifyRequest {
-    user: User | null;
+    currentUser: User | null;
     site: Site | null;
   }
 }

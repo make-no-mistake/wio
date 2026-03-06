@@ -1,7 +1,12 @@
 #!/usr/bin/env bun
 import { exists, mkdir, readFile, writeFile } from "fs/promises";
 import { parseArgs } from "util";
-import { YAML } from "bun";
+import {
+  CONFIG_FILE_NAME,
+  readWioConfig,
+  writeWioConfig,
+} from "./helpers/config";
+import { fetchWithAuth } from "./helpers/authentication";
 
 const API_URL = "https://wio.onl";
 const MAX_ARCHIVE_SIZE = 50 * 1024 * 1024;
@@ -18,21 +23,39 @@ if (positionals.length === 0) {
 
 const last = positionals[positionals.length - 1];
 const second_last = positionals[positionals.length - 2];
+const cwd = process.cwd();
 
-// Handle push command
-if (last === "push") {
-  const cwd = process.cwd();
+// Handle login command
+if (second_last === "login") {
+  const tag = last?.trim();
+  const response = await fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tag }),
+  });
 
-  if (!(await exists(`${cwd}/wio.yaml`))) {
-    console.error("No wio.yaml file found");
+  if (!response.ok) {
+    console.error("Unauthorized: user tag not recognized");
     process.exit(1);
   }
 
-  const wio_yaml_config = await readFile(`${cwd}/wio.yaml`);
-  const config = YAML.parse(wio_yaml_config.toString()) as { name: string };
+  const body = (await response.json()) as { token?: string };
+  const config = await readWioConfig();
+  config.auth = {
+    ...(config.auth ?? {}),
+    token: body.token,
+  };
+  await writeWioConfig(config);
+  console.log(`Login successful. Token saved to ${CONFIG_FILE_NAME}.`);
 
+  process.exit(0);
+}
+
+// Handle push command
+if (last === "push") {
+  const config = await readWioConfig();
   if (!config.name) {
-    console.error("No name found in wio.yaml");
+    console.error(`No name found in ${CONFIG_FILE_NAME}`);
     process.exit(1);
   }
 
@@ -66,7 +89,7 @@ if (last === "push") {
   formData.append("archive", blob, `${project_name}.tar.gz`);
 
   try {
-    const response = await fetch(`${API_URL}/api/site`, {
+    const response = await fetchWithAuth(`${API_URL}/api/site`, {
       method: "POST",
       body: formData,
     });
@@ -106,7 +129,7 @@ if (second_last === "init") {
   const wio_yaml_content = `name: ${project_name}
     `;
 
-  await writeFile(`${project_name}/wio.yaml`, wio_yaml_content);
+  await writeFile(`${project_name}/${CONFIG_FILE_NAME}`, wio_yaml_content);
   console.log(`Project ${project_name} initialized successfully!`);
   process.exit(0);
 }
@@ -114,4 +137,5 @@ if (second_last === "init") {
 console.log(`Commands:`);
 console.log(`  init <project_name> - Initialize a new project`);
 console.log(`  push - Push current project to remote`);
+console.log(`  login <user-tag> - Authenticate and store token in wio.yaml`);
 process.exit(0);
