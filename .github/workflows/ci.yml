@@ -3,6 +3,8 @@ name: CI
 on:
   issue_comment:
     types: [created]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -15,6 +17,7 @@ jobs:
       github.event.issue.pull_request &&
       github.event.comment.body == '/ci'
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     services:
       postgres:
         image: postgres:16
@@ -92,6 +95,7 @@ jobs:
       github.event.issue.pull_request &&
       github.event.comment.body == '/ci'
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v6
         with:
