@@ -18,6 +18,13 @@ export async function llmRoutes(fastify: FastifyInstance) {
 
       const result = await generateText(prompt);
 
+      request.log.info({
+        event: "ai_prompt",
+        promptLength: prompt.length,
+        success: result.success,
+        error: result.error,
+      });
+
       if (!result.success) {
         return reply
           .status(result.statusCode || 500)

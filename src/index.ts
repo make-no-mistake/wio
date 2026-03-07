@@ -4,15 +4,40 @@ import fastifyView from "@fastify/view";
 import ejs from "ejs";
 import multipart from "@fastify/multipart";
 import { appAndSiteSpaceSwitch } from "./callbacks/appAndSiteSpaceSwitch";
+import type { TransportTargetOptions } from "pino";
 import { initDatabase } from "./db/schema";
 import { appRoutes } from "./app/routes";
 import { siteRoutes } from "./site/routes";
 import { initFastifySocket } from "./websocket";
 import fastifyCookie from "@fastify/cookie";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+const transportTargets: TransportTargetOptions[] = [
+  {
+    target: "pino-pretty",
+    options: {
+      ignore: "pid,hostname",
+      translateTime: "SYS:standard",
+    },
+    level: "info",
+  },
+];
+
+if (process.env.NODE_ENV !== "test") {
+  transportTargets.push({
+    target: "./observability/pino-db-transport.ts",
+    options: {},
+    level: "info",
+  });
+}
 
 const fastify = Fastify({
-  logger: true,
+  logger: {
+    level: "info",
+    transport: {
+      targets: transportTargets,
+    },
+  },
+  disableRequestLogging: (req) => req.url.startsWith("/sites/"),
   rewriteUrl: appAndSiteSpaceSwitch,
 }).withTypeProvider<TypeBoxTypeProvider>();
 
@@ -23,6 +48,9 @@ await fastify.register(multipart, {
 });
 
 await initDatabase();
+
+fastify.log.info({ event: "platform_restart" });
+
 await initFastifySocket(fastify);
 await fastify.register(fastifyCookie);
 

@@ -3,6 +3,7 @@ import type { FastifyInstance } from "fastify";
 import { Socket } from "socket.io";
 import { RoomManager } from "./rooms";
 import { extractLowestLevelDomain } from "../helpers/extractLowestLevelDomain";
+import { findSiteByName } from "../repositories/site.repository";
 
 export async function initFastifySocket(fastify: FastifyInstance) {
   await fastify.register(fastifyIO, {
@@ -15,7 +16,7 @@ export async function initFastifySocket(fastify: FastifyInstance) {
     const io = fastify.io;
 
     // Middleware to extract and validate siteId before connection
-    io.use((socket, next) => {
+    io.use(async (socket, next) => {
       const host = socket.handshake.headers.host;
       const siteId = extractLowestLevelDomain(host);
 
@@ -24,12 +25,34 @@ export async function initFastifySocket(fastify: FastifyInstance) {
       }
 
       socket.data.siteId = siteId;
-      next();
+
+      try {
+        const site = await findSiteByName(siteId);
+        if (site) {
+          socket.data.siteNumericId = site.id;
+        }
+
+        next();
+      } catch (e) {
+        next(e as Error);
+      }
     });
+
+    const roomManager = new RoomManager(io, fastify.log);
 
     io.on("connection", (socket: Socket) => {
       const siteId = socket.data.siteId as string;
-      new RoomManager(io).handleConnection(siteId, socket);
+      const siteNumericId = socket.data.siteNumericId as number | undefined;
+
+      if (siteNumericId) {
+        fastify.log.info({
+          event: "ws_connect",
+          socketId: socket.id,
+          siteId: siteNumericId,
+        });
+      }
+
+      roomManager.handleConnection(siteId, socket, siteNumericId);
     });
   });
 }
