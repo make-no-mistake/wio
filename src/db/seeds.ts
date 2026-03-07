@@ -72,6 +72,19 @@ const files = [
   },
 ];
 
+const global_sounds = [
+  {
+    file_name: "pop.mp3",
+    mimetype: "audio/mpeg",
+    path: `${static_dir}/sounds/pop.mp3`,
+  },
+  {
+    file_name: "fart.mp3",
+    mimetype: "audio/mpeg",
+    path: `${static_dir}/sounds/fart.mp3`,
+  },
+];
+
 const relations = [
   {
     site_name: "cat",
@@ -111,6 +124,7 @@ export async function seed() {
   await seedUsers();
   await seedSites();
   await seedFiles();
+  await seedGlobalSounds();
   await seedRelations();
 }
 
@@ -181,5 +195,14 @@ async function seedRelations() {
       INSERT INTO relations (site_id, relation_name, data)
       VALUES (${site.id}, ${relation.relation_name}, ${JSON.stringify(relation.data)}::jsonb)
       ON CONFLICT DO NOTHING;`;
+  }
+}
+
+async function seedGlobalSounds() {
+  for (const file of global_sounds) {
+    const s3Path = `sounds/${file.file_name}`;
+    const file_s3 = s3.file(s3Path);
+    const file_bytes = await Bun.file(file.path).arrayBuffer();
+    await file_s3.write(file_bytes, { type: file.mimetype });
   }
 }
