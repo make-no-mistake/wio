@@ -5,6 +5,7 @@ import { transpileSDK } from "../sdk/transpiler";
 import { SiteAssetRepositoryImpl } from "../repositories/site_asset.repository";
 import { llmRoutes } from "../llm/routes";
 import { markdownRoutes } from "../markdown/routes";
+import { playSoundRoutes } from "../play_sound/routes";
 import { dbRoutes } from "./db/routes";
 import { findSiteByName } from "../repositories/site.repository";
 
@@ -65,6 +66,7 @@ export async function siteRoutes(fastify: FastifyInstance) {
   await fastify.register(llmRoutes, { prefix: "/llm" });
   await fastify.register(dbRoutes, { prefix: "/db" });
   await fastify.register(markdownRoutes, { prefix: "/markdown" });
+  await fastify.register(playSoundRoutes, { prefix: "/playsound" });
 
   app.get("/wio.js", async (_, reply) => {
     const result = await transpileSDK();

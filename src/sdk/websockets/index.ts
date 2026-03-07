@@ -46,6 +46,11 @@ export class WioWebSocket {
     this.socket.onAny((event: string, data: unknown) => {
       this._triggerEvent(event, data);
     });
+
+    this.on("play-sound", (path) => {
+      const audio = new Audio(path as string);
+      void audio.play();
+    });
   }
 
   /**
