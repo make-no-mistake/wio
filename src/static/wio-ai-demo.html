@@ -17,6 +17,17 @@
     <button id="send">Send</button>
     <pre id="response"></pre>
 
+    <hr />
+
+    <h2>Modal Demo</h2>
+
+    <wio-button modal="settings">Open</wio-button>
+
+    <wio-modal id="settings">
+      <h2>Settings</h2>
+      <p>This modal is opened by the wio-button component.</p>
+    </wio-modal>
+
     <script type="module">
       import wio from "/wio.js";
 
