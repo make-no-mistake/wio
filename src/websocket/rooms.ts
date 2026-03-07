@@ -1,20 +1,39 @@
 import type { Server, Socket } from "socket.io";
+import type { FastifyBaseLogger } from "fastify";
 
 export class RoomManager {
   private io: Server;
+  private log: FastifyBaseLogger;
 
-  constructor(io: Server) {
+  constructor(io: Server, log: FastifyBaseLogger) {
     this.io = io;
+    this.log = log;
   }
 
-  handleConnection(siteId: string, socket: Socket) {
+  handleConnection(siteId: string, socket: Socket, siteNumericId?: number) {
     this.join(siteId, socket);
 
     socket.onAny((event: string, data: unknown) => {
+      if (siteNumericId) {
+        this.log.info({
+          event: "ws_message",
+          wsEvent: event,
+          socketId: socket.id,
+          data,
+          siteId: siteNumericId,
+        });
+      }
       this.broadcast(siteId, socket, event, data);
     });
 
     socket.on("disconnecting", () => {
+      if (siteNumericId) {
+        this.log.info({
+          event: "ws_disconnect",
+          socketId: socket.id,
+          siteId: siteNumericId,
+        });
+      }
       this.leave(siteId, socket);
     });
   }

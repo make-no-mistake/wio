@@ -36,6 +36,30 @@ export async function siteRoutes(fastify: FastifyInstance) {
     if (!site) reply.code(500).send({ message: "Site not found" });
 
     request.site = site;
+
+    if (site) {
+      const siteLogger = request.log.child({ siteId: site.id });
+
+      // Fastify 5 sets an internal kDisableRequestLogging symbol on the parent
+      // logger. Pino child loggers inherit symbol properties via the prototype
+      // chain, so siteLogger inherits the "disabled" flag. We must explicitly
+      // override it to false so Fastify's onResponseCallback still logs
+      // "request completed" using our child logger.
+      const disableLogSym = Object.getOwnPropertySymbols(request.log).find(
+        (s) => s.description === "fastify.disableRequestLogging",
+      );
+      if (disableLogSym) {
+        (siteLogger as unknown as Record<symbol, boolean>)[disableLogSym] =
+          false;
+      }
+
+      request.log = siteLogger;
+      reply.log = siteLogger;
+    }
+
+    // Fastify's auto 'incoming request' log is disabled for site routes
+    // so we emit it here with siteId included via the child logger.
+    request.log.info({ req: request }, "incoming request");
   });
 
   await fastify.register(llmRoutes, { prefix: "/llm" });
