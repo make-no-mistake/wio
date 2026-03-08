@@ -22,7 +22,7 @@ async function findOrCreateSite(siteName: string, owner: User) {
         site: null,
         isNew: false,
         error: "You do not own this site",
-        status: 401,
+        status: 403,
       };
     }
     return { site: existing, isNew: false, error: null, status: 200 };
