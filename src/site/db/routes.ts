@@ -6,6 +6,57 @@ import { RelationRepositoryImpl } from "../../repositories/relation.repository";
 export async function dbRoutes(fastify: FastifyInstance) {
   const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
+  app.get(
+    "/:relation",
+    {
+      schema: {
+        params: Type.Object({
+          relation: Type.String(),
+          site: Type.String(),
+        }),
+        querystring: Type.Object({
+          payload: Type.String(),
+        }),
+        response: {
+          200: Type.Object({
+            success: Type.Boolean(),
+            records: Type.Array(Type.Record(Type.String(), Type.Unknown())),
+          }),
+          500: Type.Object({
+            success: Type.Boolean(),
+            error: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      let parsed;
+      try {
+        parsed = JSON.parse(request.query.payload);
+      } catch {
+        return reply
+          .status(500)
+          .send({ success: false, error: "Invalid payload JSON" });
+      }
+
+      const result = await new RelationRepositoryImpl().selectRelations(
+        request.params.relation,
+        request.site!.id,
+        parsed,
+      );
+
+      if (!result.success)
+        return reply
+          .status(500)
+          .send({ success: false, error: String(result.error) });
+
+      return reply.status(200).send({
+        success: true,
+        records: result.records!,
+      });
+    },
+  );
+
   app.delete(
     "/:relation",
     {

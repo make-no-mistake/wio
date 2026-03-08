@@ -147,3 +147,126 @@ describe("updateRelations", () => {
     expect(labResult[0]?.data).toEqual({ name: "Lab1" });
   });
 });
+
+describe("selectRelations", () => {
+  test("selects all records with wildcard", async () => {
+    const site = await createSite();
+    await repo.insertRelations("courses", site.id, [
+      { name: "CSC301", year: 2026 },
+      { name: "CSC209", year: 2025 },
+    ]);
+
+    const result = await repo.selectRelations("courses", site.id, {
+      select: ["*"],
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(2);
+  });
+
+  test("selects specific columns", async () => {
+    const site = await createSite();
+    await repo.insertRelations("courses", site.id, [
+      { name: "CSC301", year: 2026, semester: "Winter" },
+    ]);
+
+    const result = await repo.selectRelations("courses", site.id, {
+      select: ["name", "year"],
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(1);
+    expect(result.records![0]).toHaveProperty("name", "CSC301");
+    expect(result.records![0]).toHaveProperty("year", "2026");
+  });
+
+  test("selects with where eq operator", async () => {
+    const site = await createSite();
+    await repo.insertRelations("courses", site.id, [
+      { name: "CSC301" },
+      { name: "CSC209" },
+    ]);
+
+    const result = await repo.selectRelations("courses", site.id, {
+      select: ["*"],
+      where: { name: { eq: "CSC301" } },
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(1);
+    expect(result.records![0]).toEqual({ name: "CSC301" });
+  });
+
+  test("selects with where gt operator", async () => {
+    const site = await createSite();
+    await repo.insertRelations("scores", site.id, [
+      { student: "Alice", score: 90 },
+      { student: "Bob", score: 60 },
+      { student: "Charlie", score: 80 },
+    ]);
+
+    const result = await repo.selectRelations("scores", site.id, {
+      select: ["*"],
+      where: { score: { gt: 70 } },
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(2);
+  });
+
+  test("selects with or combinator", async () => {
+    const site = await createSite();
+    await repo.insertRelations("courses", site.id, [
+      { name: "CSC301" },
+      { name: "CSC209" },
+      { name: "CSC263" },
+    ]);
+
+    const result = await repo.selectRelations("courses", site.id, {
+      select: ["*"],
+      where: {
+        or: [{ name: { eq: "CSC301" } }, { name: { eq: "CSC263" } }],
+      },
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(2);
+  });
+
+  test("selects with order_by, limit, and offset", async () => {
+    const site = await createSite();
+    await repo.insertRelations("courses", site.id, [
+      { name: "B_Course" },
+      { name: "A_Course" },
+      { name: "C_Course" },
+    ]);
+
+    const result = await repo.selectRelations("courses", site.id, {
+      select: ["*"],
+      order_by: [{ column: "name", order: "asc" }],
+      limit: 2,
+      offset: 0,
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(2);
+    expect(result.records![0]).toEqual({ name: "A_Course" });
+    expect(result.records![1]).toEqual({ name: "B_Course" });
+  });
+
+  test("only selects records for the specified relation and site", async () => {
+    const site1 = await createSite();
+    const site2 = await createSite();
+    await repo.insertRelations("courses", site1.id, [{ name: "CSC301" }]);
+    await repo.insertRelations("labs", site1.id, [{ name: "Lab1" }]);
+    await repo.insertRelations("courses", site2.id, [{ name: "CSC209" }]);
+
+    const result = await repo.selectRelations("courses", site1.id, {
+      select: ["*"],
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.records).toHaveLength(1);
+    expect(result.records![0]).toEqual({ name: "CSC301" });
+  });
+});
