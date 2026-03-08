@@ -1,11 +1,1 @@
-"use strict";
-(globalThis.webpackChunkdocs = globalThis.webpackChunkdocs || []).push([
-  [635],
-  {
-    8728(e) {
-      e.exports = JSON.parse(
-        '{"categoryGeneratedIndex":{"title":"Getting Started","slug":"/category/getting-started","permalink":"/docs/category/getting-started","sidebar":"docsSidebar","navigation":{"previous":{"title":"Introduction","permalink":"/docs/"},"next":{"title":"Overview","permalink":"/docs/getting-started/overview"}}}}',
-      );
-    },
-  },
-]);
+"use strict";(globalThis.webpackChunkdocs=globalThis.webpackChunkdocs||[]).push([[635],{8728(e){e.exports=JSON.parse('{"categoryGeneratedIndex":{"title":"Getting Started","slug":"/category/getting-started","permalink":"/docs/category/getting-started","sidebar":"docsSidebar","navigation":{"previous":{"title":"Introduction","permalink":"/docs/"},"next":{"title":"Overview","permalink":"/docs/getting-started/overview"}}}}')}}]);
