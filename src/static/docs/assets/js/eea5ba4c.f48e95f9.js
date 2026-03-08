@@ -1,0 +1,11 @@
+"use strict";
+(globalThis.webpackChunkdocs = globalThis.webpackChunkdocs || []).push([
+  [915],
+  {
+    5092(e) {
+      e.exports = JSON.parse(
+        '{"categoryGeneratedIndex":{"title":"Features","slug":"/category/features","permalink":"/docs/category/features","sidebar":"docsSidebar","navigation":{"previous":{"title":"Overview","permalink":"/docs/getting-started/overview"},"next":{"title":"Websockets","permalink":"/docs/features/websockets"}}}}',
+      );
+    },
+  },
+]);

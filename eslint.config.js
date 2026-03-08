@@ -8,7 +8,14 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   prettier,
   {
-    ignores: ["node_modules/**", "dist/**", "build/**", ".docker/**"],
+    ignores: [
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      ".docker/**",
+      "docs/**",
+      "src/static/docs/**",
+    ],
   },
   {
     rules: {
