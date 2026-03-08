@@ -1,0 +1,72 @@
+"use strict";
+(globalThis.webpackChunkdocs = globalThis.webpackChunkdocs || []).push([
+  [949],
+  {
+    4322(e, t, s) {
+      (s.r(t),
+        s.d(t, {
+          assets: () => c,
+          contentTitle: () => a,
+          default: () => b,
+          frontMatter: () => n,
+          metadata: () => r,
+          toc: () => d,
+        }));
+      const r = JSON.parse(
+        '{"id":"features/observability","title":"Observability","description":"","source":"@site/docs/features/observability.md","sourceDirName":"features","slug":"/features/observability","permalink":"/docs/features/observability","draft":false,"unlisted":false,"editUrl":"https://github.com/csc301-2026-s/project-21-make-no-mistake/tree/main/docs/docs/features/observability.md","tags":[],"version":"current","sidebarPosition":2,"frontMatter":{"sidebar_position":2,"title":"Observability"},"sidebar":"docsSidebar","previous":{"title":"Websockets","permalink":"/docs/features/websockets"},"next":{"title":"Markdown Renderer","permalink":"/docs/features/markdown-renderer"}}',
+      );
+      var i = s(4848),
+        o = s(8453);
+      const n = { sidebar_position: 2, title: "Observability" },
+        a = "Observability",
+        c = {},
+        d = [];
+      function l(e) {
+        const t = {
+          h1: "h1",
+          header: "header",
+          ...(0, o.R)(),
+          ...e.components,
+        };
+        return (0, i.jsx)(t.header, {
+          children: (0, i.jsx)(t.h1, {
+            id: "observability",
+            children: "Observability",
+          }),
+        });
+      }
+      function b(e = {}) {
+        const { wrapper: t } = { ...(0, o.R)(), ...e.components };
+        return t
+          ? (0, i.jsx)(t, { ...e, children: (0, i.jsx)(l, { ...e }) })
+          : l(e);
+      }
+    },
+    8453(e, t, s) {
+      s.d(t, { R: () => n, x: () => a });
+      var r = s(6540);
+      const i = {},
+        o = r.createContext(i);
+      function n(e) {
+        const t = r.useContext(o);
+        return r.useMemo(
+          function () {
+            return "function" == typeof e ? e(t) : { ...t, ...e };
+          },
+          [t, e],
+        );
+      }
+      function a(e) {
+        let t;
+        return (
+          (t = e.disableParentContext
+            ? "function" == typeof e.components
+              ? e.components(i)
+              : e.components || i
+            : n(e.components)),
+          r.createElement(o.Provider, { value: t }, e.children)
+        );
+      }
+    },
+  },
+]);

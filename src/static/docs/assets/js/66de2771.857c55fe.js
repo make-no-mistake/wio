@@ -1,0 +1,72 @@
+"use strict";
+(globalThis.webpackChunkdocs = globalThis.webpackChunkdocs || []).push([
+  [471],
+  {
+    360(e, t, s) {
+      (s.r(t),
+        s.d(t, {
+          assets: () => a,
+          contentTitle: () => i,
+          default: () => l,
+          frontMatter: () => c,
+          metadata: () => o,
+          toc: () => u,
+        }));
+      const o = JSON.parse(
+        '{"id":"features/websockets","title":"Websockets","description":"","source":"@site/docs/features/websockets.md","sourceDirName":"features","slug":"/features/websockets","permalink":"/docs/features/websockets","draft":false,"unlisted":false,"editUrl":"https://github.com/csc301-2026-s/project-21-make-no-mistake/tree/main/docs/docs/features/websockets.md","tags":[],"version":"current","sidebarPosition":1,"frontMatter":{"sidebar_position":1,"title":"Websockets"},"sidebar":"docsSidebar","previous":{"title":"Features","permalink":"/docs/category/features"},"next":{"title":"Observability","permalink":"/docs/features/observability"}}',
+      );
+      var n = s(4848),
+        r = s(8453);
+      const c = { sidebar_position: 1, title: "Websockets" },
+        i = "Websockets",
+        a = {},
+        u = [];
+      function d(e) {
+        const t = {
+          h1: "h1",
+          header: "header",
+          ...(0, r.R)(),
+          ...e.components,
+        };
+        return (0, n.jsx)(t.header, {
+          children: (0, n.jsx)(t.h1, {
+            id: "websockets",
+            children: "Websockets",
+          }),
+        });
+      }
+      function l(e = {}) {
+        const { wrapper: t } = { ...(0, r.R)(), ...e.components };
+        return t
+          ? (0, n.jsx)(t, { ...e, children: (0, n.jsx)(d, { ...e }) })
+          : d(e);
+      }
+    },
+    8453(e, t, s) {
+      s.d(t, { R: () => c, x: () => i });
+      var o = s(6540);
+      const n = {},
+        r = o.createContext(n);
+      function c(e) {
+        const t = o.useContext(r);
+        return o.useMemo(
+          function () {
+            return "function" == typeof e ? e(t) : { ...t, ...e };
+          },
+          [t, e],
+        );
+      }
+      function i(e) {
+        let t;
+        return (
+          (t = e.disableParentContext
+            ? "function" == typeof e.components
+              ? e.components(n)
+              : e.components || n
+            : c(e.components)),
+          o.createElement(r.Provider, { value: t }, e.children)
+        );
+      }
+    },
+  },
+]);
