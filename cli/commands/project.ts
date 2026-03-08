@@ -1,4 +1,4 @@
-import { exists, mkdir, readFile, writeFile } from "fs/promises";
+import { exists, mkdir, readFile, writeFile, symlink } from "fs/promises";
 import { join } from "path";
 import { YAML } from "bun";
 import {
@@ -66,6 +66,8 @@ export async function runInit(args: string[]): Promise<void> {
 
     const agents_md = await readFile(`${import.meta.dir}/../AGENTS.sample.md`);
     await writeFile(`${targetDir}/AGENTS.md`, agents_md);
+    await symlink("AGENTS.md", `${targetDir}/CLAUDE.md`);
+    await symlink("AGENTS.md", `${targetDir}/GEMINI.md`);
 
     const index_html = await readFile(
       `${import.meta.dir}/../index.sample.html`,
