@@ -21,7 +21,7 @@ const featureGridCards = [
     title: "Schema-less tables",
     description:
       "Create tables on the fly. Insert any JSON, query with a fluent TypeScript client — no migrations required.",
-    visualHtml: `<div class="feature-visual-code"><pre><code><span class="kw">const</span> courses = <span class="fn">useTable</span>(<span class="s">"courses"</span>);
+    visualHtml: `<div class="feature-visual-code"><pre><code><span class="kw">const</span> courses = <span class="fn">wio.useTable</span>(<span class="s">"courses"</span>);
 <span class="kw">await</span> courses
   .<span class="fn">where</span>({ dept: <span class="s">"CSC"</span> })
   .<span class="fn">orderBy</span>(<span class="s">"votes"</span>, <span class="s">"desc"</span>)
@@ -46,8 +46,7 @@ const featureGridCards = [
     description:
       "Call Claude as a single function. Summarize, classify, generate — no API keys or backend to manage.",
     visualHtml: `<div class="feature-visual-code"><pre><code><span class="kw">const</span> summary = <span class="kw">await</span>
-  <span class="fn">ask</span>(<span class="s">"Summarize top courses"</span>)
-  .<span class="fn">response</span>();</code></pre></div>`,
+  <span class="fn">wio.ask</span>(<span class="s">"Summarize top courses"</span>)</code></pre></div>`,
   },
   {
     icon: codeIcon,
@@ -56,11 +55,11 @@ const featureGridCards = [
       "AGENTS.md gives your AI the full API reference. One read, then it builds — no guessing.",
     visualHtml: `<div class="feature-visual-code feature-visual-md"><pre><code><span class="cm"># wio API</span>
 <span class="kw">## Tables</span>
-useTable(name)
+wio.useTable(name)
 <span class="kw">## Real-time</span>
-socket.emit / socket.on
+wio.ws.emit / wio.ws.on
 <span class="kw">## AI</span>
-ask(prompt).response()</code></pre></div>`,
+wio.ask(prompt)</code></pre></div>`,
   },
   {
     icon: deployIcon,
@@ -91,19 +90,19 @@ const workflowSteps = [
   {
     title: "Scaffold",
     description:
-      "Run <code>npx create-wio-app</code>. You get <code>index.html</code> and <code>AGENTS.md</code> — a complete API reference your agent can read.",
+      "Run <code>wio init my-app</code>. You get <code>index.html</code> and <code>AGENTS.md</code> — a complete API reference your agent can read.",
     fileLabel: "AGENTS.md",
     codeHtml: `<span class="cm"># wio API Reference</span><br>
 <br>
 <span class="kw">## Tables</span><br>
-<span class="fn">useTable</span>(name) → Table client<br>
+<span class="fn">wio.useTable</span>(name) → Table client<br>
 <br>
 <span class="kw">## Real-time</span><br>
-socket.<span class="fn">emit</span>(topic, data)<br>
-socket.<span class="fn">on</span>(topic, callback)<br>
+wio.ws.<span class="fn">emit</span>(topic, data)<br>
+wio.ws.<span class="fn">on</span>(topic, callback)<br>
 <br>
 <span class="kw">## AI</span><br>
-<span class="fn">ask</span>(prompt).<span class="fn">response</span>()<br>
+<span class="fn">wio.ask</span>(prompt)<br>
 <br>
 <span class="cm"># Your agent reads this once. Then it builds.</span>`,
   },
@@ -127,13 +126,13 @@ socket.<span class="fn">on</span>(topic, callback)<br>
       "The agent reads <code>AGENTS.md</code> and builds — creating tables, wiring sockets, calling <code>ask()</code>. No backend code from you.",
     fileLabel: "index.html",
     codeHtml: `<span class="cm">&lt;!-- Agent-built --&gt;</span><br>
-<span class="kw">&lt;script</span> <span class="fn">src</span>=<span class="s">"https://cdn.wio.dev/wio.js"</span><span class="kw">&gt;&lt;/script&gt;</span><br>
 <span class="kw">&lt;script&gt;</span><br>
-&nbsp;<span class="kw">const</span> courses = <span class="fn">useTable</span>(<span class="s">"courses"</span>);<br>
+&nbsp;<span class="kw">import</span> wio <span class="kw">from</span> <span class="s">"/wio.js"</span>;<br>
+&nbsp;<span class="kw">const</span> courses = <span class="fn">wio.useTable</span>(<span class="s">"courses"</span>);<br>
 &nbsp;<span class="kw">const</span> data = <span class="kw">await</span> courses<br>
 &nbsp;&nbsp;&nbsp;.<span class="fn">orderBy</span>(<span class="s">"votes"</span>,<span class="s">"desc"</span>)<br>
 &nbsp;&nbsp;&nbsp;.<span class="fn">limit</span>(<span class="num">20</span>);<br>
-&nbsp;socket.<span class="fn">on</span>(<span class="s">"vote"</span>, () =&gt; <span class="fn">refresh</span>());<br>
+&nbsp;wio.ws.<span class="fn">on</span>(<span class="s">"vote"</span>, () =&gt; <span class="fn">refresh</span>());<br>
 <span class="kw">&lt;/script&gt;</span>`,
   },
   {
@@ -141,7 +140,7 @@ socket.<span class="fn">on</span>(topic, callback)<br>
     description:
       "Run <code>wio push</code>. Your app is live at <code>project.wio.dev</code> — shareable instantly. No DevOps required.",
     fileLabel: "Terminal",
-    codeHtml: `<span class="ok">$</span> npx create-wio-app course-ranker<br>
+    codeHtml: `<span class="ok">$</span> wio init course-ranker<br>
 <span class="agent-muted">✓ Created index.html + AGENTS.md</span><br>
 <br>
 <span class="ok">$</span> wio push<br>
@@ -208,80 +207,6 @@ socket.<span class="fn">on</span>(topic, callback)<br>
 })();
 
 (function () {
-  const STORAGE_KEY = "wio-theme";
-  const html = document.documentElement;
-
-  function getStoredPreference() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return ["dark", "light", "adaptive"].includes(stored) ? stored : "adaptive";
-  }
-
-  function getResolvedTheme() {
-    const pref = getStoredPreference();
-    if (pref === "adaptive")
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    return pref;
-  }
-
-  function applyTheme(resolved) {
-    if (resolved === "dark") html.setAttribute("data-theme", "dark");
-    else html.removeAttribute("data-theme");
-  }
-
-  function setPreference(pref) {
-    localStorage.setItem(STORAGE_KEY, pref);
-    const resolved =
-      pref === "adaptive"
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light"
-        : pref;
-    applyTheme(resolved);
-    updateFooterThemeButtons();
-  }
-
-  function updateFooterThemeButtons() {
-    const pref = getStoredPreference();
-    document.querySelectorAll(".theme-btn-adaptive").forEach((btn) => {
-      btn.classList.toggle("active", pref === "adaptive");
-      btn.setAttribute("aria-pressed", pref === "adaptive");
-    });
-    document.querySelectorAll(".theme-btn-light").forEach((btn) => {
-      btn.classList.toggle("active", pref === "light");
-      btn.setAttribute("aria-pressed", pref === "light");
-    });
-    document.querySelectorAll(".theme-btn-dark").forEach((btn) => {
-      btn.classList.toggle("active", pref === "dark");
-      btn.setAttribute("aria-pressed", pref === "dark");
-    });
-  }
-
-  function initTheme() {
-    applyTheme(getResolvedTheme());
-    updateFooterThemeButtons();
-  }
-
-  initTheme();
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", (e) => {
-      if (getStoredPreference() === "adaptive")
-        applyTheme(e.matches ? "dark" : "light");
-    });
-  document
-    .querySelector(".theme-btn-adaptive")
-    ?.addEventListener("click", () => setPreference("adaptive"));
-  document
-    .querySelector(".theme-btn-light")
-    ?.addEventListener("click", () => setPreference("light"));
-  document
-    .querySelector(".theme-btn-dark")
-    ?.addEventListener("click", () => setPreference("dark"));
-})();
-
-(function () {
   const cmdEl = document.getElementById("hero-install-cmd");
   const copyBtn = document.getElementById("hero-install-copy");
   const copySvg =
@@ -292,7 +217,9 @@ socket.<span class="fn">on</span>(topic, callback)<br>
   if (cmdEl && copyBtn) {
     copyBtn.addEventListener("click", () => {
       const cmd =
-        cmdEl.getAttribute("data-cmd") || cmdEl.textContent || "bun link wio";
+        cmdEl.getAttribute("data-cmd") ||
+        cmdEl.textContent ||
+        "npm i -g wio-cli";
       navigator.clipboard.writeText(cmd).then(() => {
         copyBtn.classList.add("copied");
         copyBtn.innerHTML = checkSvg;

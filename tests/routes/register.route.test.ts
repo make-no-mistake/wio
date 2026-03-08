@@ -10,7 +10,7 @@ describe("GET /register", () => {
       url: "/register",
     });
 
-    expect(response.body).toContain("Your User Tag");
+    expect(response.body).toContain("User tag");
 
     await fastify.close();
   });
