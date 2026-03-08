@@ -1,4 +1,6 @@
 import { sql } from "bun";
+import type { SelectPayload } from "../sdk/db/payload";
+import { buildSelectQuery } from "../helpers/selectQueryBuilder";
 
 export declare interface RelationRecord {
   id: number;
@@ -26,6 +28,12 @@ export declare type RelationsUpdateResult = {
   success: boolean;
   error?: string;
   records?: RelationRecord[];
+};
+
+export declare type RelationsSelectResult = {
+  success: boolean;
+  error?: string;
+  records?: Record<string, unknown>[];
 };
 
 export declare interface RelationRepository {
@@ -68,6 +76,19 @@ export declare interface RelationRepository {
     siteId: number,
     updates: { id: number; data: Record<string, unknown> }[],
   ): Promise<RelationsUpdateResult>;
+
+  /**
+   * Select records from the relations table using a SelectPayload.
+   * @param relation The name of the relation to select records from.
+   * @param siteId The ID of the site to select records from.
+   * @param payload The SelectPayload describing the query (select, where, order_by, limit, offset).
+   * @returns A promise that resolves to an object with a success boolean and matching records.
+   */
+  selectRelations(
+    relation: string,
+    siteId: number,
+    payload: SelectPayload,
+  ): Promise<RelationsSelectResult>;
 }
 
 export class RelationRepositoryImpl implements RelationRepository {
@@ -142,6 +163,31 @@ export class RelationRepositoryImpl implements RelationRepository {
       });
 
       return { success: true, records: updated };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  }
+
+  async selectRelations(
+    relation: string,
+    siteId: number,
+    payload: SelectPayload,
+  ): Promise<RelationsSelectResult> {
+    try {
+      const query = buildSelectQuery(relation, siteId, payload);
+      const rows = await sql.unsafe(query);
+
+      const isWildcard =
+        payload.select.length === 1 && payload.select[0] === "*";
+
+      const records = rows.map((row: Record<string, unknown>) =>
+        isWildcard ? row.data : row,
+      );
+
+      return { success: true, records };
     } catch (error) {
       return {
         success: false,

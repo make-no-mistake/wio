@@ -193,7 +193,7 @@ async function seedRelations() {
 
     await sql`
       INSERT INTO relations (site_id, relation_name, data)
-      VALUES (${site.id}, ${relation.relation_name}, ${JSON.stringify(relation.data)}::jsonb)
+      VALUES (${site.id}, ${relation.relation_name}, ${relation.data}::jsonb)
       ON CONFLICT DO NOTHING;`;
   }
 }
