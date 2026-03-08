@@ -1,6 +1,5 @@
 const tagValue = document.getElementById("tagValue");
 const copyBtn = document.getElementById("copyBtn");
-const regenBtn = document.getElementById("regenBtn");
 const status = document.getElementById("status");
 
 async function generateTag() {
@@ -38,10 +37,6 @@ copyBtn.addEventListener("click", async () => {
   } catch {
     status.textContent = "Copy failed. Select and copy manually.";
   }
-});
-
-regenBtn.addEventListener("click", () => {
-  generateTag();
 });
 
 generateTag();

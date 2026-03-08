@@ -11,6 +11,7 @@ html {
 }
 
 :root {
+  color-scheme: dark;
   --bg: #fafaf9;
   --white: #ffffff;
   --cta-bg: #f5f5f4;
