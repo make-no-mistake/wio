@@ -36,7 +36,7 @@ export default function () {
               ${level}, 
               ${hostname}, 
               ${msg}, 
-              ${JSON.stringify(finalRest)}
+              ${JSON.stringify(finalRest)}::jsonb
             )
           `;
         } catch (err) {
