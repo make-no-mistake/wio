@@ -24,10 +24,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const initialTheme = getTheme();
   document.documentElement.setAttribute("data-theme", initialTheme);
 
-  initCharts();
-
-  // Now apply theme colors to initialized charts
-  setTheme(initialTheme);
+  try {
+    initCharts();
+    // Now apply theme colors to initialized charts
+    setTheme(initialTheme);
+  } catch (err) {
+    console.error(
+      "Failed to initialize charts. Chart.js may be blocked or failed to load.",
+      err,
+    );
+  }
 
   const siteSelect = document.getElementById("siteSelect");
   currentSiteId = siteSelect.value;
