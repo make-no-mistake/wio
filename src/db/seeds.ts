@@ -31,6 +31,10 @@ const sites = [
     name: "ai",
     owner_tag: "1234",
   },
+  {
+    name: "todo",
+    owner_tag: "1234",
+  },
 ];
 
 const files = [
@@ -69,6 +73,12 @@ const files = [
     site_name: "ai",
     mimetype: "text/html",
     path: `${static_dir}/wio-ai-demo.html`,
+  },
+  {
+    file_name: "index.html",
+    site_name: "todo",
+    mimetype: "text/html",
+    path: `${static_dir}/todo.html`,
   },
 ];
 

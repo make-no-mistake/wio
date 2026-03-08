@@ -183,9 +183,14 @@ export class RelationRepositoryImpl implements RelationRepository {
       const isWildcard =
         payload.select.length === 1 && payload.select[0] === "*";
 
-      const records = rows.map((row: Record<string, unknown>) =>
-        isWildcard ? row.data : row,
-      );
+      const records = rows.map((row: Record<string, unknown>) => {
+        if (isWildcard) {
+          row.data.id = row.id;
+          return row.data;
+        } else {
+          return row;
+        }
+      });
 
       return { success: true, records };
     } catch (error) {

@@ -186,7 +186,7 @@ describe("relation repository integration", () => {
 
     expect(result.success).toBe(true);
     expect(result.records).toHaveLength(1);
-    expect(result.records![0]).toEqual({ name: "Alice", grade: "A" });
+    expect(result.records![0]).toMatchObject({ name: "Alice", grade: "A" });
   });
 
   test("selects with not combinator", async () => {
@@ -322,7 +322,7 @@ describe("relation repository integration", () => {
     });
     expect(courses.success).toBe(true);
     expect(courses.records).toHaveLength(1);
-    expect(courses.records![0]).toEqual({ name: "CSC301" });
+    expect(courses.records![0]).toMatchObject({ name: "CSC301" });
 
     // Labs should be empty
     const remainingLabs = await repo.selectRelations("labs", site.id, {
@@ -350,14 +350,14 @@ describe("relation repository integration", () => {
       select: ["*"],
     });
     expect(site1Courses.records).toHaveLength(1);
-    expect(site1Courses.records![0]).toEqual({ name: "CSC301" });
+    expect(site1Courses.records![0]).toMatchObject({ name: "CSC301" });
 
     // site2 should reflect the update
     const site2Courses = await repo.selectRelations("courses", site2.id, {
       select: ["*"],
     });
     expect(site2Courses.records).toHaveLength(1);
-    expect(site2Courses.records![0]).toEqual({ name: "CSC209-updated" });
+    expect(site2Courses.records![0]).toMatchObject({ name: "CSC209-updated" });
   });
 
   // ── update does not affect non-matching records in same relation ────
@@ -379,7 +379,7 @@ describe("relation repository integration", () => {
       where: { name: { eq: "CSC209" } },
     });
     expect(result.records).toHaveLength(1);
-    expect(result.records![0]).toEqual({ name: "CSC209", year: 2025 });
+    expect(result.records![0]).toMatchObject({ name: "CSC209", year: 2025 });
   });
 
   // ── inserting records with complex / nested JSONB data ───────────────
@@ -403,6 +403,6 @@ describe("relation repository integration", () => {
       select: ["*"],
     });
     expect(selected.records).toHaveLength(1);
-    expect(selected.records![0]).toEqual(complexData);
+    expect(selected.records![0]).toMatchObject(complexData);
   });
 });
