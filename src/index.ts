@@ -10,6 +10,7 @@ import { appRoutes } from "./app/routes";
 import { siteRoutes } from "./site/routes";
 import { initFastifySocket } from "./websocket";
 import fastifyCookie from "@fastify/cookie";
+import sensible from "@fastify/sensible";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 const transportTargets: TransportTargetOptions[] = [
   {
@@ -70,6 +71,7 @@ await fastify.register(fastifyView, {
   viewExt: "ejs",
 });
 
+fastify.register(sensible);
 await fastify.register(appRoutes);
 await fastify.register(siteRoutes, { prefix: "/sites/:site" });
 

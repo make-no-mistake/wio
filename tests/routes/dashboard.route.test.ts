@@ -38,6 +38,7 @@ describe("Dashboard Routes", () => {
     const response = await fastify.inject({
       method: "GET",
       url: "/dashboard",
+      headers: { accept: "text/html" },
     });
 
     expect(response.statusCode).toBe(302);

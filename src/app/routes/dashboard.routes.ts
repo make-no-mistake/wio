@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyReply } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { findSitesByOwner } from "../../repositories/site.repository";
 import {
   getEventCounts,
@@ -22,19 +22,17 @@ function calculateTrend(current: number, past: number): string | null {
 
 export async function dashboardRoutes(fastify: FastifyInstance) {
   // View Route
-  fastify.get("/dashboard", async (request, reply) => {
-    try {
-      await fastify.authorize(request, reply as FastifyReply);
-    } catch {
-      return reply.redirect("/login");
-    }
-
-    const sites = await findSitesByOwner(request.currentUser!.id);
-    return reply.viewAsync("dashboard.ejs", {
-      user: request.currentUser,
-      sites,
-    });
-  });
+  fastify.get(
+    "/dashboard",
+    { preHandler: fastify.authorize },
+    async (request, reply) => {
+      const sites = await findSitesByOwner(request.currentUser!.id);
+      return reply.viewAsync("dashboard.ejs", {
+        user: request.currentUser,
+        sites,
+      });
+    },
+  );
 
   // Analytics APIs
   fastify.register(async (api) => {
