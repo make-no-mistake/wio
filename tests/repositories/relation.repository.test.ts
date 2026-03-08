@@ -194,7 +194,7 @@ describe("selectRelations", () => {
 
     expect(result.success).toBe(true);
     expect(result.records).toHaveLength(1);
-    expect(result.records![0]).toEqual({ name: "CSC301" });
+    expect(result.records![0]).toMatchObject({ name: "CSC301" });
   });
 
   test("selects with where gt operator", async () => {
@@ -250,8 +250,8 @@ describe("selectRelations", () => {
 
     expect(result.success).toBe(true);
     expect(result.records).toHaveLength(2);
-    expect(result.records![0]).toEqual({ name: "A_Course" });
-    expect(result.records![1]).toEqual({ name: "B_Course" });
+    expect(result.records![0]).toMatchObject({ name: "A_Course" });
+    expect(result.records![1]).toMatchObject({ name: "B_Course" });
   });
 
   test("only selects records for the specified relation and site", async () => {
@@ -267,6 +267,6 @@ describe("selectRelations", () => {
 
     expect(result.success).toBe(true);
     expect(result.records).toHaveLength(1);
-    expect(result.records![0]).toEqual({ name: "CSC301" });
+    expect(result.records![0]).toMatchObject({ name: "CSC301" });
   });
 });

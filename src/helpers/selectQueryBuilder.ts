@@ -88,8 +88,9 @@ export function buildSelectQuery(
 ) {
   const isWildcard = payload.select.length === 1 && payload.select[0] === "*";
   const selectExpr = isWildcard
-    ? "data"
-    : payload.select.map((col) => `data->>'${col}' AS "${col}"`).join(", ");
+    ? "data, id"
+    : payload.select.map((col) => `data->>'${col}' AS "${col}"`).join(", ") +
+      ", id ";
 
   let query = `SELECT ${selectExpr} FROM relations WHERE relation_name = '${relation.replace(/'/g, "''")}' AND site_id = ${siteId}`;
 

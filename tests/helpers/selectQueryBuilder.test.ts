@@ -69,7 +69,7 @@ describe("buildSelectQuery", () => {
       where: { name: "general" },
     });
     expect(result).toBe(
-      "SELECT data->>'name' AS \"name\" FROM relations WHERE relation_name = 'channels' AND site_id = 2 AND data->>'name' = 'general' ORDER BY data->>'name' DESC, data->>'description' ASC LIMIT 10 OFFSET 12;",
+      "SELECT data->>'name' AS \"name\", id  FROM relations WHERE relation_name = 'channels' AND site_id = 2 AND data->>'name' = 'general' ORDER BY data->>'name' DESC, data->>'description' ASC LIMIT 10 OFFSET 12;",
     );
   });
 
@@ -78,7 +78,7 @@ describe("buildSelectQuery", () => {
       select: ["*"],
     });
     expect(result).toBe(
-      "SELECT data FROM relations WHERE relation_name = 'channels' AND site_id = 1;",
+      "SELECT data, id FROM relations WHERE relation_name = 'channels' AND site_id = 1;",
     );
   });
 
@@ -88,7 +88,7 @@ describe("buildSelectQuery", () => {
       limit: 5,
     });
     expect(result).toBe(
-      "SELECT data->>'email' AS \"email\", data->>'name' AS \"name\" FROM relations WHERE relation_name = 'users' AND site_id = 3 LIMIT 5;",
+      "SELECT data->>'email' AS \"email\", data->>'name' AS \"name\", id  FROM relations WHERE relation_name = 'users' AND site_id = 3 LIMIT 5;",
     );
   });
 
@@ -98,7 +98,7 @@ describe("buildSelectQuery", () => {
       offset: 20,
     });
     expect(result).toBe(
-      "SELECT data->>'email' AS \"email\" FROM relations WHERE relation_name = 'users' AND site_id = 1 OFFSET 20;",
+      "SELECT data->>'email' AS \"email\", id  FROM relations WHERE relation_name = 'users' AND site_id = 1 OFFSET 20;",
     );
   });
 });

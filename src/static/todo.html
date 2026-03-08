@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wio Todo – Persistence Demo</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-primary: #0f0f1a;
+        --bg-secondary: #16162a;
+        --bg-card: rgba(255, 255, 255, 0.04);
+        --bg-card-hover: rgba(255, 255, 255, 0.07);
+        --border: rgba(255, 255, 255, 0.08);
+        --border-focus: rgba(139, 92, 246, 0.5);
+        --text-primary: #f1f1f4;
+        --text-secondary: rgba(241, 241, 244, 0.55);
+        --text-muted: rgba(241, 241, 244, 0.3);
+        --accent: #8b5cf6;
+        --accent-hover: #7c3aed;
+        --accent-glow: rgba(139, 92, 246, 0.25);
+        --danger: #ef4444;
+        --danger-hover: #dc2626;
+        --success: #22c55e;
+        --surface-complete: rgba(34, 197, 94, 0.1);
+        --border-complete: rgba(34, 197, 94, 0.2);
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 60px 20px;
+        background-image:
+          radial-gradient(
+            ellipse 80% 50% at 50% -20%,
+            rgba(139, 92, 246, 0.12),
+            transparent
+          ),
+          radial-gradient(
+            ellipse 60% 40% at 80% 100%,
+            rgba(59, 130, 246, 0.06),
+            transparent
+          );
+      }
+
+      .app {
+        width: 100%;
+        max-width: 560px;
+      }
+
+      /* ── Header ── */
+      .header {
+        text-align: center;
+        margin-bottom: 36px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        background: linear-gradient(
+          135deg,
+          #c4b5fd 0%,
+          #8b5cf6 50%,
+          #6d28d9 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .header p {
+        margin-top: 6px;
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      .header .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 12px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        font-size: 11px;
+        font-weight: 500;
+        color: #c4b5fd;
+      }
+
+      .badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--success);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      /* ── Input area ── */
+      .input-area {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+
+      .input-area input {
+        flex: 1;
+        padding: 14px 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg-card);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .input-area input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .input-area input:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      .btn-add {
+        padding: 14px 22px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.1s,
+          box-shadow 0.2s;
+        white-space: nowrap;
+      }
+
+      .btn-add:hover {
+        box-shadow: 0 4px 20px var(--accent-glow);
+      }
+
+      .btn-add:active {
+        transform: scale(0.97);
+      }
+
+      .btn-add:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      /* ── Stats bar ── */
+      .stats {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        padding: 0 4px;
+      }
+
+      .stats span {
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .stats .count {
+        background: rgba(139, 92, 246, 0.12);
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ── Todo list ── */
+      .todo-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .todo-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        transition:
+          background 0.2s,
+          border-color 0.2s,
+          transform 0.15s,
+          opacity 0.3s;
+        animation: slideIn 0.25s ease-out;
+      }
+
+      .todo-item:hover {
+        background: var(--bg-card-hover);
+      }
+
+      .todo-item.completed {
+        background: var(--surface-complete);
+        border-color: var(--border-complete);
+      }
+
+      .todo-item.removing {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Custom checkbox */
+      .checkbox {
+        position: relative;
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+      }
+
+      .checkbox input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 1;
+      }
+
+      .checkbox .check-visual {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+
+      .checkbox input:checked + .check-visual {
+        background: var(--success);
+        border-color: var(--success);
+      }
+
+      .checkbox .check-visual svg {
+        width: 12px;
+        height: 12px;
+        opacity: 0;
+        transform: scale(0.5);
+        transition:
+          opacity 0.15s,
+          transform 0.15s;
+      }
+
+      .checkbox input:checked + .check-visual svg {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .todo-text {
+        flex: 1;
+        font-size: 14px;
+        line-height: 1.4;
+        transition: color 0.2s;
+      }
+
+      .todo-item.completed .todo-text {
+        color: var(--text-secondary);
+        text-decoration: line-through;
+        text-decoration-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .todo-meta {
+        font-size: 11px;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+
+      .btn-delete {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+
+      .btn-delete:hover {
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+
+      .btn-delete svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* ── Empty state ── */
+      .empty-state {
+        text-align: center;
+        padding: 48px 20px;
+        color: var(--text-muted);
+      }
+
+      .empty-state .icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+
+      .empty-state p {
+        font-size: 14px;
+      }
+
+      /* ── Toast ── */
+      .toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 100;
+      }
+
+      .toast {
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-family: inherit;
+        font-weight: 500;
+        color: #fff;
+        backdrop-filter: blur(12px);
+        animation: toastIn 0.3s ease-out;
+        pointer-events: none;
+      }
+
+      .toast.success {
+        background: rgba(34, 197, 94, 0.85);
+      }
+
+      .toast.error {
+        background: rgba(239, 68, 68, 0.85);
+      }
+
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Loading spinner ── */
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app">
+      <div class="header">
+        <h1>✦ Wio Todo</h1>
+        <p>Database persistence demo powered by the Wio SDK</p>
+        <div class="badge">
+          <span class="dot"></span>
+          <span>Connected to Wio backend</span>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <input
+          type="text"
+          id="todoInput"
+          placeholder="What needs to be done?"
+          autocomplete="off"
+        />
+        <button class="btn-add" id="addBtn">Add</button>
+      </div>
+
+      <div class="stats" id="stats" style="display: none">
+        <span><span id="activeCount">0</span> remaining</span>
+        <span class="count"><span id="totalCount">0</span> total</span>
+      </div>
+
+      <div class="todo-list" id="todoList"></div>
+
+      <div class="empty-state" id="emptyState">
+        <div class="icon">📝</div>
+        <p>No todos yet — add one above!</p>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script type="module">
+      import wio from "/wio.js";
+
+      // ── Wio relation handle ──
+      const todos = wio.useRelation("todos");
+
+      // ── State ──
+      let items = []; // { id, text, completed }
+
+      // ── DOM refs ──
+      const todoInput = document.getElementById("todoInput");
+      const addBtn = document.getElementById("addBtn");
+      const todoList = document.getElementById("todoList");
+      const emptyState = document.getElementById("emptyState");
+      const statsEl = document.getElementById("stats");
+      const activeCountEl = document.getElementById("activeCount");
+      const totalCountEl = document.getElementById("totalCount");
+      const toastContainer = document.getElementById("toastContainer");
+
+      // ── Bootstrap: load existing todos from the database ──
+      // ── Flatten a raw DB record into the shape the UI expects ──
+      function flattenRecord(record) {
+        const { id, data, created_at } = record;
+        return { id, ...data, created_at };
+      }
+
+      async function loadTodos() {
+        items = await todos.select("*").execute();
+        render();
+      }
+
+      loadTodos();
+
+      // ── Add todo ──
+      async function addTodo() {
+        const text = todoInput.value.trim();
+        if (!text) return;
+
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<span class="spinner"></span>';
+
+        const records = await todos
+          .insert({ text, completed: false })
+          .execute();
+        if (records) {
+          const flat = (Array.isArray(records) ? records : [records]).map(
+            flattenRecord,
+          );
+          items.push(...flat);
+          todoInput.value = "";
+          render();
+          showToast("Todo added", "success");
+          // Broadcast to other clients
+          flat.forEach((item) => wio.ws.emit("todo:added", item));
+        }
+        addBtn.disabled = false;
+        addBtn.textContent = "Add";
+      }
+
+      addBtn.addEventListener("click", addTodo);
+      todoInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addTodo();
+      });
+
+      // ── Toggle completed ──
+      async function toggleTodo(id) {
+        const idx = items.findIndex((t) => t.id === id);
+        if (idx === -1) return;
+
+        const item = items[idx];
+        const newCompleted = !item.completed;
+
+        const records = await todos
+          .update(id, { text: item.text, completed: newCompleted })
+          .execute();
+
+        if (records) {
+          const list = (Array.isArray(records) ? records : [records]).map(
+            flattenRecord,
+          );
+          const updated = list.find((r) => r.id === id);
+          if (updated) {
+            items[idx] = updated;
+          } else {
+            items[idx].completed = newCompleted;
+          }
+          render();
+          // Broadcast to other clients
+          wio.ws.emit("todo:updated", items[idx]);
+        }
+      }
+
+      // ── Delete todo ──
+      async function deleteTodo(id) {
+        const el = document.querySelector(`[data-id="${id}"]`);
+        if (el) el.classList.add("removing");
+
+        await todos.delete(id).execute();
+        // Wait for the CSS transition to finish
+        await new Promise((r) => setTimeout(r, 250));
+        items = items.filter((t) => t.id !== id);
+        render();
+        showToast("Todo removed", "success");
+        // Broadcast to other clients
+        wio.ws.emit("todo:deleted", { id });
+      }
+
+      // ── Real-time sync via Wio WebSockets ──
+      wio.ws.on("todo:added", (data) => {
+        // Avoid duplicates
+        if (!items.find((t) => t.id === data.id)) {
+          items.push(data);
+          render();
+          showToast("New todo synced", "success");
+        }
+      });
+
+      wio.ws.on("todo:updated", (data) => {
+        const idx = items.findIndex((t) => t.id === data.id);
+        if (idx !== -1) {
+          items[idx] = data;
+          render();
+        }
+      });
+
+      wio.ws.on("todo:deleted", (data) => {
+        const el = document.querySelector(`[data-id="${data.id}"]`);
+        if (el) el.classList.add("removing");
+        setTimeout(() => {
+          items = items.filter((t) => t.id !== data.id);
+          render();
+        }, 250);
+      });
+
+      // ── Render ──
+      function render() {
+        const hasItems = items.length > 0;
+        emptyState.style.display = hasItems ? "none" : "block";
+        statsEl.style.display = hasItems ? "flex" : "none";
+
+        const active = items.filter((t) => !t.completed).length;
+        activeCountEl.textContent = active;
+        totalCountEl.textContent = items.length;
+
+        todoList.innerHTML = "";
+
+        for (const item of items) {
+          const completed = item.completed;
+          const div = document.createElement("div");
+          div.className = "todo-item" + (completed ? " completed" : "");
+          div.dataset.id = item.id;
+
+          const time = item.created_at
+            ? new Date(item.created_at).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "";
+
+          div.innerHTML = `
+            <label class="checkbox">
+              <input type="checkbox" ${completed ? "checked" : ""} />
+              <span class="check-visual">
+                <svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="2 6 5 9 10 3" />
+                </svg>
+              </span>
+            </label>
+            <span class="todo-text">${escapeHtml(item.text)}</span>
+            <span class="todo-meta">${time}</span>
+            <button class="btn-delete" title="Delete">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <line x1="4" y1="4" x2="12" y2="12" />
+                <line x1="12" y1="4" x2="4" y2="12" />
+              </svg>
+            </button>
+          `;
+
+          div
+            .querySelector("input")
+            .addEventListener("change", () => toggleTodo(item.id));
+          div
+            .querySelector(".btn-delete")
+            .addEventListener("click", () => deleteTodo(item.id));
+
+          todoList.appendChild(div);
+        }
+      }
+
+      // ── Helpers ──
+      function escapeHtml(str) {
+        const d = document.createElement("div");
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      function showToast(message, type = "success") {
+        const t = document.createElement("div");
+        t.className = `toast ${type}`;
+        t.textContent = message;
+        toastContainer.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+      }
+    </script>
+  </body>
+</html>
