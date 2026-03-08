@@ -15,6 +15,7 @@ export default tseslint.config(
       ".docker/**",
       "docs/**",
       "src/static/docs/**",
+      "cli/AGENTS.sample.md",
     ],
   },
   {
