@@ -36,6 +36,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     setStatus("Authenticated...");
+    window.location.href = "/dashboard";
   } catch {
     setStatus("Network error. Check your connection.", "warn");
   } finally {

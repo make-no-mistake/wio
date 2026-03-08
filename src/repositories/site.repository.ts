@@ -16,6 +16,16 @@ export async function findSiteByName(name: string): Promise<Site | null> {
   return result[0] ?? null;
 }
 
+export async function findSitesByOwner(ownerId: number): Promise<Site[]> {
+  const result = await sql<Site[]>`
+    SELECT *
+    FROM sites
+    WHERE owner_id = ${ownerId}
+    ORDER BY created_at DESC;`;
+
+  return result;
+}
+
 export async function createSite(
   name: string,
   ownerId: number,
