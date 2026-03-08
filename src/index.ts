@@ -62,6 +62,7 @@ await fastify.register(fastifyStatic, {
   root: `${import.meta.dir}/static/docs`,
   prefix: "/docs/",
   decorateReply: false,
+  extensions: ["html"],
 });
 await fastify.register(fastifyView, {
   engine: { ejs },
