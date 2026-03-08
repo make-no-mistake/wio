@@ -67,6 +67,11 @@ export async function runInit(args: string[]): Promise<void> {
     const agents_md = await readFile(`${import.meta.dir}/../AGENTS.sample.md`);
     await writeFile(`${targetDir}/AGENTS.md`, agents_md);
 
+    const index_html = await readFile(
+      `${import.meta.dir}/../index.sample.html`,
+    );
+    await writeFile(`${targetDir}/index.html`, index_html);
+
     const config: WioConfig = { name: displayName };
     await writeFile(
       `${targetDir}/${CONFIG_FILE_NAME}`,
@@ -85,8 +90,12 @@ export async function runInit(args: string[]): Promise<void> {
     const rawMsg = formatError(err);
     if (code === "EACCES") {
       printError("Permission denied. Cannot create project directory.");
-    } else if (code === "ENOENT" && rawMsg.includes("AGENTS.sample.md")) {
-      printError("Cannot find AGENTS.sample.md. Reinstall wio.");
+    } else if (
+      code === "ENOENT" &&
+      (rawMsg.includes("AGENTS.sample.md") ||
+        rawMsg.includes("index.sample.html"))
+    ) {
+      printError("Cannot find sample files. Reinstall wio.");
     } else {
       printError(describeError(err));
     }

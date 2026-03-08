@@ -1,11 +1,12 @@
 {
-  "version": "0.0.8",
+  "version": "0.0.9",
   "name": "wio-cli",
   "module": "index.ts",
   "type": "module",
   "files": [
     "index.ts",
     "AGENTS.sample.md",
+    "index.sample.html",
     "commands",
     "helpers"
   ],
