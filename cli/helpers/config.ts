@@ -1,11 +1,12 @@
 import { exists, readFile, writeFile } from "fs/promises";
 import { YAML } from "bun";
+import { formatError, getErrnoCode } from "./errors";
 
 export const CONFIG_FILE_NAME = "wio.yaml";
 
 export type WioConfig = {
   name?: string;
-  auth?: { token?: string };
+  auth?: { token?: string; tag?: string };
 };
 
 export async function readWioConfig(): Promise<WioConfig> {
@@ -16,9 +17,23 @@ export async function readWioConfig(): Promise<WioConfig> {
     return {};
   }
 
-  const raw = await readFile(configPath, "utf8");
-  const parsed = YAML.parse(raw) as WioConfig | null;
-  return parsed ?? {};
+  let raw: string;
+  try {
+    raw = await readFile(configPath, "utf8");
+  } catch (err) {
+    const code = getErrnoCode(err);
+    if (code === "ENOENT") return {};
+    if (code === "EACCES")
+      throw new Error("Permission denied reading wio.yaml");
+    throw err;
+  }
+
+  try {
+    const parsed = YAML.parse(raw) as WioConfig | null;
+    return parsed ?? {};
+  } catch (err) {
+    throw new Error(`Invalid wio.yaml: ${formatError(err)}`);
+  }
 }
 
 export async function writeWioConfig(config: WioConfig): Promise<void> {
