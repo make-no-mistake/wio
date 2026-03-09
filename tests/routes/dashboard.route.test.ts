@@ -42,7 +42,7 @@ describe("Dashboard Routes", () => {
     });
 
     expect(response.statusCode).toBe(302);
-    expect(response.headers.location).toBe("/login");
+    expect(response.headers.location).toBe("/login?returnTo=/dashboard");
 
     await fastify.close();
   });

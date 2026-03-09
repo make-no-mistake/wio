@@ -36,7 +36,9 @@ form.addEventListener("submit", async (event) => {
     }
 
     setStatus("Authenticated...");
-    window.location.href = "/dashboard";
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnTo = urlParams.get("returnTo") || "/";
+    window.location.href = returnTo;
   } catch {
     setStatus("Network error. Check your connection.", "warn");
   } finally {
