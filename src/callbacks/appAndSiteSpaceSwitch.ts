@@ -9,10 +9,9 @@ export function appAndSiteSpaceSwitch(req: IncomingMessage): string {
   const site = extractLowestLevelDomain(host);
   const url = req.url || "/";
 
-  // Prevent routing to site space for dashboard and metrics endpoints
-  if (url.startsWith("/dashboard") || url.startsWith("/api/metrics")) {
+  if (url.startsWith("/static/")) return url;
+  if (url.startsWith("/dashboard") || url.startsWith("/api/metrics"))
     return url;
-  }
 
   if (!site) return url;
 

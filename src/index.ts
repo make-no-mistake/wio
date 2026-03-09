@@ -12,6 +12,7 @@ import { initFastifySocket } from "./websocket";
 import fastifyCookie from "@fastify/cookie";
 import sensible from "@fastify/sensible";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+import { registerErrorHandler } from "./plugins/error-handler";
 const transportTargets: TransportTargetOptions[] = [
   {
     target: "pino-pretty",
@@ -41,6 +42,8 @@ const fastify = Fastify({
   disableRequestLogging: (req) => req.url.startsWith("/sites/"),
   rewriteUrl: appAndSiteSpaceSwitch,
 }).withTypeProvider<TypeBoxTypeProvider>();
+
+registerErrorHandler(fastify);
 
 await fastify.register(multipart, {
   limits: {
