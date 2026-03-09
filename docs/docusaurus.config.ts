@@ -3,8 +3,8 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
-  title: "Make No Mistake",
-  tagline: "Project 21 Documentation",
+  title: "Wio",
+  tagline: "Wio Documentation",
   favicon: "img/favicon.ico",
 
   future: {
@@ -14,8 +14,8 @@ const config: Config = {
   url: "https://wio.onl",
   baseUrl: "/docs",
 
-  organizationName: "csc301-2026-s",
-  projectName: "project-21-make-no-mistake",
+  organizationName: "MakeNoMistake",
+  projectName: "Wio",
   deploymentBranch: "gh-pages",
   trailingSlash: false,
 
@@ -47,13 +47,15 @@ const config: Config = {
   themeConfig: {
     image: "img/docusaurus-social-card.jpg",
     colorMode: {
-      respectPrefersColorScheme: true,
+      defaultMode: "dark",
+      disableSwitch: true,
+      respectPrefersColorScheme: false,
     },
     navbar: {
-      title: "Make No Mistake",
+      title: "Wio",
       logo: {
-        alt: "Make No Mistake Logo",
-        src: "img/logo.svg",
+        alt: "Wio Logo",
+        src: "img/logo.png",
       },
       items: [
         {
