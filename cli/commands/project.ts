@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, symlink } from "fs/promises";
+import { mkdir, readFile, writeFile, copyFile } from "fs/promises";
 import { join } from "path";
 import {
   printError,
@@ -74,8 +74,8 @@ export async function runInit(args: string[]): Promise<void> {
     const scriptDir = getScriptDir(import.meta);
     const agents_md = await readFile(`${scriptDir}/../AGENTS.sample.md`);
     await writeFile(`${targetDir}/AGENTS.md`, agents_md);
-    await symlink("AGENTS.md", `${targetDir}/CLAUDE.md`);
-    await symlink("AGENTS.md", `${targetDir}/GEMINI.md`);
+    await copyFile(`${targetDir}/AGENTS.md`, `${targetDir}/CLAUDE.md`);
+    await copyFile(`${targetDir}/AGENTS.md`, `${targetDir}/GEMINI.md`);
 
     const index_html = await readFile(`${scriptDir}/../index.sample.html`);
     await writeFile(`${targetDir}/index.html`, index_html);
