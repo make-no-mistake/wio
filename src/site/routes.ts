@@ -34,7 +34,7 @@ export async function siteRoutes(fastify: FastifyInstance) {
     const site = await findSiteByName(request.params.site);
 
     // This rejects any request to any site route for which a site is invalid.
-    if (!site) reply.code(500).send({ message: "Site not found" });
+    if (!site) throw fastify.httpErrors.notFound();
 
     request.site = site;
 

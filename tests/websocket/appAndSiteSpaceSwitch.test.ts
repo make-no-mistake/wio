@@ -37,6 +37,15 @@ describe("appAndSiteSpaceSwitch", () => {
       const result = appAndSiteSpaceSwitch(req);
       expect(result).toBe("/dashboard");
     });
+
+    it("should not rewrite platform static paths on subdomains", () => {
+      const req = createMockRequest(
+        "mysite.wio.onl",
+        "/static/views/errors/404.html",
+      );
+      const result = appAndSiteSpaceSwitch(req);
+      expect(result).toBe("/static/views/errors/404.html");
+    });
   });
 
   describe("edge cases", () => {
