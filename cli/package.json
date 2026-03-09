@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "tsup": "^8.4.0"
+    "tsup": "^8.4.0",
+    "typescript": "^5.0.0"
   }
 }
