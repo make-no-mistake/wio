@@ -1,7 +1,7 @@
-#!/usr/bin/env bun
 import { printError } from "./helpers/pretty_print";
-import { formatError } from "./helpers/errors.ts";
+import { formatError } from "./helpers/errors";
 import { wantsHelp } from "./helpers/utils";
+import { getCliArgs } from "./helpers/runtime";
 import { runLogin, runLogout } from "./commands/auth";
 import { runInit, runPush, runStatus } from "./commands/project";
 import { showHelp, showCommandHelp, runVersion } from "./commands/misc";
@@ -57,7 +57,7 @@ async function runCommand(cmd: string, args: string[]): Promise<boolean> {
 async function main(): Promise<void> {
   process.env.WIO_MINIMAL_COLOR = "1";
 
-  const rawArgs = Bun.argv.slice(2);
+  const rawArgs = getCliArgs();
   const command = rawArgs[0];
   const commandArgs = rawArgs.slice(1);
 

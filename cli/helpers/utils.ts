@@ -1,9 +1,11 @@
 import { readFile } from "fs/promises";
+import { getScriptDir } from "./runtime";
 
 export async function getVersion(): Promise<string> {
   try {
+    const scriptDir = getScriptDir(import.meta);
     const pkg = JSON.parse(
-      (await readFile(`${import.meta.dir}/../package.json`)).toString(),
+      (await readFile(`${scriptDir}/../package.json`)).toString(),
     ) as { version?: string };
     return pkg.version ?? "0.0.0";
   } catch {

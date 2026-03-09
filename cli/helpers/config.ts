@@ -1,5 +1,5 @@
-import { exists, readFile, writeFile } from "fs/promises";
-import { YAML } from "bun";
+import { readFile, writeFile } from "fs/promises";
+import { yamlParse, yamlStringify, exists } from "./runtime";
 import { formatError, getErrnoCode } from "./errors";
 
 export const CONFIG_FILE_NAME = "wio.yaml";
@@ -29,7 +29,7 @@ export async function readWioConfig(): Promise<WioConfig> {
   }
 
   try {
-    const parsed = YAML.parse(raw) as WioConfig | null;
+    const parsed = (await yamlParse(raw)) as WioConfig | null;
     return parsed ?? {};
   } catch (err) {
     throw new Error(`Invalid wio.yaml: ${formatError(err)}`);
@@ -38,5 +38,5 @@ export async function readWioConfig(): Promise<WioConfig> {
 
 export async function writeWioConfig(config: WioConfig): Promise<void> {
   const configPath = `${process.cwd()}/${CONFIG_FILE_NAME}`;
-  await writeFile(configPath, YAML.stringify(config, null, 2));
+  await writeFile(configPath, await yamlStringify(config));
 }
