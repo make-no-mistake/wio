@@ -1,4 +1,5 @@
 import { input } from "@inquirer/prompts";
+import { promptUser } from "./runtime";
 
 const STYLED_INPUT_THEME = {
   style: {
@@ -8,7 +9,7 @@ const STYLED_INPUT_THEME = {
 };
 
 export async function prompt(question: string): Promise<string> {
-  const answer = globalThis.prompt?.(question) ?? "";
+  const answer = await promptUser(question);
   return answer.trim();
 }
 

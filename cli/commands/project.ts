@@ -1,6 +1,5 @@
-import { exists, mkdir, readFile, writeFile, symlink } from "fs/promises";
+import { mkdir, readFile, writeFile, symlink } from "fs/promises";
 import { join } from "path";
-import { YAML } from "bun";
 import {
   printError,
   printInfo,
@@ -17,6 +16,14 @@ import { fetchWithAuth } from "../helpers/authentication";
 import { validateProjectName, getBaseName } from "../helpers/utils";
 import { styledInput } from "../helpers/input";
 import { API_URL, MAX_ARCHIVE_SIZE } from "../helpers/constants";
+import {
+  exists,
+  yamlStringify,
+  globFiles,
+  readFileAsBuffer,
+  createArchive,
+  getScriptDir,
+} from "../helpers/runtime";
 
 export async function runInit(args: string[]): Promise<void> {
   let projectName = args.find((a) => !a.startsWith("-")) ?? "";
@@ -64,20 +71,19 @@ export async function runInit(args: string[]): Promise<void> {
       await mkdir(projectName);
     }
 
-    const agents_md = await readFile(`${import.meta.dir}/../AGENTS.sample.md`);
+    const scriptDir = getScriptDir(import.meta);
+    const agents_md = await readFile(`${scriptDir}/../AGENTS.sample.md`);
     await writeFile(`${targetDir}/AGENTS.md`, agents_md);
     await symlink("AGENTS.md", `${targetDir}/CLAUDE.md`);
     await symlink("AGENTS.md", `${targetDir}/GEMINI.md`);
 
-    const index_html = await readFile(
-      `${import.meta.dir}/../index.sample.html`,
-    );
+    const index_html = await readFile(`${scriptDir}/../index.sample.html`);
     await writeFile(`${targetDir}/index.html`, index_html);
 
     const config: WioConfig = { name: displayName };
     await writeFile(
       `${targetDir}/${CONFIG_FILE_NAME}`,
-      YAML.stringify(config, null, 2),
+      await yamlStringify(config),
     );
 
     const projectPath = useCurrentDir ? cwd : join(cwd, projectName);
@@ -130,15 +136,14 @@ export async function runPush(): Promise<void> {
   printInfo(`Pushing ${projectName} to remote...`);
   printInfo(`Scanning project files...`);
 
-  const glob = new Bun.Glob("**/*");
+  const filePaths = await globFiles(cwd, "**/*");
   const files: Record<string, ArrayBuffer> = {};
 
-  for await (const path of glob.scan({ cwd, onlyFiles: true })) {
-    files[path] = await Bun.file(`${cwd}/${path}`).arrayBuffer();
+  for (const path of filePaths) {
+    files[path] = await readFileAsBuffer(`${cwd}/${path}`);
   }
 
-  const archive = new Bun.Archive(files, { compress: "gzip", level: 9 });
-  const blob = await archive.blob();
+  const blob = await createArchive(files);
 
   if (blob.size > MAX_ARCHIVE_SIZE) {
     printError(

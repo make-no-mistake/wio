@@ -11,6 +11,7 @@ export default tseslint.config(
     ignores: [
       "node_modules/**",
       "dist/**",
+      "cli/dist/**",
       "build/**",
       ".docker/**",
       "docs/**",
