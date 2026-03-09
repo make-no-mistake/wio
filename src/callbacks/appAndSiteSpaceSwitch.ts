@@ -13,6 +13,18 @@ export function appAndSiteSpaceSwitch(req: IncomingMessage): string {
   if (url.startsWith("/dashboard") || url.startsWith("/api/metrics"))
     return url;
 
+  // Force all tenant sites to use the Wio favicon
+  if (
+    url === "/favicon.ico" ||
+    url === "/favicon-32x32.png" ||
+    url === "/favicon-16x16.png" ||
+    url === "/apple-touch-icon.png" ||
+    url === "/site.webmanifest" ||
+    url.startsWith("/android-chrome-")
+  ) {
+    return `/static${url}`;
+  }
+
   if (!site) return url;
 
   return `/sites/${site}${url}`;

@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register — wio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="/static/css/landing.css" />
   <link rel="stylesheet" href="/static/css/register.css" />
 </head>
+
 <body>
   <%- include('partials/nav') %>
-  <main class="register-shell">
-    <section class="register-card">
-      <p class="register-eyebrow">Registration</p>
-      <h1 class="register-title">Claim your user tag</h1>
-      <p class="register-subhead">This tag is your key to log in. Save it somewhere safe.</p>
+    <main class="register-shell">
+      <section class="register-card">
+        <p class="register-eyebrow">Registration</p>
+        <h1 class="register-title">Claim your user tag</h1>
+        <p class="register-subhead">This tag is your key to log in. Save it somewhere safe.</p>
 
-      <div class="register-token">
-        <div class="register-token-header">
-          <span>User tag</span>
-          <button id="copyBtn" class="register-btn" type="button" disabled>Copy</button>
+        <div class="register-token">
+          <div class="register-token-header">
+            <span>User tag</span>
+            <button id="copyBtn" class="register-btn" type="button" disabled>Copy</button>
+          </div>
+          <code id="tagValue" class="register-tag">Generating…</code>
         </div>
-        <code id="tagValue" class="register-tag">Generating…</code>
-      </div>
 
-      <p id="status" class="register-status"></p>
-    </section>
-  </main>
-  <%- include('partials/footer') %>
-  <script src="/static/js/register.js"></script>
+        <p id="status" class="register-status"></p>
+      </section>
+    </main>
+    <%- include('partials/footer') %>
+      <script src="/static/js/register.js"></script>
 </body>
+
 </html>
