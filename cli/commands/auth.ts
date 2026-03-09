@@ -6,7 +6,24 @@ import {
   CONFIG_FILE_NAME,
 } from "../helpers/config";
 import { prompt } from "../helpers/input";
-import { API_URL } from "../helpers/constants";
+import { API_URL, REGISTER_URL } from "../helpers/constants";
+
+export async function runRegister(): Promise<void> {
+  printInfo(`Opening register page: ${REGISTER_URL}`);
+  try {
+    const isDarwin = process.platform === "darwin";
+    const isLinux = process.platform === "linux";
+    const command = isDarwin ? "open" : isLinux ? "xdg-open" : null;
+
+    if (command) {
+      Bun.spawn([command, REGISTER_URL]);
+    } else {
+      printInfo("Please open the link manually in your browser.");
+    }
+  } catch {
+    printInfo("Please open the link manually in your browser.");
+  }
+}
 
 export async function runLogin(args: string[]): Promise<void> {
   let tag = args[0]?.trim();

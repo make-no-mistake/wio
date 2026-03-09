@@ -2,7 +2,7 @@ import { printError } from "./helpers/pretty_print";
 import { formatError } from "./helpers/errors";
 import { wantsHelp } from "./helpers/utils";
 import { getCliArgs } from "./helpers/runtime";
-import { runLogin, runLogout } from "./commands/auth";
+import { runLogin, runLogout, runRegister } from "./commands/auth";
 import { runInit, runPush, runStatus } from "./commands/project";
 import { showHelp, showCommandHelp, runVersion } from "./commands/misc";
 
@@ -13,6 +13,10 @@ async function runCommand(cmd: string, args: string[]): Promise<boolean> {
   }
   if (cmd === "version" || cmd === "--version" || cmd === "-V") {
     await runVersion();
+    return true;
+  }
+  if (cmd === "register") {
+    await runRegister();
     return true;
   }
   if (cmd === "login") {

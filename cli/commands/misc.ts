@@ -5,6 +5,7 @@ import { stripAnsi, padRight } from "../helpers/display";
 const COMMANDS = [
   ["init [name]", "Create new project"],
   ["push", "Push to remote"],
+  ["register", "Create a new account"],
   ["login <user-tag>", "Sign in"],
   ["logout", "Sign out"],
   ["status", "Show project + auth status"],
@@ -24,6 +25,11 @@ const COMMAND_USAGE: Record<string, string[]> = {
     "",
     "  Packages and uploads the current project to Wio.",
     "  Requires login. Run: wio login <user-tag>",
+  ],
+  register: [
+    "Usage: wio register",
+    "",
+    "  Opens the Wio registration page in your browser.",
   ],
   login: [
     "Usage: wio login <user-tag>",
