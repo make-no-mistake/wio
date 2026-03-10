@@ -1,46 +1,127 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * wio Docs — custom Docusaurus CSS
+ * Design tokens are intentionally aligned with landing.css so all
+ * three surfaces (landing, dashboard, docs) share the same visual identity.
  */
 
-/* You can override the default Infima variables here. */
+/* ── Google Fonts (IBM Plex Sans · IBM Plex Mono · Instrument Serif) ────── */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600&family=Instrument+Serif:ital@0;1&display=swap");
+
+/* ── Infima colour overrides (light — not currently used, kept for parity) */
 :root {
-  --ifm-color-primary: #5fa9ee;
-  --ifm-color-primary-dark: #409be9;
-  --ifm-color-primary-darker: #3194e6;
-  --ifm-color-primary-darkest: #157dd5;
-  --ifm-color-primary-light: #7eb7f3;
-  --ifm-color-primary-lighter: #8ebef5;
-  --ifm-color-primary-lightest: #bedcf9;
+  /* Accent matches landing.css --blue / --accent in dark mode: #5b9bd8 */
+  --ifm-color-primary: #5b9bd8;
+  --ifm-color-primary-dark: #4189cc;
+  --ifm-color-primary-darker: #3880c7;
+  --ifm-color-primary-darkest: #2b69a8;
+  --ifm-color-primary-light: #75ade2;
+  --ifm-color-primary-lighter: #7eb4e4;
+  --ifm-color-primary-lightest: #a5cced;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
-  --ifm-background-color: #0b0b0d;
-  --ifm-background-surface-color: #121214;
-  --ifm-navbar-background-color: #0b0b0d;
-  --ifm-footer-background-color: #0b0b0d;
-  --ifm-heading-font-family: 'Instrument Serif', Georgia, serif;
+
+  /* Background matches landing.css --bg in dark mode: #0a0d10 */
+  --ifm-background-color: #0a0d10;
+  --ifm-background-surface-color: #12161a;
+  --ifm-navbar-background-color: #0a0d10;
+  --ifm-footer-background-color: #0a0d10;
+
+  /* Navigation border matches landing.css --border in dark mode: #2a3038 */
+  --ifm-navbar-shadow: 0 1px 0 0 #2a3038;
+
+  /* Typography — matches landing.css font stacks */
+  --ifm-font-family-base: "IBM Plex Sans", system-ui, sans-serif;
+  --ifm-font-family-monospace: "IBM Plex Mono", ui-monospace, monospace;
+  --ifm-heading-font-family: "Instrument Serif", Georgia, serif;
+
+  /* Border radius matches landing.css (4px everywhere) */
+  --ifm-global-radius: 4px;
+  --ifm-code-border-radius: 3px;
+  --ifm-pre-border-radius: 4px;
+
+  /* Font sizes to match landing.css defaults */
+  --ifm-font-size-base: 14px;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* ── Dark-mode overrides (forced dark — matches landing dark palette) ────── */
 [data-theme="dark"] {
-  --ifm-color-primary: #5fa9ee;
-  --ifm-color-primary-dark: #409be9;
-  --ifm-color-primary-darker: #3194e6;
-  --ifm-color-primary-darkest: #157dd5;
-  --ifm-color-primary-light: #7eb7f3;
-  --ifm-color-primary-lighter: #8ebef5;
-  --ifm-color-primary-lightest: #bedcf9;
+  --ifm-color-primary: #5b9bd8;
+  --ifm-color-primary-dark: #4189cc;
+  --ifm-color-primary-darker: #3880c7;
+  --ifm-color-primary-darkest: #2b69a8;
+  --ifm-color-primary-light: #75ade2;
+  --ifm-color-primary-lighter: #7eb4e4;
+  --ifm-color-primary-lightest: #a5cced;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
-  --ifm-background-color: #0b0b0d;
-  --ifm-background-surface-color: #121214;
-  --ifm-navbar-background-color: #0b0b0d;
-  --ifm-footer-background-color: #0b0b0d;
+  --ifm-background-color: #0a0d10;
+  --ifm-background-surface-color: #12161a;
+  --ifm-navbar-background-color: #0a0d10;
+  --ifm-footer-background-color: #0a0d10;
+  --ifm-navbar-shadow: 0 1px 0 0 #2a3038;
+  --ifm-color-emphasis-300: #2a3038;
+  --ifm-toc-border-color: #2a3038;
+  --ifm-hr-border-color: #2a3038;
+  --ifm-color-content-secondary: #8b94a0;
 }
 
+/* ── Subtle grid background (matches landing hero / docs body) ─────────────
+   Same colours and size as landing.css hero::before grid            */
 body {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 2rem 2rem;
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ── Headings use Instrument Serif (same as landing h1 / h2) ─────────────── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 400;
+  letter-spacing: -0.5px;
+}
+
+/* ── Navbar tweaks ──────────────────────────────────────────────── */
+.navbar__brand .navbar__title {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+
+/* ── Footer adjustments ─────────────────────────────────────────── */
+.footer__title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+
+.footer__link-item {
+  font-size: 13px;
+}
+
+/* ── Code blocks match landing.css code color tokens ────────────── */
+.token.keyword {
+  color: #7ab3e8;
+}
+
+.token.function {
+  color: #5eead4;
+}
+
+.token.string {
+  color: #6ee7b7;
+}
+
+.token.number {
+  color: #fbbf24;
+}
+
+.token.comment {
+  color: #5c6470;
 }

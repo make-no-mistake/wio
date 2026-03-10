@@ -1,149 +1,219 @@
-:root {
-  --primary: #1a73e8;
-  --success: #188038;
-  --success-bg: #e6f4ea;
-  --danger: #d93025;
-  --bg-color: #f8f9fa;
-  --surface: #ffffff;
-  --text-main: #202124;
-  --text-sec: #5f6368;
-  --border: #dadce0;
-  --sidebar-width: 64px;
-  --chart-grid: #f1f3f4;
-  --active-bg: #e8f0fe;
-}
+/* ─────────────────────────────────────────────────────────────────────────────
+   wio — Observability Dashboard CSS
+   Design tokens & typography are intentionally aligned with landing.css
+   ───────────────────────────────────────────────────────────────────────────── */
 
-[data-theme="dark"] {
-  --primary: #8ab4f8;
-  --success: #81c995;
-  --success-bg: rgba(129, 201, 149, 0.15);
-  --danger: #f28b82;
-  --bg-color: #202124;
-  --surface: #292a2d;
-  --text-main: #e8eaed;
-  --text-sec: #9aa0a6;
-  --border: #3c4043;
-  --chart-grid: #3c4043;
-  --active-bg: rgba(138, 180, 248, 0.15);
-}
-
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  transition:
-    background-color 0.3s,
-    color 0.3s;
+:root {
+  color-scheme: dark;
+  /* ── Base palette (mirrors landing.css dark theme) ── */
+  --bg: #0a0d10;
+  --white: #12161a;
+  --border: #2a3038;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --text: #e6eaef;
+  --muted: #8b94a0;
+  --light: #5c6470;
+  --green: #34d399;
+  --red: #f87171;
+  --blue: #5b9bd8;
+  --accent: #5b9bd8;
+  --accent-hover: #7ab3e8;
+
+  /* ── Surface layers ── */
+  --surface: #12161a;
+  /* card background */
+  --surface-raised: #1a1e24;
+  /* header / sidebar */
+
+  /* ── Sidebar ── */
+  --sidebar-width: 52px;
+
+  /* ── Chart grid ── */
+  --chart-grid: #2a3038;
+
+  /* ── Active state ── */
+  --active-bg: rgba(91, 155, 216, 0.12);
+
+  /* ── Shared (for select/input) ── */
+  --hero-install-bg: #14181d;
+
+  --success-bg: rgba(52, 211, 153, 0.12);
+  --danger-bg: rgba(248, 113, 113, 0.12);
+
+  --transition-fast: 0.12s ease;
 }
 
-/* Layout */
+/* ─── Typography ─────────────────────────────────────────────────────────── */
+code,
+pre {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  overflow: hidden;
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ─── Layout ─────────────────────────────────────────────────────────────── */
 .app-container {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
 
+/* ─── Sidebar ────────────────────────────────────────────────────────────── */
 .sidebar {
   width: var(--sidebar-width);
-  background-color: var(--surface);
+  background-color: var(--surface-raised);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
+  padding: 12px 0;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .sidebar-icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  color: var(--text-sec);
-  margin-bottom: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  color: var(--muted);
+  margin-bottom: 4px;
   text-decoration: none;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .sidebar-icon:hover {
-  background-color: var(--bg-color);
+  background-color: var(--active-bg);
+  color: var(--accent);
 }
 
 .sidebar-icon.active {
   background-color: var(--active-bg);
-  color: var(--primary);
+  color: var(--accent);
 }
 
+/* ─── Main wrapper ───────────────────────────────────────────────────────── */
 .main-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
-/* Header */
+/* ─── Top header ─────────────────────────────────────────────────────────── */
 .top-header {
-  height: 64px;
-  background-color: var(--surface);
+  height: 56px;
+  background-color: var(--surface-raised);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
+  flex-shrink: 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .header-left,
-.header-center,
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .header-center {
+  display: flex;
+  align-items: center;
   flex: 1;
   justify-content: center;
 }
 
+/* ─── Logo (matches landing page logo style) ─────────────────────────────── */
 .logo {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 600;
-  font-size: 18px;
+  text-decoration: none;
+  color: var(--text);
 }
 
 .logo-mark {
-  background: var(--primary);
-  color: white;
-  padding: 2px 8px;
+  width: 24px;
+  height: 24px;
+  background: var(--text);
   border-radius: 4px;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a0d10;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
 }
 
-.site-selector select {
-  padding: 6px 32px 6px 12px;
+.logo:hover .logo-mark {
+  transform: scale(1.04);
+}
+
+.logo-text {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 16px;
+  letter-spacing: -0.4px;
+  color: var(--text);
+}
+
+/* ─── Site selector ──────────────────────────────────────────────────────── */
+.site-selector select,
+.chart-select {
+  padding: 5px 10px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  background-color: var(--surface);
-  color: var(--text-main);
-  font-size: 14px;
+  background-color: var(--hero-install-bg);
+  color: var(--text);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 12px;
   cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
 }
 
+.site-selector select:hover,
+.chart-select:hover {
+  border-color: var(--accent);
+}
+
+/* ─── Nav tabs ───────────────────────────────────────────────────────────── */
 .nav-tabs {
   display: flex;
-  height: 64px;
+  height: 56px;
+  gap: 4px;
 }
 
 .nav-tabs .tab {
@@ -151,189 +221,186 @@ body {
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: var(--text-sec);
-  border-bottom: 3px solid transparent;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  font-size: 13px;
   font-weight: 500;
-  font-size: 14px;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .nav-tabs .tab:hover {
-  color: var(--text-main);
+  color: var(--text);
 }
 
 .nav-tabs .tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
+/* ─── Header icon buttons ────────────────────────────────────────────────── */
 .icon-btn {
   background: none;
-  border: none;
-  color: var(--text-sec);
+  border: 1px solid var(--border);
+  color: var(--muted);
   cursor: pointer;
-  position: relative;
-  display: flex;
-}
-
-.notification .dot {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  background-color: var(--danger);
-  border-radius: 50%;
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 8px;
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  background-color: #e0e0e0;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
-.user-info .user-name {
-  font-size: 14px;
-  font-weight: 500;
+.icon-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
-/* Content Area */
+/* ─── Content area ───────────────────────────────────────────────────────── */
 .content-area {
   flex: 1;
   overflow-y: auto;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow:
-    0 1px 2px 0 rgba(60, 64, 67, 0.1),
-    0 1px 3px 1px rgba(60, 64, 67, 0.05);
-  padding: 16px;
-}
-
-.card-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-main);
-  margin: 0;
-}
-
-/* View Sections */
+/* ─── View sections ──────────────────────────────────────────────────────── */
 .view-section {
   display: none;
 }
+
 .view-section.active {
-  display: block;
-}
-
-/* Grid Layouts */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.kpi-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.kpi-value {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 4px;
+/* ─── Cards ──────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  transition: border-color var(--transition-fast);
 }
 
-.kpi-sub {
+.card:hover {
+  border-color: #3a4450;
+}
+
+.card-title {
   font-size: 12px;
-}
-
-.kpi-positive {
-  color: var(--success);
-}
-.kpi-negative {
-  color: var(--danger);
-}
-.kpi-muted {
-  color: var(--text-sec);
-}
-
-.badge {
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.trend-up {
-  background-color: var(--success-bg);
-  color: var(--success);
-}
-
-.btn-more {
-  background: none;
-  border: none;
-  color: var(--text-sec);
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.large-chart-card {
-  grid-column: span 2;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: 0.01em;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-}
-
-.chart-select {
-  padding: 4px 8px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background-color: var(--surface);
-  color: var(--text-main);
-  font-size: 12px;
+  margin-bottom: 14px;
 }
 
 .card-body {
   position: relative;
 }
 
-.large-chart-card .card-body {
-  height: 250px;
+/* ─── KPI grid ───────────────────────────────────────────────────────────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
-/* Tables */
+.kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--text);
+  letter-spacing: -1px;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.kpi-positive {
+  color: var(--green);
+}
+
+.kpi-negative {
+  color: var(--red);
+}
+
+.kpi-muted {
+  color: var(--muted);
+}
+
+/* ─── Badges ─────────────────────────────────────────────────────────────── */
+.badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.trend-up {
+  background-color: var(--success-bg);
+  color: var(--green);
+}
+
+.btn-more {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color var(--transition-fast);
+}
+
+.btn-more:hover {
+  color: var(--accent);
+}
+
+/* ─── Dashboard grid ─────────────────────────────────────────────────────── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.large-chart-card {
+  grid-column: span 2;
+}
+
+.large-chart-card .card-body {
+  height: 240px;
+}
+
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
 .table-container {
   overflow-x: auto;
 }
@@ -341,38 +408,69 @@ body {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 12px;
+  font-family: "IBM Plex Mono", monospace;
 }
 
 .data-table th,
 .data-table td {
-  padding: 10px 8px;
+  padding: 8px 8px;
   text-align: left;
   border-bottom: 1px solid var(--border);
 }
 
 .data-table th {
-  color: var(--text-sec);
+  color: var(--muted);
   font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .data-table tr:last-child td {
   border-bottom: none;
 }
 
+.data-table tbody tr:hover td {
+  background: var(--active-bg);
+}
+
+/* ─── Status badges ──────────────────────────────────────────────────────── */
 .status-badge {
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
   font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 .status-badge.success {
   background-color: var(--success-bg);
-  color: var(--success);
+  color: var(--green);
 }
 
 .status-badge.error {
-  background-color: #fce8e6;
-  color: var(--danger);
+  background-color: var(--danger-bg);
+  color: var(--red);
+}
+
+/* ─── Middle/Bottom row spacing ──────────────────────────────────────────── */
+.middle-row,
+.bottom-row {
+  gap: 16px;
+}
+
+/* ─── Notification dot ───────────────────────────────────────────────────── */
+.notification {
+  position: relative;
+}
+
+.notification .dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--red);
+  border-radius: 50%;
 }
