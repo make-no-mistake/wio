@@ -10,7 +10,7 @@ let eventsCurrentPage = 1;
 let eventsFilterType = "all";
 
 function getTheme() {
-  return localStorage.getItem("theme") || "light";
+  return localStorage.getItem("theme") || "dark";
 }
 
 function setTheme(theme) {
@@ -461,10 +461,10 @@ function updateTrafficCharts(data) {
     const counts = data.statusCodes.map((r) => r.count);
     const colors = labels.map((code) => {
       const c = parseInt(code);
-      if (c >= 200 && c < 300) return "#188038"; // Success green
-      if (c >= 300 && c < 400) return "#fbbc04"; // Redirect yellow/orange
-      if (c >= 400 && c < 500) return "#ea4335"; // Client error red
-      return "#d93025"; // Server error dark red
+      if (c >= 200 && c < 300) return "#34d399"; // Success green (matches --green)
+      if (c >= 300 && c < 400) return "#fbbf24"; // Redirect amber (matches dashboard palette)
+      if (c >= 400 && c < 500) return "#f87171"; // Client error red (matches --red)
+      return "#dc2626"; // Server error dark red
     });
 
     statusCodesChart.data.labels = labels;
@@ -484,12 +484,12 @@ function getCssVar(name) {
 }
 
 function updateChartColors() {
-  const textColor = getCssVar("--text-sec") || "#5f6368";
-  const gridColor = getCssVar("--chart-grid") || "#f1f3f4";
-  const surfaceColor = getCssVar("--surface") || "#ffffff";
-  const bodyColor = getCssVar("--text-main") || "#202124";
-  const borderColor = getCssVar("--border") || "#dadce0";
-  const primaryColor = getCssVar("--primary") || "#1a73e8";
+  const textColor = getCssVar("--muted") || "#8b94a0";
+  const gridColor = getCssVar("--chart-grid") || "#2a3038";
+  const surfaceColor = getCssVar("--surface") || "#12161a";
+  const bodyColor = getCssVar("--text") || "#e6eaef";
+  const borderColor = getCssVar("--border") || "#2a3038";
+  const primaryColor = getCssVar("--accent") || "#5b9bd8";
 
   const charts = [viewsChart, eventsChart, trafficVolumeChart];
 
@@ -539,8 +539,8 @@ function updateChartColors() {
 function initCharts() {
   const gradientLine = (ctx) => {
     const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-    gradient.addColorStop(0, "rgba(26, 115, 232, 0.4)");
-    gradient.addColorStop(1, "rgba(26, 115, 232, 0.0)");
+    gradient.addColorStop(0, "rgba(91, 155, 216, 0.3)");
+    gradient.addColorStop(1, "rgba(91, 155, 216, 0.0)");
     return gradient;
   };
 
@@ -552,22 +552,26 @@ function initCharts() {
       tooltip: {
         mode: "index",
         intersect: false,
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
-        titleColor: "#5f6368",
-        bodyColor: "#202124",
-        borderColor: "#dadce0",
+        backgroundColor: "#1a1e24",
+        titleColor: "#8b94a0",
+        bodyColor: "#e6eaef",
+        borderColor: "#2a3038",
         borderWidth: 1,
       },
     },
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: "#5f6368" },
+        ticks: {
+          color: "#8b94a0",
+          font: { family: "IBM Plex Mono", size: 10 },
+        },
       },
       y: {
-        grid: { color: "#f1f3f4" },
+        grid: { color: "#2a3038" },
         ticks: {
-          color: "#5f6368",
+          color: "#8b94a0",
+          font: { family: "IBM Plex Mono", size: 10 },
           callback: function (value) {
             return value >= 1000 ? value / 1000 + "k" : value;
           },
@@ -586,9 +590,9 @@ function initCharts() {
         {
           label: "Page Views",
           data: [],
-          borderColor: "#1a73e8",
+          borderColor: "#5b9bd8",
           backgroundColor: gradientLine(ctxViews),
-          borderWidth: 2,
+          borderWidth: 1.5,
           fill: true,
           tension: 0.4,
           pointRadius: 0,
@@ -609,8 +613,8 @@ function initCharts() {
         {
           label: "Events",
           data: [],
-          backgroundColor: "#1a73e8",
-          borderRadius: 4,
+          backgroundColor: "#5b9bd8",
+          borderRadius: 3,
         },
       ],
     },
@@ -623,11 +627,17 @@ function initCharts() {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { color: "#5f6368" },
+          ticks: {
+            color: "#8b94a0",
+            font: { family: "IBM Plex Mono", size: 10 },
+          },
         },
         y: {
-          grid: { color: "#f1f3f4" },
-          ticks: { color: "#5f6368" },
+          grid: { color: "#2a3038" },
+          ticks: {
+            color: "#8b94a0",
+            font: { family: "IBM Plex Mono", size: 10 },
+          },
         },
       },
     },
@@ -644,9 +654,9 @@ function initCharts() {
           {
             label: "Traffic",
             data: [],
-            borderColor: "#1a73e8",
+            borderColor: "#5b9bd8",
             backgroundColor: gradientLine(ctxTraffic.getContext("2d")),
-            borderWidth: 2,
+            borderWidth: 1.5,
             fill: true,
             tension: 0.4,
             pointRadius: 0,
