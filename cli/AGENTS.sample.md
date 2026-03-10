@@ -247,3 +247,15 @@ useRelation:
         Execute a built query and return the resulting rows.
       signature:
         clause.execute() -> Promise<object[]>
+
+  casting_and_sorting:
+    warning:
+      Database reads from relations return values as strings (e.g., "100" instead of 100).
+      This causes the `orderBy` method to perform string comparisons (e.g., "95" > "100").
+    rule:
+      Do not rely on `orderBy` for numeric sorting. Always fetch the results,
+      cast the values to numbers (e.g., `Number(row.score)`), and sort them
+      in JavaScript.
+    example:
+      const rows = await users.select("*").execute()
+      const sorted = rows.sort((a, b) => Number(b.score) - Number(a.score))
