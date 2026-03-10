@@ -7,6 +7,7 @@ import {
 } from "../helpers/config";
 import { prompt } from "../helpers/input";
 import { API_URL, REGISTER_URL } from "../helpers/constants";
+import { isWioDirectory } from "../helpers/utils";
 
 export async function runRegister(): Promise<void> {
   printInfo(`Opening register page: ${REGISTER_URL}`);
@@ -26,6 +27,14 @@ export async function runRegister(): Promise<void> {
 }
 
 export async function runLogin(args: string[]): Promise<void> {
+  // Ensure that we only log in into a directory that contains a wio project.
+  if (!(await isWioDirectory())) {
+    printError(
+      "You must be in a wio project directory to log in. Navigate into a wio project directory or initialize a new project using the wio init command.",
+    );
+    process.exit(1);
+  }
+
   let tag = args[0]?.trim();
   if (!tag) {
     if (process.stdin.isTTY) {

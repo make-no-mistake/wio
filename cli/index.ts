@@ -7,55 +7,56 @@ import { runInit, runPush, runStatus } from "./commands/project";
 import { showHelp, showCommandHelp, runVersion } from "./commands/misc";
 
 async function runCommand(cmd: string, args: string[]): Promise<boolean> {
-  if (cmd === "help" || cmd === "--help" || cmd === "-h") {
-    await showHelp();
-    return true;
+  switch (cmd) {
+    case "help":
+    case "--help":
+    case "-h":
+      await showHelp();
+      break;
+    case "version":
+    case "--version":
+    case "-V":
+      await runVersion();
+      break;
+    case "register":
+      await runRegister();
+      break;
+    case "login":
+      if (wantsHelp(args)) {
+        await showCommandHelp("login");
+      } else {
+        await runLogin(args);
+      }
+      break;
+    case "logout":
+      await runLogout();
+      break;
+    case "push":
+      if (wantsHelp(args)) {
+        await showCommandHelp("push");
+      } else {
+        await runPush();
+      }
+      break;
+    case "init":
+      if (wantsHelp(args)) {
+        await showCommandHelp("init");
+      } else {
+        await runInit(args);
+      }
+      break;
+    case "status":
+      if (wantsHelp(args)) {
+        await showCommandHelp("status");
+      } else {
+        await runStatus();
+      }
+      break;
+    default:
+      return false;
   }
-  if (cmd === "version" || cmd === "--version" || cmd === "-V") {
-    await runVersion();
-    return true;
-  }
-  if (cmd === "register") {
-    await runRegister();
-    return true;
-  }
-  if (cmd === "login") {
-    if (wantsHelp(args)) {
-      await showCommandHelp("login");
-      return true;
-    }
-    await runLogin(args);
-    return true;
-  }
-  if (cmd === "logout") {
-    await runLogout();
-    return true;
-  }
-  if (cmd === "push") {
-    if (wantsHelp(args)) {
-      await showCommandHelp("push");
-      return true;
-    }
-    await runPush();
-    return true;
-  }
-  if (cmd === "init") {
-    if (wantsHelp(args)) {
-      await showCommandHelp("init");
-      return true;
-    }
-    await runInit(args);
-    return true;
-  }
-  if (cmd === "status") {
-    if (wantsHelp(args)) {
-      await showCommandHelp("status");
-      return true;
-    }
-    await runStatus();
-    return true;
-  }
-  return false;
+
+  return true;
 }
 
 async function main(): Promise<void> {
