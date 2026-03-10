@@ -38,3 +38,11 @@ export async function createSite(
 
   return result[0] ?? null;
 }
+
+export async function getAllSites(): Promise<Site[]> {
+  return await sql<Site[]>`
+    SELECT id, name, owner_id, created_at
+    FROM sites
+    ORDER BY created_at DESC;
+  `;
+}
