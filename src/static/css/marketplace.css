@@ -1,0 +1,186 @@
+/* ========================================
+   marketplace.css — extends landing.css
+   ======================================== */
+
+.marketplace-section {
+  padding: 80px 0 120px;
+  background: var(--bg);
+}
+
+/* ---- Header ---- */
+.marketplace-header {
+  margin-bottom: 48px;
+}
+
+.marketplace-eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.marketplace-header h2 {
+  font-family: "Instrument Serif", "Georgia", serif;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 400;
+  letter-spacing: -1.2px;
+  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.marketplace-sub {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 480px;
+}
+
+/* ---- Grid ---- */
+.marketplace-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* ---- Card ---- */
+.marketplace-card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  min-height: 140px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.marketplace-card:hover {
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+[data-theme="dark"] .marketplace-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Remove trailing borders so they don't double up with grid border */
+.marketplace-card:nth-child(3n) {
+  border-right: none;
+}
+
+.marketplace-card:nth-last-child(-n + 3) {
+  border-bottom: none;
+}
+
+/* ---- Card internals ---- */
+.marketplace-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.marketplace-card-icon {
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: color var(--transition-fast);
+}
+
+.marketplace-card:hover .marketplace-card-icon {
+  color: var(--accent);
+}
+
+.marketplace-card-icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.marketplace-card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.marketplace-card-url {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  margin-bottom: auto;
+}
+
+.marketplace-card-date {
+  font-size: 11px;
+  color: var(--light);
+  margin-top: 16px;
+}
+
+/* ---- Empty state ---- */
+.marketplace-empty {
+  padding: 64px 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.marketplace-empty a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.marketplace-empty a:hover {
+  text-decoration: underline;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 960px) {
+  .marketplace-section {
+    padding: 56px 0 80px;
+  }
+
+  .marketplace-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Reset 3-col rules, apply 2-col rules */
+  .marketplace-card:nth-child(3n) {
+    border-right: 1px solid var(--border);
+  }
+  .marketplace-card:nth-child(2n) {
+    border-right: none;
+  }
+  .marketplace-card:nth-last-child(-n + 3) {
+    border-bottom: 1px solid var(--border);
+  }
+  .marketplace-card:nth-last-child(-n + 2) {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .marketplace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplace-card:nth-child(n) {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .marketplace-card:last-child {
+    border-bottom: none;
+  }
+}
