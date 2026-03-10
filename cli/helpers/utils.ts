@@ -1,5 +1,6 @@
 import { readFile } from "fs/promises";
 import { getScriptDir } from "./runtime";
+import { readWioConfig } from "./config";
 
 export async function getVersion(): Promise<string> {
   try {
@@ -36,4 +37,9 @@ export function validateProjectName(name: string): string | null {
 
 export function wantsHelp(args: string[]): boolean {
   return args.includes("--help") || args.includes("-h");
+}
+
+export async function isWioDirectory() {
+  const config = await readWioConfig();
+  return Object.keys(config).length > 0;
 }
