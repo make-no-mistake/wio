@@ -33,7 +33,7 @@ export async function playSoundRoutes(fastify: FastifyInstance) {
 
   app.post("/", { schema: { body: PlaysoundBody } }, async (request, reply) => {
     const { sound } = request.body;
-    const siteId = request.site?.name;
+    const siteId = request.site?.id;
 
     if (!siteId) return reply.status(400).send({ error: "Missing siteId" });
 
