@@ -1,4 +1,5 @@
 import { sql } from "bun";
+import assert from "node:assert";
 
 export interface Site {
   id: number;
@@ -7,13 +8,16 @@ export interface Site {
   created_at: Date;
 }
 
-export async function findSiteByName(name: string): Promise<Site | null> {
+export async function findSiteByName(name: string): Promise<Site> {
   const result = await sql<Site[]>`
     SELECT *
     FROM sites
     WHERE name = ${name};`;
 
-  return result[0] ?? null;
+  const site = result[0];
+  assert(site, `Site with name ${name} not found`);
+
+  return site;
 }
 
 export async function findSitesByOwner(ownerId: number): Promise<Site[]> {

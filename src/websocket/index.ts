@@ -1,9 +1,22 @@
 import fastifyIO from "fastify-socket.io";
 import type { FastifyInstance } from "fastify";
-import { Socket } from "socket.io";
-import { RoomManager } from "./rooms";
+import { Socket, type DefaultEventsMap } from "socket.io";
+import { ManagedSocket } from "./managed-socket";
 import { extractLowestLevelDomain } from "../helpers/extractLowestLevelDomain";
 import { findSiteByName } from "../repositories/site.repository";
+import assert from "node:assert";
+import type { Site } from "../repositories/site.repository";
+
+export type SiteSocket = Socket<
+  DefaultEventsMap,
+  DefaultEventsMap,
+  DefaultEventsMap,
+  { site: Site }
+> & { readonly __brand: unique symbol };
+
+export function assertSiteSocket(socket: Socket): asserts socket is SiteSocket {
+  assert(socket.data.site);
+}
 
 export async function initFastifySocket(fastify: FastifyInstance) {
   await fastify.register(fastifyIO, {
@@ -11,48 +24,27 @@ export async function initFastifySocket(fastify: FastifyInstance) {
     path: "/wio-socket/",
   });
 
-  fastify.ready((err) => {
-    if (err) throw err;
-    const io = fastify.io;
+  // Middleware to extract and validate site before connection
+  fastify.io.use(async (socket, next) => {
+    const host = socket.handshake.headers.host;
+    assert(host);
 
-    // Middleware to extract and validate siteId before connection
-    io.use(async (socket, next) => {
-      const host = socket.handshake.headers.host;
-      const siteId = extractLowestLevelDomain(host);
+    const siteId = extractLowestLevelDomain(host);
+    assert(siteId);
 
-      if (!siteId) {
-        return next(new Error("Could not extract siteId from host"));
-      }
+    socket.data.site = await findSiteByName(siteId);
 
-      socket.data.siteId = siteId;
+    next();
+  });
 
-      try {
-        const site = await findSiteByName(siteId);
-        if (site) {
-          socket.data.siteNumericId = site.id;
-        }
+  fastify.io.on("connection", (socket: Socket) => {
+    assertSiteSocket(socket);
 
-        next();
-      } catch (e) {
-        next(e as Error);
-      }
-    });
+    const managedSocket = new ManagedSocket(socket, fastify.io, fastify.log);
 
-    const roomManager = new RoomManager(io, fastify.log);
-
-    io.on("connection", (socket: Socket) => {
-      const siteId = socket.data.siteId as string;
-      const siteNumericId = socket.data.siteNumericId as number | undefined;
-
-      if (siteNumericId) {
-        fastify.log.info({
-          event: "ws_connect",
-          socketId: socket.id,
-          siteId: siteNumericId,
-        });
-      }
-
-      roomManager.handleConnection(siteId, socket, siteNumericId);
-    });
+    // Hook the managed socket up to the socket event pipeline.
+    managedSocket.joinAndAnnounce();
+    socket.onAny((event, data) => managedSocket.broadcast(event, data));
+    socket.on("disconnecting", () => managedSocket.leaveAndAnnounce());
   });
 }
