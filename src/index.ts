@@ -82,7 +82,8 @@ fastify.register(sensible);
 await fastify.register(appRoutes);
 await fastify.register(siteRoutes, { prefix: "/sites/:site" });
 
-fastify.listen({ port: 3000, host: "0.0.0.0" }, (err) => {
+const port = Number(process.env.PORT) || 3000;
+fastify.listen({ port, host: "0.0.0.0" }, (err) => {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
