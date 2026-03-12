@@ -18,20 +18,28 @@ jobs:
       github.event.comment.body == '/ci'
     runs-on: self-hosted
     timeout-minutes: 3
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: wio_test
-        ports:
-          - 5432:5432
 
     steps:
       - uses: actions/checkout@v6
         with:
           ref: refs/pull/${{ github.event.issue.number }}/head
+
+      - name: Pick random ports
+        id: ports
+        run: |
+          POSTGRES_PORT=$(shuf -i 10000-60000 -n 1)
+          MINIO_PORT=$(shuf -i 10000-60000 -n 1)
+          while [ "$MINIO_PORT" -eq "$POSTGRES_PORT" ]; do
+            MINIO_PORT=$(shuf -i 10000-60000 -n 1)
+          done
+          WEB_PORT=$(shuf -i 10000-60000 -n 1)
+          while [ "$WEB_PORT" -eq "$POSTGRES_PORT" ] || [ "$WEB_PORT" -eq "$MINIO_PORT" ]; do
+            WEB_PORT=$(shuf -i 10000-60000 -n 1)
+          done
+          echo "postgres=$POSTGRES_PORT" >> $GITHUB_OUTPUT
+          echo "minio=$MINIO_PORT" >> $GITHUB_OUTPUT
+          echo "web=$WEB_PORT" >> $GITHUB_OUTPUT
+          echo "Using POSTGRES_PORT=$POSTGRES_PORT, MINIO_PORT=$MINIO_PORT, WEB_PORT=$WEB_PORT"
 
       - name: Get PR HEAD SHA
         id: pr
@@ -55,14 +63,26 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
+      - name: Start PostgreSQL
+        run: |
+          docker run --detach -p ${{ steps.ports.outputs.postgres }}:5432 \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            -e POSTGRES_DB=wio_test \
+            postgres:16
+          for i in $(seq 1 30); do
+            pg_isready -h localhost -p ${{ steps.ports.outputs.postgres }} && break
+            sleep 1
+          done
+
       - name: Start MinIO
         run: |
-          docker run --detach -p 9000:9000 \
+          docker run --detach -p ${{ steps.ports.outputs.minio }}:9000 \
             -e MINIO_ROOT_USER=minioadmin \
             -e MINIO_ROOT_PASSWORD=minioadmin \
             minio/minio:edge-cicd server /data
           for i in $(seq 1 30); do
-            curl -sf http://localhost:9000/minio/health/live && break
+            curl -sf http://localhost:${{ steps.ports.outputs.minio }}/minio/health/live && break
             sleep 1
           done
 
@@ -70,10 +90,15 @@ jobs:
         run: |
           curl -sL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
           chmod +x /usr/local/bin/mc
-          mc alias set local http://localhost:9000 minioadmin minioadmin
+          mc alias set local http://localhost:${{ steps.ports.outputs.minio }} minioadmin minioadmin
           mc mb local/wio-assets
 
-      - run: bun test
+      - name: Run tests
+        run: bun test
+        env:
+          PORT: ${{ steps.ports.outputs.web }}
+          DATABASE_URL: postgresql://postgres:postgres@localhost:${{ steps.ports.outputs.postgres }}/wio_test
+          S3_ENDPOINT: http://localhost:${{ steps.ports.outputs.minio }}
 
       - name: Set commit status to final
         if: always()

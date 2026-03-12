@@ -8,6 +8,8 @@ RUN bun install
 
 COPY . .
 
-EXPOSE 3000
+ARG PORT=3000
+ENV PORT=$PORT
+EXPOSE $PORT
 
 CMD ["bun", "run", "dev"]

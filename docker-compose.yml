@@ -8,8 +8,8 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
       - minio_data:/data
     networks:
@@ -41,7 +41,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: wio
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./dev/db/init:/docker-entrypoint-initdb.d:ro
@@ -57,14 +57,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PORT: ${WEB_PORT:-3000}
     container_name: wio-web
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${WEB_PORT:-3000}:${WEB_PORT:-3000}"
     volumes:
       - .:/app
       - /app/node_modules
     environment:
+      - PORT=${WEB_PORT:-3000}
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/wio
       - S3_ENDPOINT=http://minio:9000
       - S3_ACCESS_KEY_ID=minioadmin
