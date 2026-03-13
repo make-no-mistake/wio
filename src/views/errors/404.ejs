@@ -11,20 +11,7 @@
   <link rel="stylesheet" href="/static/css/404.css" />
 </head>
 <body>
-  <nav>
-    <div class="container">
-      <a href="/#" class="logo"><div class="logo-mark">w</div>wio</a>
-      <ul class="nav-links">
-        <li><a href="/#features">Features</a></li>
-        <li><a href="/#how-it-works">How it works</a></li>
-        <li><a href="/#" data-github-link>GitHub ↗</a></li>
-        <li><a href="/login">Login</a></li>
-      </ul>
-      <div class="nav-right">
-        <a href="/register" class="btn-nav">Register</a>
-      </div>
-    </div>
-  </nav>
+  <%- include('partials/nav') %>
 
   <main class="login-shell">
     <section class="login-card error-card">
@@ -41,45 +28,9 @@
     </section>
   </main>
 
-  <footer>
-    <div class="footer-main">
-      <div class="container">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <a href="#" class="footer-logo-link">
-              <span class="footer-logo-mark">w</span>
-              <span class="footer-logo-text">wio</span>
-            </a>
-            <p class="footer-tagline">Backend infrastructure for AI-native apps.</p>
-          </div>
-          <div class="footer-col">
-            <h4>Navigation</h4>
-            <ul>
-              <li><a href="/#">Home</a></li>
-              <li><a href="/#features">Features</a></li>
-              <li><a href="/#how-it-works">How it works</a></li>
-            </ul>
-          </div>
-          <div class="footer-col">
-            <h4>Resources</h4>
-            <ul>
-              <li><a href="/#" data-github-link>GitHub ↗</a></li>
-              <li><a href="/docs/">Read the docs ↗</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <div class="container">
-        <div class="footer-copyright">
-          <span>© 2026 wio.</span>
-        </div>
-      </div>
-    </div>
-    <div class="footer-watermark" aria-hidden="true">Make no mistake.</div>
-  </footer>
+  <%- include('partials/footer') %>
 
   <script src="/static/js/landing.js"></script>
 </body>
 </html>
+
