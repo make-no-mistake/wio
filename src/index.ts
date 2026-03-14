@@ -43,6 +43,7 @@ const fastify = Fastify({
   rewriteUrl: appAndSiteSpaceSwitch,
 }).withTypeProvider<TypeBoxTypeProvider>();
 
+await fastify.register(sensible);
 registerErrorHandler(fastify);
 
 await fastify.register(multipart, {
@@ -77,8 +78,6 @@ await fastify.register(fastifyView, {
   root: `${import.meta.dir}/views`,
   viewExt: "ejs",
 });
-
-fastify.register(sensible);
 await fastify.register(appRoutes);
 await fastify.register(siteRoutes, { prefix: "/sites/:site" });
 
