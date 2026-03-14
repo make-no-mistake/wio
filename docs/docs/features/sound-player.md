@@ -27,8 +27,17 @@ await wio.playSound("pop");
 
 | Sound | Name |
 |-------|------|
+| Alert | `"alert"` |
+| Applause | `"applause"` |
+| Click | `"click"` |
+| Coin | `"coin"` |
+| Crickets | `"crickets"` |
+| Error | `"error"` |
+| Message | `"message"` |
+| Notification | `"notification"` |
 | Pop | `"pop"` |
-| Fart | `"fart"` |
+| Success | `"success"` |
+| Switch | `"switch"` |
 
 ## How It Works
 
@@ -44,12 +53,12 @@ This means the sound plays for **everyone** visiting the site, not just the user
 
 ```html
 <button id="pop-btn">Pop!</button>
-<button id="fart-btn">Fart!</button>
+<button id="applause-btn">Applause!</button>
 
 <script type="module">
   import wio from "/wio.js";
 
   document.getElementById("pop-btn").onclick = () => wio.playSound("pop");
-  document.getElementById("fart-btn").onclick = () => wio.playSound("fart");
+  document.getElementById("applause-btn").onclick = () => wio.playSound("applause");
 </script>
 ```

@@ -3,7 +3,19 @@ import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
 import { readS3File } from "../repositories/s3.repository";
 
-const Sounds = Type.Union([Type.Literal("pop"), Type.Literal("fart")]);
+const Sounds = Type.Union([
+  Type.Literal("alert"),
+  Type.Literal("applause"),
+  Type.Literal("click"),
+  Type.Literal("coin"),
+  Type.Literal("crickets"),
+  Type.Literal("error"),
+  Type.Literal("message"),
+  Type.Literal("notification"),
+  Type.Literal("pop"),
+  Type.Literal("success"),
+  Type.Literal("switch"),
+]);
 
 const PlaysoundBody = Type.Object({
   sound: Sounds,
