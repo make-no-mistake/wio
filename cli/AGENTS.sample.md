@@ -14,6 +14,9 @@ SdkToolIndex:
   - renderMarkdown
   - ask
   - playSound
+  - cookies.read
+  - cookies.write
+  - cookies.delete
   - ws.on
   - ws.emit
   - ws.onConnect
@@ -65,6 +68,36 @@ playSound:
     - pop
     - success
     - switch
+
+cookies:
+  description:
+    Read, write, and delete site cookies through the WIO SDK.
+
+  methods:
+    cookies.read:
+      description:
+        Read a cookie by name.
+      signature:
+        wio.cookies.read({ name: string }) -> Promise<{ value: string | null, error?: string }>
+      usage:
+        const result = await wio.cookies.read({ name: "user" })
+        console.log(result.value)
+
+    cookies.write:
+      description:
+        Write a cookie value by name.
+      signature:
+        wio.cookies.write({ name: string, value: string }) -> Promise<{ error?: string }>
+      usage:
+        await wio.cookies.write({ name: "user", value: "username" })
+
+    cookies.delete:
+      description:
+        Delete a cookie by name.
+      signature:
+        wio.cookies.delete({ name: string }) -> Promise<{ error?: string }>
+      usage:
+        await wio.cookies.delete({ name: "user" })
 
 websocket:
   description:
