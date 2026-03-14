@@ -36,7 +36,7 @@ export class WioCookieImpl implements WioCookies {
 
   async delete(payload: WioCookiePayload): Promise<WioCookieResponse> {
     const res = await fetch(`${COOKIE_PATH}/delete`, {
-      method: "DELETE",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
