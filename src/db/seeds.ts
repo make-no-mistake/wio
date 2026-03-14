@@ -82,18 +82,22 @@ const files = [
   },
 ];
 
-const global_sounds = [
-  {
-    file_name: "pop.mp3",
-    mimetype: "audio/mpeg",
-    path: `${static_dir}/sounds/pop.mp3`,
-  },
-  {
-    file_name: "fart.mp3",
-    mimetype: "audio/mpeg",
-    path: `${static_dir}/sounds/fart.mp3`,
-  },
-];
+const sounds_dir = `${static_dir}/sounds`;
+
+async function getGlobalSounds() {
+  const glob = new Bun.Glob("*.mp3");
+  const sounds: { file_name: string; mimetype: string; path: string }[] = [];
+
+  for await (const file_name of glob.scan({ cwd: sounds_dir })) {
+    sounds.push({
+      file_name,
+      mimetype: "audio/mpeg",
+      path: `${sounds_dir}/${file_name}`,
+    });
+  }
+
+  return sounds;
+}
 
 const relations = [
   {
@@ -209,6 +213,8 @@ async function seedRelations() {
 }
 
 async function seedGlobalSounds() {
+  const global_sounds = await getGlobalSounds();
+
   for (const file of global_sounds) {
     const s3Path = `sounds/${file.file_name}`;
     const file_s3 = s3.file(s3Path);
