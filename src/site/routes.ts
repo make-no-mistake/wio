@@ -8,6 +8,7 @@ import { markdownRoutes } from "../markdown/routes";
 import { playSoundRoutes } from "../play_sound/routes";
 import { dbRoutes } from "./db/routes";
 import { findSiteByName } from "../repositories/site.repository";
+import { cookieRoutes } from "../cookies/routes";
 
 const SiteParams = Type.Object({
   site: Type.String(),
@@ -67,6 +68,7 @@ export async function siteRoutes(fastify: FastifyInstance) {
   await fastify.register(dbRoutes, { prefix: "/db" });
   await fastify.register(markdownRoutes, { prefix: "/markdown" });
   await fastify.register(playSoundRoutes, { prefix: "/playsound" });
+  await app.register(cookieRoutes, { prefix: "/cookies" });
 
   app.get("/wio.js", async (_, reply) => {
     const result = await transpileSDK();

@@ -4,6 +4,7 @@ import { WioWebSocket } from "./websockets";
 import { ask } from "./ai";
 import { playSound } from "./play_sound";
 import { openModal } from "./helpers/modal";
+import { WioCookieImpl } from "./cookies";
 import "./webcomponents";
 
 export default class wio {
@@ -13,4 +14,5 @@ export default class wio {
   static renderMarkdown = renderMarkdown;
   static playSound = playSound;
   static openModal = openModal;
+  static cookies = new WioCookieImpl();
 }
