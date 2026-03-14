@@ -6,7 +6,7 @@
 - **Instant deployment**: Sites are deployed instantly with zero configuration.
 - **AI-agent-powered**: All development is powered by an AI agent.
 
-Wio provides a [managed database](https://wio.onl/docs/features/database), [websockets](https://wio.onl/docs/features/websockets), [observability](https://wio.onl/docs/features/observability), [markdown renderer](https://wio.onl/docs/features/markdown-renderer), [sound player](https://wio.onl/docs/features/sound-player), and [LLM API](https://wio.onl/docs/features/llm-api). Sites using Wio rely on the [SDK](https://wio.onl/docs/sdk) to interface the backend services provided by Wio. The development of sites is meant to be fully AI driven, requiring no human-written code.
+Wio provides a [managed database](https://wio.onl/docs/features/database), [websockets](https://wio.onl/docs/features/websockets), [observability](https://wio.onl/docs/features/observability), [markdown renderer](https://wio.onl/docs/features/markdown-renderer), [sound player](https://wio.onl/docs/features/sound-player), and [LLM API](https://wio.onl/docs/features/llm-api). Sites using Wio rely on the [SDK](https://wio.onl/docs/sdk) to interface the backend services provided by Wio, including [additional SDK features](https://wio.onl/docs/sdk#additional-sdk-features). The development of sites is meant to be fully AI driven, requiring no human-written code.
 
 ## Getting Started
 
