@@ -92,4 +92,5 @@ This shows whether your config file, `index.html`, `AGENTS.md`, and login creden
 - Learn about the [Database](/docs/features/database) query builder
 - Add [real-time features](/docs/features/websockets) with WebSockets
 - Integrate [AI responses](/docs/features/llm-api) into your app
+- Store [site cookies](/docs/features/cookies) through the SDK
 - See the full [SDK Reference](/docs/sdk)

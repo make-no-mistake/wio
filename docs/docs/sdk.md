@@ -22,6 +22,7 @@ The Wio SDK is a client-side JavaScript module that provides access to all Wio p
 | `wio.ws` | `WioWebSocket` | WebSocket client instance |
 | `wio.renderMarkdown(md)` | `(string) => Promise<string>` | Render markdown to HTML |
 | `wio.playSound(sound)` | `(string) => Promise<void>` | Play a sound for all users |
+| `wio.cookies` | `WioCookies` | Read, write, and delete site cookies |
 | `wio.openModal(id)` | `(string) => void` | Open a `<wio-modal>` by ID |
 
 ---
@@ -243,6 +244,55 @@ The sound is broadcast via WebSockets, so every visitor hears it simultaneously.
 
 ---
 
+## Cookies — `wio.cookies`
+
+Read, write, and delete site-specific cookies through the SDK.
+
+Cookies written by Wio are scoped per site name, use the `/` path, expire after 7 days, and are set as `HttpOnly`, `Secure`, and `SameSite=Lax`.
+
+### `wio.cookies.read({ name })`
+
+Read a cookie by name.
+
+```ts
+const result = await wio.cookies.read({ name: "theme" });
+console.log(result.value);
+```
+
+**Parameters:**
+- `name` (`string`) — Cookie name
+
+**Returns:** `Promise<{ value: string | null, error?: string }>`
+
+### `wio.cookies.write({ name, value })`
+
+Write a cookie value by name.
+
+```ts
+await wio.cookies.write({ name: "theme", value: "dark" });
+```
+
+**Parameters:**
+- `name` (`string`) — Cookie name
+- `value` (`string`) — Cookie value
+
+**Returns:** `Promise<{ error?: string }>`
+
+### `wio.cookies.delete({ name })`
+
+Delete a cookie by name.
+
+```ts
+await wio.cookies.delete({ name: "theme" });
+```
+
+**Parameters:**
+- `name` (`string`) — Cookie name
+
+**Returns:** `Promise<{ error?: string }>`
+
+---
+
 ## Web Components
 
 The SDK registers two custom HTML elements.
@@ -291,4 +341,4 @@ Style via `::part(overlay)` and `::part(modal)` CSS selectors.
 
 ## Additional SDK Features
 
-This section is intentionally left blank for future SDK documentation updates.
+This section is reserved for future SDK additions.

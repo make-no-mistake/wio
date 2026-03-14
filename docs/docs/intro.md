@@ -6,7 +6,7 @@ title: Introduction
 
 # Wio
 
-Wio is a **backend-as-a-service platform** for developing web applications with AI agents. It provides a [managed database](/docs/features/database), [real-time websockets](/docs/features/websockets), [LLM API](/docs/features/llm-api), [markdown rendering](/docs/features/markdown-renderer), [sound playback](/docs/features/sound-player), and instant deployment — all accessible through a lightweight client SDK.
+Wio is a **backend-as-a-service platform** for developing web applications with AI agents. It provides a [managed database](/docs/features/database), [real-time websockets](/docs/features/websockets), [LLM API](/docs/features/llm-api), [markdown rendering](/docs/features/markdown-renderer), [sound playback](/docs/features/sound-player), [site cookies](/docs/features/cookies), and instant deployment — all accessible through a lightweight client SDK.
 
 The development workflow is designed to be fully AI-driven. You scaffold a project with the CLI, point an AI coding agent at it, and deploy with a single command. No server configuration, no build pipelines, no infrastructure management.
 
@@ -27,6 +27,7 @@ Your app's HTML, CSS, and JS files are uploaded and served from Wio's infrastruc
 | [LLM API](/docs/features/llm-api) | `wio.ask()` | Server-side AI text generation |
 | [Markdown](/docs/features/markdown-renderer) | `wio.renderMarkdown()` | Server-side markdown to HTML conversion |
 | [Sound Player](/docs/features/sound-player) | `wio.playSound()` | Broadcast sound effects to all connected users |
+| [Cookies](/docs/features/cookies) | `wio.cookies` | Site-scoped cookie storage via the SDK |
 
 ## Documentation Structure
 
