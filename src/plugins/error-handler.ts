@@ -6,6 +6,10 @@ import type {
 } from "fastify";
 
 export function registerErrorHandler(fastify: FastifyInstance) {
+  fastify.setNotFoundHandler(() => {
+    throw fastify.httpErrors.notFound();
+  });
+
   fastify.setErrorHandler(
     (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
       if (!request.headers.accept?.includes("text/html"))
