@@ -17,7 +17,11 @@ export async function runRegister(): Promise<void> {
     const command = isDarwin ? "open" : isLinux ? "xdg-open" : null;
 
     if (command) {
-      Bun.spawn([command, REGISTER_URL]);
+      const { spawn } = await import("child_process");
+      spawn(command, [REGISTER_URL], {
+        detached: true,
+        stdio: "ignore",
+      }).unref();
     } else {
       printInfo("Please open the link manually in your browser.");
     }
