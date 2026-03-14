@@ -237,7 +237,7 @@ Play a sound effect for **all connected users** in the current site room.
 await wio.playSound("pop");
 ```
 
-**Available sounds:** `pop`, `fart`
+**Available sounds:** `alert`, `applause`, `click`, `coin`, `crickets`, `error`, `message`, `notification`, `pop`, `success`, `switch`
 
 The sound is broadcast via WebSockets, so every visitor hears it simultaneously.
 

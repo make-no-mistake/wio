@@ -54,7 +54,17 @@ playSound:
   example:
     await wio.playSound("pop")
   availableSounds:
+    - alert
+    - applause
+    - click
+    - coin
+    - crickets
+    - error
+    - message
+    - notification
     - pop
+    - success
+    - switch
 
 websocket:
   description:
