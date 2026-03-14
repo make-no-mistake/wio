@@ -286,3 +286,9 @@ wio.openModal("my-modal");
 ```
 
 Style via `::part(overlay)` and `::part(modal)` CSS selectors.
+
+---
+
+## Additional SDK Features
+
+This section is intentionally left blank for future SDK documentation updates.
