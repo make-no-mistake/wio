@@ -7,7 +7,7 @@ import { llmRoutes } from "../llm/routes";
 import { markdownRoutes } from "../markdown/routes";
 import { playSoundRoutes } from "../play_sound/routes";
 import { dbRoutes } from "./db/routes";
-import { findSiteByName } from "../repositories/site.repository";
+import { getSiteByName } from "../repositories/site.repository";
 import { cookieRoutes } from "../cookies/routes";
 
 const SiteParams = Type.Object({
@@ -32,7 +32,7 @@ export async function siteRoutes(fastify: FastifyInstance) {
   await app.addHook("onRequest", async (request, reply) => {
     // TODO: The site lookup should be cashed to avoid a database read on every request.
     // @ts-expect-error: The presence of the site param is enforced by the type provider.
-    const site = await findSiteByName(request.params.site);
+    const site = await getSiteByName(request.params.site);
 
     // This rejects any request to any site route for which a site is invalid.
     if (!site) throw fastify.httpErrors.notFound();
