@@ -3,7 +3,7 @@ import type { FastifyInstance } from "fastify";
 import { Socket, type DefaultEventsMap } from "socket.io";
 import { ManagedSocket } from "./managed-socket";
 import { extractLowestLevelDomain } from "../helpers/extractLowestLevelDomain";
-import { findSiteByName } from "../repositories/site.repository";
+import { getSiteByName } from "../repositories/site.repository";
 import assert from "node:assert";
 import type { Site } from "../repositories/site.repository";
 
@@ -32,7 +32,7 @@ export async function initFastifySocket(fastify: FastifyInstance) {
     const siteId = extractLowestLevelDomain(host);
     assert(siteId);
 
-    socket.data.site = await findSiteByName(siteId);
+    socket.data.site = await getSiteByName(siteId);
 
     next();
   });
