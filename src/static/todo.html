@@ -493,8 +493,8 @@
       // ── Bootstrap: load existing todos from the database ──
       // ── Flatten a raw DB record into the shape the UI expects ──
       function flattenRecord(record) {
-        const { id, data, created_at } = record;
-        return { id, ...data, created_at };
+        // The SDK now returns flattened records
+        return record;
       }
 
       async function loadTodos() {

@@ -24,21 +24,21 @@ describe("buildBaseQuery", () => {
 describe("buildWhereClause", () => {
   test("builds equality conditions for simple key-value pairs", () => {
     const result = buildWhereClause({ name: "general", id: 1 });
-    expect(result).toBe("data->>'name' = 'general' AND data->>'id' = 1");
+    expect(result).toBe("data->>'name' = 'general' AND id = 1");
   });
 
   test("builds OR combinator", () => {
     const result = buildWhereClause({
       or: [{ name: "general" }, { id: 1 }],
     });
-    expect(result).toBe("(data->>'name' = 'general' OR data->>'id' = 1)");
+    expect(result).toBe("(data->>'name' = 'general' OR id = 1)");
   });
 
   test("builds AND combinator", () => {
     const result = buildWhereClause({
       and: [{ name: "general" }, { id: 1 }],
     });
-    expect(result).toBe("(data->>'name' = 'general' AND data->>'id' = 1)");
+    expect(result).toBe("(data->>'name' = 'general' AND id = 1)");
   });
 
   test("builds NOT combinator", () => {
@@ -51,7 +51,7 @@ describe("buildWhereClause", () => {
       or: [{ id: { gt: 15 } }, { id: { lte: 10 } }, { accessed: true }],
     });
     expect(result).toBe(
-      "(((data->>'id')::numeric > 15) OR ((data->>'id')::numeric <= 10) OR data->>'accessed' = true)",
+      "(((id)::numeric > 15) OR ((id)::numeric <= 10) OR data->>'accessed' = true)",
     );
   });
 });
@@ -69,7 +69,7 @@ describe("buildSelectQuery", () => {
       where: { name: "general" },
     });
     expect(result).toBe(
-      "SELECT data->>'name' AS \"name\", id  FROM relations WHERE relation_name = 'channels' AND site_id = 2 AND data->>'name' = 'general' ORDER BY data->>'name' DESC, data->>'description' ASC LIMIT 10 OFFSET 12;",
+      "SELECT data->>'name' AS \"name\" FROM relations WHERE relation_name = 'channels' AND site_id = 2 AND data->>'name' = 'general' ORDER BY data->'name' DESC, data->'description' ASC LIMIT 10 OFFSET 12;",
     );
   });
 
@@ -88,7 +88,7 @@ describe("buildSelectQuery", () => {
       limit: 5,
     });
     expect(result).toBe(
-      "SELECT data->>'email' AS \"email\", data->>'name' AS \"name\", id  FROM relations WHERE relation_name = 'users' AND site_id = 3 LIMIT 5;",
+      "SELECT data->>'email' AS \"email\", data->>'name' AS \"name\" FROM relations WHERE relation_name = 'users' AND site_id = 3 LIMIT 5;",
     );
   });
 
@@ -98,7 +98,43 @@ describe("buildSelectQuery", () => {
       offset: 20,
     });
     expect(result).toBe(
-      "SELECT data->>'email' AS \"email\", id  FROM relations WHERE relation_name = 'users' AND site_id = 1 OFFSET 20;",
+      "SELECT data->>'email' AS \"email\" FROM relations WHERE relation_name = 'users' AND site_id = 1 OFFSET 20;",
+    );
+  });
+
+  test("handles operator edge cases like like, neq, lt, gte", () => {
+    const result = buildWhereClause({
+      and: [
+        { name: { like: "%test%" } },
+        { status: { neq: "deleted" } },
+        { count: { lt: 5 } },
+      ],
+    });
+    expect(result).toBe(
+      "((data->>'name' LIKE '%test%') AND (data->>'status' != 'deleted') AND ((data->>'count')::numeric < 5))",
+    );
+  });
+
+  test("throws error on unknown operator", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(() => buildWhereClause({ name: { foo: "bar" } as any })).toThrow(
+      "Unknown operator: foo",
+    );
+  });
+
+  test("ignores empty and/or inner arrays", () => {
+    const result = buildWhereClause({ and: [], or: [], not: {} });
+    expect(result).toBe("");
+  });
+
+  test("buildSelectQuery gracefully handles empty offset and limit 0", () => {
+    const result = buildSelectQuery("users", 1, {
+      select: ["email"],
+      limit: 0,
+      offset: 0,
+    });
+    expect(result).toBe(
+      "SELECT data->>'email' AS \"email\" FROM relations WHERE relation_name = 'users' AND site_id = 1 LIMIT 0 OFFSET 0;",
     );
   });
 });

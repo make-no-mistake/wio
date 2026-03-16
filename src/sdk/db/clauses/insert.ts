@@ -6,7 +6,7 @@ export class InsertClause<T = JsonValue> extends Clause<T> {
 
   constructor(relationName: string, data: Partial<T> | Partial<T>[]) {
     super(relationName);
-    this._payload = { data: Array.isArray(data) ? data : [data] };
+    this._payload = { data };
   }
 
   payload(): InsertPayload<T> {

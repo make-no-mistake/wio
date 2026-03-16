@@ -7,7 +7,6 @@ export declare interface RelationRecord {
   site_id: number;
   relation_name: string;
   data: Record<string, unknown>;
-  created_at: Date;
 }
 
 export declare type RecordInsertPayload = Record<string, unknown>;
@@ -130,7 +129,7 @@ export class RelationRepositoryImpl implements RelationRepository {
     try {
       inserted = await sql<RelationRecord[]>`
       INSERT INTO relations ${sql(rows)}
-      RETURNING id, site_id, relation_name, data, created_at`;
+      RETURNING id, site_id, relation_name, data`;
     } catch (error) {
       return {
         success: false,
@@ -157,7 +156,7 @@ export class RelationRepositoryImpl implements RelationRepository {
             WHERE id = ${update.id}
             AND site_id = ${siteId}
             AND relation_name = ${relation}
-            RETURNING id, site_id, relation_name, data, created_at`;
+            RETURNING id, site_id, relation_name, data`;
           if (result[0]) updated.push(result[0]);
         }
       });
@@ -183,7 +182,7 @@ export class RelationRepositoryImpl implements RelationRepository {
       const isWildcard =
         payload.select.length === 1 && payload.select[0] === "*";
 
-      const records = rows.map((row: Record<string, unknown>) => {
+      const records = rows.map((row: RelationRecord) => {
         if (isWildcard) {
           row.data.id = row.id;
           return row.data;

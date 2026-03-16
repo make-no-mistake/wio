@@ -1,7 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
-import { RelationRepositoryImpl } from "../../repositories/relation.repository";
+import {
+  RelationRepositoryImpl,
+  type RelationRecord,
+} from "../../repositories/relation.repository";
 
 export async function dbRoutes(fastify: FastifyInstance) {
   const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
@@ -108,19 +111,17 @@ export async function dbRoutes(fastify: FastifyInstance) {
           relation: Type.String(),
           site: Type.String(),
         }),
-        body: Type.Array(Type.Record(Type.String(), Type.Unknown())),
+        body: Type.Union([
+          Type.Record(Type.String(), Type.Unknown()),
+          Type.Array(Type.Record(Type.String(), Type.Unknown())),
+        ]),
         response: {
           200: Type.Object({
             success: Type.Boolean(),
-            records: Type.Array(
-              Type.Object({
-                id: Type.Number(),
-                site_id: Type.Number(),
-                relation_name: Type.String(),
-                data: Type.Record(Type.String(), Type.Unknown()),
-                created_at: Type.Any(),
-              }),
-            ),
+            records: Type.Union([
+              Type.Record(Type.String(), Type.Unknown()),
+              Type.Array(Type.Record(Type.String(), Type.Unknown())),
+            ]),
           }),
           500: Type.Object({
             success: Type.Boolean(),
@@ -130,10 +131,13 @@ export async function dbRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const isArray = Array.isArray(request.body);
+      const dataForDb = isArray ? request.body : [request.body];
+
       const result = await new RelationRepositoryImpl().insertRelations(
         request.params.relation,
         request.site!.id,
-        request.body,
+        dataForDb as Record<string, unknown>[],
       );
 
       if (!result.success)
@@ -141,9 +145,14 @@ export async function dbRoutes(fastify: FastifyInstance) {
           .status(500)
           .send({ success: false, error: String(result.error) });
 
+      const formattedRecords = result.records!.map((r: RelationRecord) => ({
+        ...r.data,
+        id: r.id,
+      }));
+
       return reply.status(200).send({
         success: true,
-        records: result.records!,
+        records: isArray ? formattedRecords : formattedRecords[0]!,
       });
     },
   );
@@ -156,24 +165,25 @@ export async function dbRoutes(fastify: FastifyInstance) {
           relation: Type.String(),
           site: Type.String(),
         }),
-        body: Type.Array(
+        body: Type.Union([
           Type.Object({
             id: Type.Number(),
             data: Type.Record(Type.String(), Type.Unknown()),
           }),
-        ),
+          Type.Array(
+            Type.Object({
+              id: Type.Number(),
+              data: Type.Record(Type.String(), Type.Unknown()),
+            }),
+          ),
+        ]),
         response: {
           200: Type.Object({
             success: Type.Boolean(),
-            records: Type.Array(
-              Type.Object({
-                id: Type.Number(),
-                site_id: Type.Number(),
-                relation_name: Type.String(),
-                data: Type.Record(Type.String(), Type.Unknown()),
-                created_at: Type.Any(),
-              }),
-            ),
+            records: Type.Union([
+              Type.Record(Type.String(), Type.Unknown()),
+              Type.Array(Type.Record(Type.String(), Type.Unknown())),
+            ]),
           }),
           500: Type.Object({
             success: Type.Boolean(),
@@ -183,10 +193,13 @@ export async function dbRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const isArray = Array.isArray(request.body);
+      const dataForDb = isArray ? request.body : [request.body];
+
       const result = await new RelationRepositoryImpl().updateRelations(
         request.params.relation,
         request.site!.id,
-        request.body,
+        dataForDb as { id: number; data: Record<string, unknown> }[],
       );
 
       if (!result.success)
@@ -194,9 +207,14 @@ export async function dbRoutes(fastify: FastifyInstance) {
           .status(500)
           .send({ success: false, error: String(result.error) });
 
+      const formattedRecords = result.records!.map((r: RelationRecord) => ({
+        ...r.data,
+        id: r.id,
+      }));
+
       return reply.status(200).send({
         success: true,
-        records: result.records!,
+        records: isArray ? formattedRecords : formattedRecords[0]!,
       });
     },
   );

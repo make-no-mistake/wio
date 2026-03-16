@@ -21,6 +21,10 @@ function refOp(op: string) {
 }
 
 function refJsonCol(col: string) {
+  if (col === "id") {
+    return col;
+  }
+
   return `data->>'${col}'`;
 }
 
@@ -89,8 +93,14 @@ export function buildSelectQuery(
   const isWildcard = payload.select.length === 1 && payload.select[0] === "*";
   const selectExpr = isWildcard
     ? "data, id"
-    : payload.select.map((col) => `data->>'${col}' AS "${col}"`).join(", ") +
-      ", id ";
+    : payload.select
+        .map((col) => {
+          if (col === "id") {
+            return `${col} AS "${col}"`;
+          }
+          return `data->>'${col}' AS "${col}"`;
+        })
+        .join(", ");
 
   let query = `SELECT ${selectExpr} FROM relations WHERE relation_name = '${relation.replace(/'/g, "''")}' AND site_id = ${siteId}`;
 
@@ -100,10 +110,10 @@ export function buildSelectQuery(
   }
 
   if (payload.order_by && payload.order_by.length > 0) {
-    const orderParts = payload.order_by.map(
-      (o) =>
-        `data->>'${o.column}' ${o.order.toUpperCase() === "DESC" ? "DESC" : "ASC"}`,
-    );
+    const orderParts = payload.order_by.map((o) => {
+      const colExpr = o.column === "id" ? o.column : `data->'${o.column}'`;
+      return `${colExpr} ${o.order.toUpperCase() === "DESC" ? "DESC" : "ASC"}`;
+    });
     query += ` ORDER BY ${orderParts.join(", ")}`;
   }
 

@@ -10,10 +10,7 @@ export class UpdateClause<T = JsonValue> extends Clause<T> {
     data: Partial<T> | Partial<T>[],
   ) {
     super(relationName);
-    this._payload = {
-      id: Array.isArray(id) ? id : [id],
-      data: Array.isArray(data) ? data : [data],
-    };
+    this._payload = { id, data };
   }
 
   payload(): UpdatePayload<T> {

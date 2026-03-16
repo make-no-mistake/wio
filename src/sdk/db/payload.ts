@@ -46,12 +46,12 @@ export interface OrderByEntry {
 }
 
 export interface InsertPayload<T> {
-  data: Partial<T>[];
+  data: Partial<T> | Partial<T>[];
 }
 
 export interface UpdatePayload<T> {
-  id: number[];
-  data: Partial<T>[];
+  id: number | number[];
+  data: Partial<T> | Partial<T>[];
 }
 
 export interface DeletePayload {

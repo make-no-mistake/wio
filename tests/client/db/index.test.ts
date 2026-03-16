@@ -16,7 +16,7 @@ describe("delete", () => {
 describe("insert", () => {
   test("insert single", () => {
     const clause = useRelation("test").insert({ name: "Alice" });
-    expect(clause.payload()).toEqual({ data: [{ name: "Alice" }] });
+    expect(clause.payload()).toEqual({ data: { name: "Alice" } });
   });
 
   test("insert multiple", () => {
@@ -33,7 +33,7 @@ describe("insert", () => {
 describe("update", () => {
   test("update single", () => {
     const clause = useRelation("test").update(1, { name: "Updated" });
-    expect(clause.payload()).toEqual({ id: [1], data: [{ name: "Updated" }] });
+    expect(clause.payload()).toEqual({ id: 1, data: { name: "Updated" } });
   });
 
   test("update multiple", () => {
