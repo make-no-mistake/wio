@@ -1,6 +1,11 @@
 import { openModal } from "../helpers/modal";
 
-export class WioButton extends HTMLElement {
+const BaseElement =
+  typeof HTMLElement !== "undefined"
+    ? HTMLElement
+    : (class {} as typeof HTMLElement);
+
+export class WioButton extends BaseElement {
   private shadow: ShadowRoot;
 
   constructor() {
@@ -42,6 +47,9 @@ export class WioButton extends HTMLElement {
   }
 }
 
-if (!customElements.get("wio-button")) {
+if (
+  typeof customElements !== "undefined" &&
+  !customElements.get("wio-button")
+) {
   customElements.define("wio-button", WioButton);
 }

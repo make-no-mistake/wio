@@ -1,4 +1,9 @@
-export class WioModal extends HTMLElement {
+const BaseElement =
+  typeof HTMLElement !== "undefined"
+    ? HTMLElement
+    : (class {} as typeof HTMLElement);
+
+export class WioModal extends BaseElement {
   private shadow: ShadowRoot;
   private overlay!: HTMLDivElement;
 
@@ -108,6 +113,6 @@ export class WioModal extends HTMLElement {
   }
 }
 
-if (!customElements.get("wio-modal")) {
+if (typeof customElements !== "undefined" && !customElements.get("wio-modal")) {
   customElements.define("wio-modal", WioModal);
 }

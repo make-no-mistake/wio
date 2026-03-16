@@ -18,6 +18,12 @@ function isDeletePayload(payload: Payload<unknown>): boolean {
   return "ids" in payload;
 }
 
+export let wioFetch: typeof fetch = globalThis.fetch;
+
+export function setFetch(customFetch: typeof fetch): void {
+  wioFetch = customFetch;
+}
+
 export async function request<T>(
   relationName: string,
   payload: Payload<T>,
@@ -42,15 +48,12 @@ async function selectRequest<T>(
   const params = new URLSearchParams();
   params.set("payload", JSON.stringify(payload));
 
-  const res = await fetch(
+  const res = await wioFetch(
     `${DB_ENDPOINT}/${relationName}?${params.toString()}`,
   );
 
   if (!res.ok) {
-    const body = (await res.json().catch(() => null)) as Record<
-      string,
-      string
-    > | null;
+    const body = await res.json().catch(() => null);
     throw new Error(body?.error ?? `Select failed (${res.status})`);
   }
 
@@ -68,14 +71,27 @@ async function mutationRequest<T>(
   if (method === "POST" && "data" in payload) {
     body = payload.data;
   } else if (method === "PATCH" && "id" in payload && "data" in payload) {
-    const ids = (payload as { id: number[]; data: Partial<T>[] }).id;
-    const data = (payload as { id: number[]; data: Partial<T>[] }).data;
-    body = ids.map((id: number, i: number) => ({ id, data: data[i] }));
+    const payloadId = (
+      payload as { id: number | number[]; data: Partial<T> | Partial<T>[] }
+    ).id;
+    const payloadData = (
+      payload as { id: number | number[]; data: Partial<T> | Partial<T>[] }
+    ).data;
+    if (Array.isArray(payloadId) && Array.isArray(payloadData)) {
+      body = payloadId.map((id: number, i: number) => ({
+        id,
+        data: payloadData[i],
+      }));
+    } else if (!Array.isArray(payloadId) && !Array.isArray(payloadData)) {
+      body = { id: payloadId, data: payloadData };
+    } else {
+      throw new Error("Mismatched id and data arrays in update payload");
+    }
   } else {
     body = payload;
   }
 
-  const res = await fetch(`${DB_ENDPOINT}/${relationName}`, {
+  const res = await wioFetch(`${DB_ENDPOINT}/${relationName}`, {
     method,
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -101,7 +117,7 @@ async function deleteRequest<T>(
 ): Promise<T> {
   const ids = (payload as { ids: number[] }).ids.join(",");
 
-  const res = await fetch(`${DB_ENDPOINT}/${relationName}?ids=${ids}`, {
+  const res = await wioFetch(`${DB_ENDPOINT}/${relationName}?ids=${ids}`, {
     method: "DELETE",
   });
 
@@ -113,6 +129,6 @@ async function deleteRequest<T>(
     throw new Error(body?.error ?? `Delete failed (${res.status})`);
   }
 
-  const body = (await res.json()) as { success: boolean; deleted_ids: T };
-  return body.deleted_ids;
+  const body = (await res.json()) as T;
+  return body;
 }
