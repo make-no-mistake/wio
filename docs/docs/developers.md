@@ -122,7 +122,6 @@ Uses ESLint and Prettier.
 │   │   ├── websockets/       # Socket.IO client wrapper
 │   │   ├── markdown/         # Markdown rendering client
 │   │   ├── play_sound/       # Sound playback client
-│   │   ├── webcomponents/    # Custom HTML elements
 │   │   └── transpiler.ts     # Bun.build bundler for SDK
 │   ├── websocket/            # Socket.IO server (rooms, connections)
 │   ├── llm/                  # LLM server (Gemma model proxy)

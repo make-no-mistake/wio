@@ -23,7 +23,6 @@ The Wio SDK is a client-side JavaScript module that provides access to all Wio p
 | `wio.renderMarkdown(md)` | `(string) => Promise<string>` | Render markdown to HTML |
 | `wio.playSound(sound)` | `(string) => Promise<void>` | Play a sound for all users |
 | `wio.cookies` | `WioCookies` | Read, write, and delete site cookies |
-| `wio.openModal(id)` | `(string) => void` | Open a `<wio-modal>` by ID |
 
 ---
 
@@ -290,54 +289,6 @@ await wio.cookies.delete({ name: "theme" });
 - `name` (`string`) — Cookie name
 
 **Returns:** `Promise<{ error?: string }>`
-
----
-
-## Web Components
-
-The SDK registers two custom HTML elements.
-
-### `<wio-button>`
-
-A styled button with optional modal integration.
-
-```html
-<wio-button>Click me</wio-button>
-<wio-button modal="my-modal">Open Modal</wio-button>
-```
-
-**Attributes:**
-- `modal` — ID of a `<wio-modal>` to open on click
-
-Style the inner button via the `::part(button)` CSS selector.
-
-### `<wio-modal>`
-
-A modal dialog with overlay, close-on-escape, and close-on-backdrop-click.
-
-```html
-<wio-modal id="my-modal">
-  <h2>Modal Content</h2>
-  <p>This is inside the modal.</p>
-</wio-modal>
-```
-
-**Attributes:**
-- `open` — When present, the modal is visible
-
-**Events:**
-- `wio-modal-open` — Dispatched when the modal opens
-- `wio-modal-close` — Dispatched when the modal closes
-
-**Programmatic control:**
-
-```ts
-wio.openModal("my-modal");
-```
-
-Style via `::part(overlay)` and `::part(modal)` CSS selectors.
-
----
 
 ## Additional SDK Features
 
