@@ -7,27 +7,11 @@ import {
 } from "../helpers/config";
 import { prompt } from "../helpers/input";
 import { API_URL, REGISTER_URL } from "../helpers/constants";
-import { isWioDirectory } from "../helpers/utils";
+import { isWioDirectory, openBrowser } from "../helpers/utils";
 
 export async function runRegister(): Promise<void> {
   printInfo(`Opening register page: ${REGISTER_URL}`);
-  try {
-    const isDarwin = process.platform === "darwin";
-    const isLinux = process.platform === "linux";
-    const command = isDarwin ? "open" : isLinux ? "xdg-open" : null;
-
-    if (command) {
-      const { spawn } = await import("child_process");
-      spawn(command, [REGISTER_URL], {
-        detached: true,
-        stdio: "ignore",
-      }).unref();
-    } else {
-      printInfo("Please open the link manually in your browser.");
-    }
-  } catch {
-    printInfo("Please open the link manually in your browser.");
-  }
+  await openBrowser(REGISTER_URL);
 }
 
 export async function runLogin(args: string[]): Promise<void> {

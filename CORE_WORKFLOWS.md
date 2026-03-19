@@ -70,7 +70,7 @@ After deployment:
 
 - Visit the deployed site and interact with it
 - Generate HTTP traffic and, if applicable, websocket events
-- Open the dashboard at [https://wio.onl/dashboard](https://wio.onl/dashboard)
+- Run `wio dashboard` to open the observability dashboard at [https://wio.onl/dashboard](https://wio.onl/dashboard)
 
 You should see observability data for:
 

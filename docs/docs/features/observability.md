@@ -5,7 +5,7 @@ title: Observability
 
 # Observability
 
-Wio automatically logs all platform activity to a PostgreSQL `logs` table. This includes HTTP requests, WebSocket events, AI prompts, and server lifecycle events. Site owners can view analytics through the dashboard at [wio.onl/dashboard](https://wio.onl/dashboard).
+Wio automatically logs all platform activity to a PostgreSQL `logs` table. This includes HTTP requests, WebSocket events, AI prompts, and server lifecycle events. Site owners can view analytics through the dashboard at [wio.onl/dashboard](https://wio.onl/dashboard) or by running `wio dashboard`.
 
 ## What Gets Logged
 
@@ -44,7 +44,7 @@ The `logs` table is indexed on:
 
 ## Dashboard
 
-Authenticated users can access the analytics dashboard at [`wio.onl/dashboard`](https://wio.onl/dashboard). The dashboard shows:
+Authenticated users can access the analytics dashboard by running `wio dashboard` or visiting [`wio.onl/dashboard`](https://wio.onl/dashboard). The dashboard shows:
 
 - **Total events** — All logged events with 24-hour trend
 - **Active connections** — WebSocket connections in the last hour
