@@ -12,9 +12,11 @@ import {
   CONFIG_FILE_NAME,
   type WioConfig,
 } from "../helpers/config";
-import { fetchWithAuth } from "../helpers/authentication";
+import { getAuthToken, fetchWithAuth } from "../helpers/authentication";
+import { msg } from "../helpers/messages";
 import { validateProjectName, getBaseName } from "../helpers/utils";
 import { styledInput } from "../helpers/input";
+import { padRight } from "../helpers/display";
 import { API_URL, MAX_ARCHIVE_SIZE } from "../helpers/constants";
 import {
   exists,
@@ -127,7 +129,7 @@ export async function runPush(): Promise<void> {
   }
 
   if (!config.auth?.token) {
-    printError("You are not logged in. Run: wio login <user-tag>");
+    msg.notLoggedIn();
     process.exit(1);
   }
 
@@ -213,5 +215,75 @@ export async function runStatus(): Promise<void> {
   printInfo(`  ${hasAgentsMd ? c.green("✓") : c.red("✗")} AGENTS.md`);
   printInfo(
     `  ${isLoggedIn ? c.green("✓") : c.red("✗")} Logged in${isLoggedIn ? ` as ${config.auth?.tag ?? "?"}` : ""}`,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// wio list
+// ---------------------------------------------------------------------------
+
+interface SiteEntry {
+  name: string;
+  url: string;
+}
+
+export async function runList(args: string[]): Promise<void> {
+  const jsonMode = args.includes("--json");
+
+  const token = await getAuthToken();
+  if (!token) {
+    msg.notLoggedIn();
+    process.exit(1);
+  }
+
+  let sites: SiteEntry[];
+  try {
+    const response = await fetchWithAuth(`${API_URL}/api/sites`);
+    if (!response.ok) {
+      printError(`Server error: ${response.status}`);
+      process.exit(1);
+    }
+    sites = (await response.json()) as SiteEntry[];
+  } catch {
+    msg.networkError();
+    process.exit(1);
+  }
+
+  if (jsonMode) {
+    console.log(JSON.stringify(sites, null, 2));
+    return;
+  }
+
+  if (sites.length === 0) {
+    printInfo("  No sites yet.");
+    printInfo("    Run wio init <name> to create your first site.");
+    return;
+  }
+
+  let tagSuffix = "";
+  try {
+    const cfg = await readWioConfig();
+    const tag = cfg.auth?.tag ?? "";
+    tagSuffix = tag.length >= 4 ? `···${tag.slice(-4)}` : tag;
+  } catch {
+    // ignore
+  }
+
+  const header = `  ${sites.length} site${sites.length === 1 ? "" : "s"}${tagSuffix ? `  tag ${tagSuffix}` : ""}`;
+  printInfo(header);
+  printInfo(
+    `  ${c.dim("─────────────────────────────────────────────────────")}`,
+  );
+
+  const nameWidth = Math.max(...sites.map((s) => s.name.length), 4);
+
+  for (const site of sites) {
+    const urlStr = c.blue(site.url);
+    const name = padRight(site.name, nameWidth);
+    console.log(`  ${name}  ${urlStr}`);
+  }
+
+  printInfo(
+    `  ${c.dim("─────────────────────────────────────────────────────")}`,
   );
 }

@@ -60,6 +60,23 @@ After a successful push, the site is live at `https://<project-name>.wio.onl`.
 Requires authentication. Run `wio login` first.
 :::
 
+### `wio list`
+
+List all sites owned by the authenticated user.
+
+```bash
+wio list
+wio list --json
+```
+
+Unlike `wio status`, this is not tied to the current directory — it shows every site on your account along with its live/offline status and last pushed timestamp.
+
+| Flag | Description |
+|------|-------------|
+| `--json` | Output as JSON |
+
+Requires authentication. Run `wio login <user-tag>` first.
+
 ### `wio register`
 
 Open the Wio registration page to create a new account.

@@ -7,6 +7,7 @@ import {
 } from "../helpers/config";
 import { prompt } from "../helpers/input";
 import { API_URL, REGISTER_URL } from "../helpers/constants";
+import { msg } from "../helpers/messages";
 import { isWioDirectory, openBrowser } from "../helpers/utils";
 
 export async function runRegister(): Promise<void> {
@@ -29,13 +30,13 @@ export async function runLogin(args: string[]): Promise<void> {
       tag = await prompt("User tag: ");
       if (!tag) {
         printError("Error: user tag is required");
-        printInfo("Visit https://wio.onl/register to get a user tag.");
+        msg.registerHint();
         process.exit(1);
       }
     } else {
       printError("Error: user tag is required");
       printError("Usage: wio login <user-tag>");
-      printInfo("Visit https://wio.onl/register to get a user tag.");
+      msg.registerHint();
       process.exit(1);
     }
   }
@@ -49,7 +50,7 @@ export async function runLogin(args: string[]): Promise<void> {
 
     if (!response.ok) {
       printError("Unauthorized: user tag not recognized");
-      printInfo("Visit https://wio.onl/register to get a user tag.");
+      msg.registerHint();
       process.exit(1);
     }
 
@@ -72,7 +73,7 @@ export async function runLogout(): Promise<void> {
   try {
     const config = await readWioConfig();
     if (!config.auth?.token) {
-      printInfo("You are not logged in.");
+      msg.notLoggedIn();
       return;
     }
     const tag = config.auth.tag;
