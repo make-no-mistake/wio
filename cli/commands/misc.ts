@@ -3,16 +3,37 @@ import { getVersion, openBrowser } from "../helpers/utils";
 import { stripAnsi, padRight } from "../helpers/display";
 import { DASHBOARD_URL } from "../helpers/constants";
 
-const COMMANDS = [
-  ["init [name]", "Create new project"],
-  ["push", "Push to remote"],
-  ["register", "Create a new account"],
-  ["login <user-tag>", "Sign in"],
-  ["logout", "Sign out"],
-  ["status", "Show project + auth status"],
-  ["dashboard", "Open the observability dashboard"],
-  ["version", "Show version"],
-  ["help", "Show help"],
+const COMMAND_GROUPS = [
+  {
+    label: "Project",
+    commands: [
+      ["init [name]", "Create a new project"],
+      ["status", "Show project + auth status"],
+    ],
+  },
+  {
+    label: "Deploy",
+    commands: [
+      ["push", "Deploy current project"],
+      ["list", "List all your sites"],
+    ],
+  },
+  {
+    label: "Auth",
+    commands: [
+      ["register", "Create a new account"],
+      ["login <user-tag>", "Sign in"],
+      ["logout", "Sign out"],
+    ],
+  },
+  {
+    label: "Other",
+    commands: [
+      ["dashboard", "Open the observability dashboard"],
+      ["version", "Show version"],
+      ["help", "Show this help"],
+    ],
+  },
 ];
 
 const COMMAND_USAGE: Record<string, string[]> = {
@@ -25,7 +46,13 @@ const COMMAND_USAGE: Record<string, string[]> = {
   push: [
     "Usage: wio push",
     "",
-    "  Packages and uploads the current project to Wio.",
+    "  Packages and deploys the current project to Wio.",
+    "  Requires login. Run: wio login <user-tag>",
+  ],
+  list: [
+    "Usage: wio list [--json]",
+    "",
+    "  Lists all sites owned by the authenticated user.",
     "  Requires login. Run: wio login <user-tag>",
   ],
   register: [
@@ -54,17 +81,24 @@ const COMMAND_USAGE: Record<string, string[]> = {
 };
 
 export async function showHelp() {
-  const commands = COMMANDS;
+  const allCommands = COMMAND_GROUPS.flatMap((g) => g.commands);
   const cmdWidth = Math.max(
-    ...commands.map(([cmd]) => stripAnsi(cmd ?? "").length),
+    ...allCommands.map(([cmd]) => stripAnsi(cmd ?? "").length),
   );
-  printInfo("Commands:");
-  for (const [cmd, desc] of commands) {
-    const padded = padRight(c.blue(cmd ?? ""), cmdWidth);
-    printInfo(`  ${padded}  ${desc ?? ""}`);
+
+  for (const group of COMMAND_GROUPS) {
+    printInfo(`  ${c.dim(group.label)}`);
+    for (const [cmd, desc] of group.commands) {
+      const padded = padRight(c.blue(cmd ?? ""), cmdWidth);
+      printInfo(`    ${padded}  ${desc ?? ""}`);
+    }
+    console.log();
   }
-  console.log();
-  printInfo("Visit https://wio.onl for more information.");
+
+  printInfo(
+    `  Run ${c.blue("wio <command> --help")} for usage details on any command.`,
+  );
+  printInfo("  Visit https://wio.onl/docs for full documentation.");
 }
 
 export async function showCommandHelp(cmd: string): Promise<void> {

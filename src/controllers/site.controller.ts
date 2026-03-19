@@ -1,6 +1,10 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { getS3Path } from "../helpers/storage";
-import { createSite, findSiteByName } from "../repositories/site.repository";
+import {
+  findSiteByName,
+  createSite,
+  findSitesByOwner,
+} from "../repositories/site.repository";
 import {
   clearSiteFiles,
   insertSiteFile,
@@ -16,6 +20,7 @@ import type { User } from "../repositories/user.repository";
  */
 async function findOrCreateSite(siteName: string, owner: User) {
   const existing = await findSiteByName(siteName);
+
   if (existing) {
     if (existing.owner_id !== owner.id) {
       return {
@@ -69,6 +74,12 @@ async function uploadExtractedFiles(
   }
 }
 
+/**
+ * Handles the POST /site/push endpoint. Expects a multipart form with a "name"
+ * field for the site name and a file upload containing a zip archive of the site's contents.
+ * If the site doesn't exist, it will be created. If it does exist and is owned by
+ * the user, its contents will be replaced with the uploaded archive.
+ */
 export async function push(request: FastifyRequest, reply: FastifyReply) {
   const formData = await request.file();
   if (!formData) {
@@ -98,4 +109,18 @@ export async function push(request: FastifyRequest, reply: FastifyReply) {
   return reply.code(status).send({
     site: siteName,
   });
+}
+
+/**
+ * Handles the GET /api/sites endpoint. Returns a list of sites owned by the user,
+ * including their name and URL.
+ */
+export async function listSites(request: FastifyRequest, reply: FastifyReply) {
+  const user = request.currentUser!;
+  const sites = await findSitesByOwner(user.id);
+  const result = sites.map((s) => ({
+    name: s.name,
+    url: `https://${s.name}.wio.onl`,
+  }));
+  return reply.send(result);
 }

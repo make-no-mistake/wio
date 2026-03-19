@@ -3,7 +3,7 @@ import { formatError } from "./helpers/errors";
 import { wantsHelp } from "./helpers/utils";
 import { getCliArgs } from "./helpers/runtime";
 import { runLogin, runLogout, runRegister } from "./commands/auth";
-import { runInit, runPush, runStatus } from "./commands/project";
+import { runInit, runPush, runStatus, runList } from "./commands/project";
 import {
   showHelp,
   showCommandHelp,
@@ -55,6 +55,13 @@ async function runCommand(cmd: string, args: string[]): Promise<boolean> {
         await showCommandHelp("status");
       } else {
         await runStatus();
+      }
+      break;
+    case "list":
+      if (wantsHelp(args)) {
+        await showCommandHelp("list");
+      } else {
+        await runList(args);
       }
       break;
     case "dashboard":
