@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import { getScriptDir } from "./runtime";
 import { readWioConfig } from "./config";
+import { printInfo } from "./pretty_print";
 
 export async function getVersion(): Promise<string> {
   try {
@@ -42,4 +43,24 @@ export function wantsHelp(args: string[]): boolean {
 export async function isWioDirectory() {
   const config = await readWioConfig();
   return Object.keys(config).length > 0;
+}
+
+export async function openBrowser(url: string): Promise<void> {
+  try {
+    const isDarwin = process.platform === "darwin";
+    const isLinux = process.platform === "linux";
+    const command = isDarwin ? "open" : isLinux ? "xdg-open" : null;
+
+    if (command) {
+      const { spawn } = await import("child_process");
+      spawn(command, [url], {
+        detached: true,
+        stdio: "ignore",
+      }).unref();
+    } else {
+      printInfo("Please open the link manually in your browser.");
+    }
+  } catch {
+    printInfo("Please open the link manually in your browser.");
+  }
 }
