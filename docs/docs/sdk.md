@@ -36,13 +36,21 @@ const posts = wio.useRelation("posts");
 
 See the [Database feature guide](/docs/features/database) for full details.
 
+### The `id` Field
+
+The `id` field is a special top-level database column (auto-incrementing integer), not stored inside the JSON data.
+
+- **Wildcard Selection:** `select("*")` automatically merges the `id` into the returned record objects.
+- **Explicit Selection:** `select(["id", "title"])` returns objects with `id` and `title` as top-level properties.
+- **Direct Querying:** You can query the `id` directly in the `.where()` clause (e.g., `.where({ id: { eq: 5 } })`).
+
 ### `relation.select(columns)`
 
 Starts a SELECT query. Pass `"*"` for all columns, or an array of column names.
 
 ```ts
 const rows = await posts.select("*").execute();
-const names = await posts.select(["title", "author"]).execute();
+const names = await posts.select(["id", "title", "author"]).execute();
 ```
 
 Returns a `SelectClause` with chainable methods:
@@ -58,8 +66,8 @@ Filter results using column conditions and logical operators.
 
 **Comparison operators** (`eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `like`):
 ```ts
+.where({ id: { gte: 100 } })
 .where({ age: { gte: 18 } })
-.where({ name: { like: "Al%" } })
 ```
 
 **Logical combinators** (`and`, `or`, `not`):
@@ -77,8 +85,12 @@ Filter results using column conditions and logical operators.
 
 Sort results. Default order is `"asc"`.
 
+:::warning Numeric Sorting
+User-defined data is stored as strings. `orderBy` performs string comparisons (e.g., `"95" > "100"`). For numeric sorting of user data, fetch the results, cast to `Number()`, and sort in JavaScript. Sorting by `id` works correctly as it is a numeric column.
+:::
+
 ```ts
-.orderBy("created_at", "desc")
+.orderBy("id", "desc")
 ```
 
 #### `.limit(count)` / `.offset(count)`
@@ -91,15 +103,18 @@ Paginate results.
 
 #### `.execute()`
 
-Runs the query and returns a `Promise<object[]>`.
+Runs the query and returns matching rows as a `Promise<object[]>`.
 
 ### `relation.insert(data)`
 
-Insert one or more records.
+Insert one or more records. Accepts a single object or an array of objects.
 
 ```ts
-await posts.insert({ title: "Hello", body: "World" }).execute();
-await posts.insert([
+// Returns the inserted record (with id)
+const result = await posts.insert({ title: "Hello", body: "World" }).execute();
+
+// Returns an array of inserted records
+const results = await posts.insert([
   { title: "Post 1" },
   { title: "Post 2" }
 ]).execute();
@@ -110,7 +125,10 @@ await posts.insert([
 Update records by ID. Accepts a single ID or array of IDs, and matching data.
 
 ```ts
+// Returns the updated record
 await posts.update(1, { title: "Updated" }).execute();
+
+// Returns an array of updated records
 await posts.update([1, 2], [
   { title: "First Updated" },
   { title: "Second Updated" }
@@ -119,11 +137,11 @@ await posts.update([1, 2], [
 
 ### `relation.delete(ids)`
 
-Delete records by ID.
+Delete records by ID. Returns a result object containing the status and deleted IDs.
 
 ```ts
-await posts.delete(5).execute();
-await posts.delete([1, 2, 3]).execute();
+// Returns { success: true, deleted_ids: [5] }
+const result = await posts.delete(5).execute();
 ```
 
 ---
