@@ -66,6 +66,10 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/docs
+      - /app/.git
+      - /app/deliverables
+      - /app/tests
     environment:
       - PORT=${WEB_PORT:-3000}
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/wio

@@ -1,2 +1,18 @@
 [test]
 preload = ["./tests/setup.ts"]
+
+[watch]
+ignore = [
+  "node_modules",
+  ".git",
+  "docs",
+  ".cursor",
+  ".github",
+  "agents",
+  "cli",
+  "deliverables",
+  "dev",
+  "diagrams",
+  "favicon",
+  "tests"
+]
