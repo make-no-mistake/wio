@@ -38,6 +38,8 @@ html {
   --code-str: #0a5f34;
   --code-num: #b45309;
   --code-cm: var(--muted);
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
   --transition-fast: 0.12s ease;
 }
 
