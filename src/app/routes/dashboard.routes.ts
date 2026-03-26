@@ -2,9 +2,12 @@ import type { FastifyInstance } from "fastify";
 import { findSitesByOwner } from "../../repositories/site.repository";
 import {
   getEventCounts,
+  getTotalRequests,
+  getErrorCount,
   getActiveConnections,
   getAvgResponseTime,
   getPageViews,
+  getErrorsOverTime,
   getTopPaths,
   getDailyEventCounts,
   getRecentEvents,
@@ -46,9 +49,13 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
       if (sites.length === 0) {
         return {
           totalEvents: 0,
+          totalRequests: 0,
+          errorCount: 0,
           activeConnections: 0,
           avgResponseTime: 0,
           totalEventsTrend: "0%",
+          totalRequestsTrend: "0%",
+          errorCountTrend: "0%",
           activeConnectionsTrend: "0%",
           avgResponseTimeTrend: "0%",
         };
@@ -58,8 +65,11 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
 
       const eventsResult = await getEventCounts(siteIds);
       const activeConnResult = await getActiveConnections(siteIds);
+      const totalRequestsResult = await getTotalRequests(siteIds);
+      const errorCountResult = await getErrorCount(siteIds);
       const avgResponseResult = await getAvgResponseTime(siteIds);
       const pageViewsResult = await getPageViews(siteIds);
+      const errorsOverTimeResult = await getErrorsOverTime(siteIds);
       const topPathsResult = await getTopPaths(siteIds);
       const eventsCountResult = await getDailyEventCounts(siteIds);
       const recentEventsResult = await getRecentEvents(siteIds);
@@ -67,6 +77,8 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
       return {
         totalEvents: Number(eventsResult[0]?.total_count || 0),
         activeConnections: Number(activeConnResult[0]?.current_count || 0),
+        totalRequests: Number(totalRequestsResult[0]?.current_count || 0),
+        errorCount: Number(errorCountResult[0]?.current_count || 0),
         avgResponseTime: Math.round(
           Number(avgResponseResult[0]?.total_avg || 0),
         ),
@@ -78,11 +90,20 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
           Number(activeConnResult[0]?.current_count || 0),
           Number(activeConnResult[0]?.past_count || 0),
         ),
+        totalRequestsTrend: calculateTrend(
+          Number(totalRequestsResult[0]?.current_count || 0),
+          Number(totalRequestsResult[0]?.past_count || 0),
+        ),
+        errorCountTrend: calculateTrend(
+          Number(errorCountResult[0]?.current_count || 0),
+          Number(errorCountResult[0]?.past_count || 0),
+        ),
         avgResponseTimeTrend: calculateTrend(
           Number(avgResponseResult[0]?.current_avg || 0),
           Number(avgResponseResult[0]?.past_avg || 0),
         ),
         pageViews: pageViewsResult,
+        errorsOverTime: errorsOverTimeResult,
         topPaths: topPathsResult,
         eventCounts: eventsCountResult,
         recentEvents: recentEventsResult,
@@ -102,8 +123,11 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
 
       const eventsResult = await getEventCounts(siteIds);
       const activeConnResult = await getActiveConnections(siteIds);
+      const totalRequestsResult = await getTotalRequests(siteIds);
+      const errorCountResult = await getErrorCount(siteIds);
       const avgResponseResult = await getAvgResponseTime(siteIds);
       const pageViewsResult = await getPageViews(siteIds);
+      const errorsOverTimeResult = await getErrorsOverTime(siteIds);
       const topPathsResult = await getTopPaths(siteIds);
       const eventsCountResult = await getDailyEventCounts(siteIds);
       const recentEventsResult = await getRecentEvents(siteIds);
@@ -112,6 +136,8 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
         siteId,
         totalEvents: Number(eventsResult[0]?.total_count || 0),
         activeConnections: Number(activeConnResult[0]?.current_count || 0),
+        totalRequests: Number(totalRequestsResult[0]?.current_count || 0),
+        errorCount: Number(errorCountResult[0]?.current_count || 0),
         avgResponseTime: Math.round(
           Number(avgResponseResult[0]?.total_avg || 0),
         ),
@@ -123,11 +149,20 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
           Number(activeConnResult[0]?.current_count || 0),
           Number(activeConnResult[0]?.past_count || 0),
         ),
+        totalRequestsTrend: calculateTrend(
+          Number(totalRequestsResult[0]?.current_count || 0),
+          Number(totalRequestsResult[0]?.past_count || 0),
+        ),
+        errorCountTrend: calculateTrend(
+          Number(errorCountResult[0]?.current_count || 0),
+          Number(errorCountResult[0]?.past_count || 0),
+        ),
         avgResponseTimeTrend: calculateTrend(
           Number(avgResponseResult[0]?.current_avg || 0),
           Number(avgResponseResult[0]?.past_avg || 0),
         ),
         pageViews: pageViewsResult,
+        errorsOverTime: errorsOverTimeResult,
         topPaths: topPathsResult,
         eventCounts: eventsCountResult,
         recentEvents: recentEventsResult,
@@ -136,6 +171,10 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
 
     api.get("/api/metrics/traffic/:siteId", async (request, reply) => {
       const siteIdParam = (request.params as { siteId: string }).siteId;
+      const query = request.query as { since?: string };
+      const since = ["24h", "7d", "30d", "all"].includes(query.since || "")
+        ? query.since
+        : "24h";
       const sites = await findSitesByOwner(request.currentUser!.id);
 
       const isOverview = siteIdParam === "overview";
@@ -154,9 +193,9 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
         return { statusCodes: [], allPaths: [], trafficVolume: [] };
       }
 
-      const statusCodesResult = await getStatusCodes(siteIds);
-      const allPathsResult = await getAllPaths(siteIds);
-      const trafficVolumeResult = await getTrafficVolume(siteIds);
+      const statusCodesResult = await getStatusCodes(siteIds, since);
+      const allPathsResult = await getAllPaths(siteIds, since);
+      const trafficVolumeResult = await getTrafficVolume(siteIds, since);
 
       return {
         statusCodes: statusCodesResult,
@@ -167,9 +206,18 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
 
     api.get("/api/metrics/events/:siteId", async (request, reply) => {
       const siteIdParam = (request.params as { siteId: string }).siteId;
-      const query = request.query as { page?: string; type?: string };
+      const query = request.query as {
+        page?: string;
+        type?: string;
+        since?: string;
+      };
       const page = Number(query.page || 1);
       const type = query.type || "all";
+      const since = ["any", "1h", "6h", "24h", "7d", "30d"].includes(
+        query.since || "",
+      )
+        ? query.since
+        : "any";
       const pageSize = 50;
       const offset = (page - 1) * pageSize;
 
@@ -197,6 +245,7 @@ export async function dashboardRoutes(fastify: FastifyInstance) {
           type,
           pageSize,
           offset,
+          since,
         );
 
         return { events: eventsResult };

@@ -1,301 +1,360 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
-<head>
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wio Observability</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600&family=Instrument+Serif:ital@0;1&display=swap"
-        rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/dashboard.css">
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/dashboard.css" />
+    <style>
+      #p-logs {
+        display: none;
+        flex-direction: column;
+        padding: 0;
+        width: 100%;
+        min-height: 100%;
+        overflow: visible;
+      }
+      #p-logs.on {
+        display: flex;
+      }
+      #p-overview,
+      #p-traffic {
+        max-width: none;
+        width: 100%;
+        margin: 0;
+        padding: clamp(20px, 3vw, 36px) clamp(16px, 3vw, 36px)
+          clamp(32px, 5vw, 56px);
+      }
+      .docs-float {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font: 500 13px var(--sans);
+        color: var(--text);
+        text-decoration: none;
+        padding: 8px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+        transition:
+          color 0.12s,
+          background 0.12s,
+          border-color 0.12s,
+          box-shadow 0.12s;
+      }
+      .docs-float:hover {
+        color: var(--accent);
+        background: var(--surf2);
+        border-color: var(--accent);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+      }
+      .docs-float .material-symbols-outlined {
+        font-size: 18px;
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
-<body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-top">
-                <a href="#" class="sidebar-icon active" data-target="view-overview" title="Dashboard">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                </a>
-                <a href="#" class="sidebar-icon" data-target="view-traffic" title="Metrics">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
-                        <line x1="18" y1="20" x2="18" y2="10"></line>
-                        <line x1="12" y1="20" x2="12" y2="4"></line>
-                        <line x1="6" y1="20" x2="6" y2="14"></line>
-                    </svg>
-                </a>
-                <a href="#" class="sidebar-icon" data-target="view-events" title="Logs">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                </a>
+  </head>
+  <body>
+    <div class="shell projects-only">
+      <header class="topbar">
+        <div class="u-flex u-items-center u-min-w-0">
+          <a class="logo u-shrink-0" href="/" aria-label="Wio home"><div class="logo-mark">w</div></a>
+          <span class="slash" aria-hidden="true">/</span>
+          <a class="breadcrumb-page" href="#" id="breadcrumbProjects"
+            >My Projects</a
+          >
+          <span class="slash slash-combo" aria-hidden="true">/</span>
+          <div class="combo-wrap" id="comboWrap">
+            <div class="combo-trigger" id="comboTrigger" role="button" tabindex="0" aria-expanded="false" aria-haspopup="listbox" aria-controls="comboDropdown">
+              <span class="combo-site-name" id="comboLabel">All sites</span>
+              <span
+                class="material-symbols-outlined combo-caret"
+                id="comboCaret"
+                aria-hidden="true"
+                >expand_more</span
+              >
             </div>
-            <div class="sidebar-bottom">
-                <a href="#" class="sidebar-icon" title="Support">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                </a>
-                <a href="#" class="sidebar-icon" id="logoutBtn" title="Logout">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                </a>
+            <div class="dropdown-panel combo-dropdown" id="comboDropdown" role="listbox" aria-label="Select a site">
+              <div class="combo-search-wrap">
+                  <span class="material-symbols-outlined input-leading-icon" aria-hidden="true">search</span>
+                <input
+                  class="combo-search field-input"
+                  id="comboSearchVis"
+                  type="text"
+                  placeholder="Search sites…"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-label="Search sites"
+                />
+              </div>
+              <div class="combo-opts" id="comboOpts"></div>
             </div>
-        </aside>
-
-        <div class="main-wrapper">
-            <!-- Header -->
-            <header class="top-header">
-                <div class="header-left">
-                    <a href="/" class="logo">
-                        <div class="logo-mark">w</div>
-                        <span class="logo-text">Wio Observability</span>
-                    </a>
-                    <div class="site-selector">
-                        <select id="siteSelect">
-                            <option value="overview">All Sites (Overview)</option>
-                            <% if (sites && sites.length> 0) { %>
-                                <% sites.forEach(function(site) { %>
-                                    <option value="<%= site.id %>">
-                                        <%= site.name %>
-                                    </option>
-                                    <% }); %>
-                                        <% } %>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="header-center">
-                    <nav class="nav-tabs">
-                        <a href="#" class="tab active" data-target="view-overview">Overview</a>
-                        <a href="#" class="tab" data-target="view-traffic">Traffic</a>
-                        <a href="#" class="tab" data-target="view-events">Events</a>
-                    </nav>
-                </div>
-
-                <div class="header-right">
-                    <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme">
-                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
-                            fill="none">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                        </svg>
-                    </button>
-                    <button class="icon-btn"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
-                            stroke-width="2" fill="none">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                        </svg></button>
-                </div>
-            </header>
-
-            <!-- Main Content -->
-            <main class="content-area">
-                <div id="view-overview" class="view-section active">
-                    <!-- Summary Row -->
-                    <div class="kpi-grid">
-                        <div class="card kpi-card">
-                            <div class="kpi-header">
-                                <h3 class="card-title">Total Events</h3>
-                                <span class="badge trend-up">Trend ↗</span>
-                            </div>
-                            <div class="kpi-value">1.25M</div>
-                            <div class="kpi-sub kpi-positive">+8.4% vs 24h</div>
-                        </div>
-                        <div class="card kpi-card">
-                            <div class="kpi-header">
-                                <h3 class="card-title">Active Connections</h3>
-                                <button class="btn-more">...</button>
-                            </div>
-                            <div class="kpi-value">482</div>
-                            <div class="kpi-sub kpi-negative">-3.1% vs hour</div>
-                        </div>
-                        <div class="card kpi-card">
-                            <div class="kpi-header">
-                                <h3 class="card-title">Avg Response Time</h3>
-                                <button class="btn-more">...</button>
-                            </div>
-                            <div class="kpi-value">185ms</div>
-                            <div class="kpi-sub kpi-positive">-12.7% vs hour</div>
-                        </div>
-                    </div>
-
-                    <!-- Middle Row: Charts -->
-                    <div class="dashboard-grid middle-row">
-                        <div class="card large-chart-card">
-                            <div class="card-header">
-                                <h3 class="card-title">Page Views Over Time</h3>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="pageViewsChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="card small-table-card">
-                            <div class="card-header">
-                                <h3 class="card-title">Top Paths</h3>
-                                <button class="btn-more">...</button>
-                            </div>
-                            <div class="card-body table-container">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Path</th>
-                                            <th>Total Hits</th>
-                                            <th>Avg Response (ms)</th>
-                                            <th>Error Rate</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="topPathsBody">
-                                        <tr>
-                                            <td colspan="4">Loading...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bottom Row: Events -->
-                    <div class="dashboard-grid bottom-row">
-                        <div class="card large-chart-card">
-                            <div class="card-header">
-                                <h3 class="card-title">Event Count over Time</h3>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="eventsChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="card small-table-card">
-                            <div class="card-header">
-                                <h3 class="card-title">Recent Events</h3>
-                                <button class="btn-more">...</button>
-                            </div>
-                            <div class="card-body table-container">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Timestamp</th>
-                                            <th>Event Type</th>
-                                            <th>Resource</th>
-                                            <th>Status</th>
-                                            <th>Duration</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="recentEventsBody">
-                                        <tr>
-                                            <td colspan="5">Loading...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-traffic" class="view-section hidden">
-                    <div class="dashboard-grid middle-row">
-                        <div class="card large-chart-card">
-                            <div class="card-header">
-                                <h3 class="card-title">Traffic Volume</h3>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="trafficVolumeChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="card small-table-card">
-                            <div class="card-header">
-                                <h3 class="card-title">Status Codes</h3>
-                            </div>
-                            <div class="card-body"
-                                style="display:flex; justify-content:center; align-items:center; height: 100%;">
-                                <canvas id="statusCodesChart" style="max-height: 200px;"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card" style="margin-top: 24px;">
-                        <div class="card-header">
-                            <h3 class="card-title">All Paths</h3>
-                        </div>
-                        <div class="card-body table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Path</th>
-                                        <th>Total Hits</th>
-                                        <th>Avg Response (ms)</th>
-                                        <th>Max Response (ms)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="allPathsBody">
-                                    <tr>
-                                        <td colspan="4">Loading...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-events" class="view-section hidden">
-                    <div class="card">
-                        <div class="card-header" style="display:flex; gap: 16px; align-items: center;">
-                            <h3 class="card-title" style="flex:1">Log Explorer</h3>
-                            <select id="eventFilterType" class="chart-select">
-                                <option value="all">All Events</option>
-                                <option value="api">API Requests</option>
-                                <option value="ws">WebSockets</option>
-                                <option value="ai">AI Prompts</option>
-                            </select>
-                        </div>
-                        <div class="card-body table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>Event Type</th>
-                                        <th>Resource / Details</th>
-                                        <th>Status</th>
-                                        <th>Duration</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="logExplorerBody">
-                                    <tr>
-                                        <td colspan="5">Loading...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div style="text-align:center; padding: 16px;">
-                                <button id="loadMoreLogsBtn"
-                                    style="background:none; border:1px solid var(--border); padding: 8px 16px; border-radius: 4px; cursor: pointer; color: var(--text-sec); font-size: 13px;">Load
-                                    More</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+          </div>
         </div>
+        <div class="u-flex u-items-center u-gap-12">
+          <div class="account-wrap" id="accountWrap">
+            <div
+              class="tb-account"
+              id="accountTrigger"
+              role="button"
+              tabindex="0"
+              title="Account"
+              aria-expanded="false"
+              aria-haspopup="true"
+            >
+              <div class="tb-avatar" id="sbAvatar">
+                <%= (user && user.tag) ? String(user.tag).slice(0,
+                2).toUpperCase() : '?' %>
+              </div>
+              <span class="tb-token"
+                ><%= (user && user.tag) ? user.tag : '—' %></span
+              >
+              <span class="material-symbols-outlined tb-account-caret" aria-hidden="true"
+                >expand_more</span
+              >
+            </div>
+            <div class="dropdown-panel account-dropdown" id="accountDropdown">
+              <button class="dropdown-item account-dropdown-item" id="copyTokenBtn">
+                <span class="material-symbols-outlined">content_copy</span> Copy
+                token
+              </button>
+              <button class="dropdown-item account-dropdown-item" id="logoutBtn">
+                <span class="material-symbols-outlined">logout</span> Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <%
+        const sortIcons = '<span class="sort-icons" aria-hidden="true"><span class="material-symbols-outlined sort-up">arrow_drop_up</span><span class="material-symbols-outlined sort-down">arrow_drop_down</span></span>';
+        const filterConfigs = [
+          { id: 'Type', label: 'Type', title: 'Filter by type', options: [{ v: 'api', l: 'HTTP' }, { v: 'ws', l: 'WebSocket' }, { v: 'ai', l: 'AI' }] },
+          { id: 'Status', label: 'Status', title: 'Status range', options: [{ v: '2xx', l: '200-299' }, { v: '4xx', l: '400-499' }, { v: '5xx', l: '500-599' }] },
+          { id: 'Duration', label: 'Response time', title: 'Duration range', options: [{ v: '0-100', l: '<100ms' }, { v: '100-500', l: '100–500ms' }, { v: '500-1000', l: '500ms–1s' }, { v: '1000+', l: '>1s' }] }
+        ];
+        const navItems = [{ page: 'overview', icon: 'dashboard', label: 'Overview' }, { page: 'traffic', icon: 'show_chart', label: 'Traffic' }, { page: 'logs', icon: 'list', label: 'Logs' }];
+        const trafficRanges = [{ value: '24h', label: 'Last 24h', selected: true }, { value: '7d', label: 'Last 7 days' }, { value: '30d', label: 'Last 30 days' }, { value: 'all', label: 'All time' }];
+        const logTimeRanges = [{ value: 'any', label: 'Anytime', selected: true }, { value: '1h', label: 'Last 1 hour' }, { value: '6h', label: 'Last 6 hours' }, { value: '24h', label: 'Last 24 hours' }, { value: '7d', label: 'Last 7 days' }, { value: '30d', label: 'Last 30 days' }];
+        const allPathColumns = [{ key: 'path', label: 'Path', align: '' }, { key: 'hits', label: 'Hits', align: ' r' }, { key: 'avg', label: 'Avg ms', align: ' r' }, { key: 'max', label: 'Max ms', align: ' r' }];
+        const logColumns = [{ key: 'time', label: 'Time', order: 'desc' }, { key: 'type', label: 'Type' }, { key: 'path', label: 'Path / event' }, { key: 'status', label: 'Status' }, { key: 'dur', label: 'Response time' }];
+        const statsConfig = [
+          { label: 'Traffic', valueId: 'stat-traffic', desc: 'HTTP requests in last 24h' },
+          { label: 'Errors', valueId: 'stat-errors', desc: 'Errors in the last 24h' },
+          { label: 'Performance', valueId: 'stat-response', desc: 'HTTP response time in last 24h', hasIndicator: true, val: '0ms' }
+        ];
+        const overviewCharts = [
+          { title: 'Activity', desc: 'Requests past 24h', page: 'traffic', canvasId: 'overviewActivityChart' },
+          { title: 'Errors', desc: 'Client and server errors in the last 24h', page: 'logs', filterStatus: '4xx,5xx', filterType: 'err', canvasId: 'overviewProblemsChart' }
+        ];
+      %>
+      <aside class="sidebar">
+        <nav class="nav">
+          <% navItems.forEach(n => { %><div class="nav-item" data-page="<%= n.page %>" role="button" tabindex="0" aria-label="<%= n.label %>"><span class="material-symbols-outlined nav-icon" aria-hidden="true"><%= n.icon %></span><span class="nav-label"><%= n.label %></span></div><% }); %>
+        </nav>
+      </aside>
+      <div class="content" id="content">
+        <div class="page" id="p-overview">
+          <div class="deploy-card" id="deployCard">
+            <div class="deploy-card-head">
+              <div class="deploy-card-title-row"><span class="deploy-card-title" id="deployCardTitle">—</span><span class="pill" id="deploySystemStatus" aria-label="System status"></span></div>
+              <a class="btn-visit" id="deployVisitBtn" href="#" target="_blank" rel="noopener noreferrer">Visit</a>
+            </div>
+            <div class="deploy-card-body">
+              <div class="deploy-meta"><a class="deploy-url" id="deployUrl" href="#" target="_blank" rel="noopener noreferrer">—</a><div class="deploy-status" id="deployStatus">—</div></div>
+            </div>
+            <div class="stats deploy-card-stats">
+              <% statsConfig.forEach(s => { %><div class="stat<%= s.hasIndicator ? ' stat--has-indicator' : '' %>"><% if (s.hasIndicator) { %><span class="stat-indicator" id="stat-response-indicator" aria-hidden="true"></span><% } %>
+                <div class="stat-label"><%= s.label %></div>
+                <div class="stat-value-wrap"><span class="stat-value" id="<%= s.valueId %>"><%= s.val || '0' %></span></div>
+                <div class="stat-desc"><%= s.desc %></div>
+              </div><% }); %>
+            </div>
+          </div>
+          <div class="overview-charts-section">
+            <div class="section-title">Recent</div>
+            <div class="overview-charts-grid">
+              <% overviewCharts.forEach(c => { %><div class="overview-chart-card">
+                <div class="overview-chart-head">
+                  <div>
+                    <div class="overview-chart-title-row"><span class="overview-chart-title"><%= c.title %></span><a class="overview-chart-link" href="#" data-page="<%= c.page %>"<% if (c.filterStatus) { %> data-filter-status="<%= c.filterStatus %>"<% } %><% if (c.filterType) { %> data-filter-type="<%= c.filterType %>"<% } %> title="<%= c.page === 'logs' ? 'View Logs (errors)' : 'View Traffic' %>" aria-label="<%= c.page === 'logs' ? 'View Logs (errors)' : 'View Traffic' %>"><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a></div>
+                    <span class="overview-chart-desc"><%= c.desc %></span>
+                  </div>
+                </div>
+                <div class="chart-card"><div class="chart-wrap"><canvas id="<%= c.canvasId %>" role="img" aria-label="<%= c.title %> chart: <%= c.desc %>"></canvas></div></div>
+              </div><% }); %>
+            </div>
+          </div>
+          <div class="overview-charts-section">
+            <div class="overview-chart-head">
+              <div>
+                <div class="overview-chart-title-row"><span class="overview-chart-title">Most requested routes</span><a class="overview-chart-link" href="#" data-page="traffic" title="View Traffic" aria-label="View Traffic"><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a></div>
+                <span class="overview-chart-desc">Top paths by request count of all time</span>
+              </div>
+            </div>
+            <div class="overview-chart-card u-w-full">
+              <div class="chart-card">
+                <div class="chart-wrap tall" id="overviewRoutesChartWrap"><canvas id="overviewRoutesChart" role="img" aria-label="Most requested routes bar chart"></canvas></div>
+                <div class="empty" id="overviewRoutesEmpty"><span class="material-symbols-outlined" aria-hidden="true">route</span><span class="empty-msg">No requests yet</span><span class="empty-hint">Traffic will appear here once your site receives requests</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="p-traffic">
+          <div class="pg-head">
+            <div class="pg-head-row">
+              <div class="u-stack-4"><div class="pg-title">Traffic</div><div class="pg-sub">HTTP request analytics</div></div>
+              <select class="select-base u-shrink-0" id="trafficTimeRange" title="Time range" aria-label="Time range">
+                <% trafficRanges.forEach(r => { %><option value="<%= r.value %>"<%= r.selected ? ' selected' : '' %>><%= r.label %></option><% }); %>
+              </select>
+            </div>
+          </div>
+          <div class="section">
+            <div class="charts-row">
+              <div>
+                <div class="section-title">Traffic volume</div>
+                <div class="chart-card">
+                  <div class="chart-wrap">
+                    <canvas id="trafficVolumeChart" role="img" aria-label="Traffic volume chart"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="section-title">Status codes</div>
+                <div class="chart-card">
+                  <div class="chart-wrap" id="trafficStatusCodesChartWrap"><canvas id="trafficStatusCodesChart" role="img" aria-label="HTTP status codes chart"></canvas></div>
+                  <div class="empty" id="trafficStatusCodesEmpty"><span class="material-symbols-outlined" aria-hidden="true">pie_chart</span><span class="empty-msg">No status data yet</span><span class="empty-hint">HTTP status codes will appear here once your site receives requests</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">All paths</div>
+            <div class="table-card tbl-wrap">
+              <div id="allPathsTableWrap">
+                <table class="tbl tbl-sortable tbl-all-paths">
+                  <colgroup>
+                    <col class="col-path" />
+                    <col class="col-num" />
+                    <col class="col-num" />
+                    <col class="col-num" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <% allPathColumns.forEach(col => { %><th class="sortable<%= col.align %>" data-sort="<%= col.key %>" data-order="asc" scope="col" tabindex="0"><%= col.label %><%- sortIcons %></th><% }); %>
+                    </tr>
+                  </thead>
+                  <tbody id="allPathsBody"></tbody>
+                </table>
+              </div>
+              <div class="empty" id="allPathsEmpty"><span class="material-symbols-outlined" aria-hidden="true">route</span><span class="empty-msg">No requests yet</span><span class="empty-hint">Paths will appear here once your site receives requests</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="p-logs">
+          <div class="pg-head logs-page-head">
+            <div class="u-stack-4"><div class="pg-title">Logs</div><div class="pg-sub">HTTP, WebSocket, and AI event stream for your site</div></div>
+          </div>
+          <div class="logs-toolbar">
+            <div class="input-wrap logs-search-wrap u-flex-1 u-min-w-0"><span class="material-symbols-outlined input-leading-icon" aria-hidden="true">search</span><input class="logs-search field-input" id="logsSearch" type="text" placeholder="Search logs…" autocomplete="off" spellcheck="false" aria-label="Search logs" /></div>
+            <div class="logs-filters u-flex u-items-center u-gap-10 u-nowrap">
+              <label
+                class="input-wrap logs-filter-time-wrap"
+                id="logsFilterTimeWrap"
+                for="logsFilterTime"
+              >
+                <select
+                  class="logs-filter-select"
+                  id="logsFilterTime"
+                  title="Time range"
+                  aria-label="Time range"
+                >
+                  <% logTimeRanges.forEach(r => { %><option value="<%= r.value %>"<%= r.selected ? ' selected' : '' %>><%= r.label %></option><% }); %>
+                </select>
+                <span class="material-symbols-outlined caret-icon">expand_more</span>
+              </label>
+              <% filterConfigs.forEach(c => { %>
+              <div class="filter-dropdown" id="logsFilter<%= c.id %>Dropdown">
+                <button type="button" class="input-wrap filter-dropdown-trigger" id="logsFilter<%= c.id %>Trigger" title="<%= c.title %>" aria-expanded="false" aria-haspopup="true" aria-controls="logsFilter<%= c.id %>Panel">
+                  <span class="filter-dropdown-label"><%= c.label || c.id %></span>
+                  <span class="material-symbols-outlined caret-icon" aria-hidden="true">expand_more</span>
+                </button>
+                <div class="filter-dropdown-panel" id="logsFilter<%= c.id %>Panel" role="group" aria-label="<%= c.title %>">
+                  <% c.options.forEach(o => { %><label><input type="checkbox" data-value="<%= o.v %>" data-label="<%= o.l %>" /><%= o.l %></label><% }); %>
+                </div>
+              </div>
+              <% }); %>
+            </div>
+          </div>
+          <div class="logs-body">
+            <div class="logs-table-wrap table-card tbl-wrap" id="logsTableWrap">
+              <table class="log-tbl tbl-sortable">
+                <colgroup>
+                  <col class="log-col-time" />
+                  <col class="log-col-type" />
+                  <col class="log-col-path" />
+                  <col class="log-col-status" />
+                  <col class="log-col-dur" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <% logColumns.forEach(col => { %><th class="sortable" data-sort="<%= col.key %>" data-order="<%= col.order || 'asc' %>" scope="col" tabindex="0"><%= col.label %><%- sortIcons %></th><% }); %>
+                  </tr>
+                </thead>
+                <tbody id="logsBody"></tbody>
+              </table>
+              <div id="loadMoreLogsWrap" class="load-more-wrap">
+                <button class="btn" id="loadMoreLogsBtn">Load more</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page on" id="p-projects">
+          <div class="pg-head">
+            <div class="u-stack-4"><div class="pg-title">My Projects</div><div class="pg-sub">All sites deployed on your Wio account</div></div>
+          </div>
+          <div class="projects-toolbar u-flex u-items-center u-gap-10 u-wrap">
+            <div class="input-wrap proj-search-wrap u-flex-1 u-min-w-0"><span class="material-symbols-outlined input-leading-icon" aria-hidden="true">search</span><input class="proj-search field-input" id="projSearch" type="text" placeholder="Search projects…" autocomplete="off" spellcheck="false" aria-label="Search projects" /></div>
+            <select class="select-base sort-select" id="projSort" aria-label="Sort projects">
+              <option value="activity">Sort by newest</option>
+              <option value="name">Sort by name</option>
+            </select>
+          </div>
+          <div class="proj-grid" id="projGrid"></div>
+        </div>
+
+      </div>
     </div>
 
-    <script src="/static/js/dashboard.js"></script>
-</body>
+    <a class="docs-float" href="https://wio.onl/docs" target="_blank" rel="noopener noreferrer" title="Documentation" aria-label="Documentation"><span class="material-symbols-outlined" aria-hidden="true">help</span> Docs</a>
 
+    <%
+      const _d = JSON.stringify({ sites: sites || [], user: user || null });
+      const _dSafe = _d.replace(/<\//g, "<\\/");
+    %>
+    <script id="dashboard-data" type="application/json"><%- _dSafe %></script>
+    <script>
+      window.__DASHBOARD_DATA__ = JSON.parse(document.getElementById("dashboard-data").textContent);
+    </script>
+    <script type="module" src="/static/js/dashboard.js"></script>
+  </body>
 </html>
