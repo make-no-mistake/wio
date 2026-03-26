@@ -199,3 +199,16 @@ Authentication uses JWT tokens stored in HTTP-only cookies. The flow:
 2. **SDK client:** Add a new module under `src/sdk/` and export it from `src/sdk/_index.ts`
 3. **Tests:** Add tests in `tests/` following existing patterns
 4. **Documentation:** Update the relevant docs page and the `AGENTS.sample.md` file in `cli/`
+
+## Troubleshooting
+
+If your local setup gets out of sync, reinstall dependencies with `bun install`.
+
+For a full reset, remove linked artifacts, rebuild containers, and reinstall everything:
+
+```bash
+bun unlink
+bun run nuke
+bun install
+bun link
+```
