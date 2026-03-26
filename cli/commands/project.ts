@@ -28,11 +28,13 @@ import {
 } from "../helpers/runtime";
 
 export async function runInit(args: string[]): Promise<void> {
-  let projectName = args.find((a) => !a.startsWith("-")) ?? "";
+  let projectName = (args.find((a) => !a.startsWith("-")) ?? "").toLowerCase();
 
   if (!projectName) {
     if (process.stdin.isTTY) {
-      projectName = await styledInput("", { message: "Project name" });
+      projectName = (
+        await styledInput("", { message: "Project name" })
+      ).toLowerCase();
       if (!projectName) {
         printError("Error: project name is required");
         process.exit(1);
@@ -125,6 +127,13 @@ export async function runPush(): Promise<void> {
 
   if (!config.name) {
     printError(`No name found in ${CONFIG_FILE_NAME}`);
+    process.exit(1);
+  }
+
+  if (config.name !== config.name.toLowerCase()) {
+    printError(
+      `Project name "${config.name}" must be all lowercase. Update the name in ${CONFIG_FILE_NAME}.`,
+    );
     process.exit(1);
   }
 

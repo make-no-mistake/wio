@@ -27,8 +27,8 @@ export function validateProjectName(name: string): string | null {
   if (!trimmed) return "Project name cannot be empty.";
   if (trimmed !== name)
     return "Project name cannot have leading or trailing spaces.";
-  if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
-    return "Project name can only contain letters, numbers, hyphens, and underscores.";
+  if (!/^[a-z0-9_-]+$/.test(trimmed)) {
+    return "Project name can only contain lowercase letters, numbers, hyphens, and underscores.";
   }
   if (/^-/.test(trimmed)) return "Project name cannot start with a hyphen.";
   if (trimmed.length > 50)
