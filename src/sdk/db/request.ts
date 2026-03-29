@@ -2,6 +2,28 @@ import type { Payload } from "./payload";
 
 const DB_ENDPOINT = "/db";
 
+export function coerceValue(value: unknown): unknown {
+  const num = Number(value);
+  // Prevents the literal string "NaN" from being coerced to NaN
+  return !Number.isNaN(num) && value === String(num) ? num : value;
+}
+
+export function coerceRecord(record: unknown): unknown {
+  if (Array.isArray(record)) {
+    return record.map(coerceRecord);
+  }
+  if (record !== null && typeof record === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(
+      record as Record<string, unknown>,
+    )) {
+      result[key] = coerceValue(val);
+    }
+    return result;
+  }
+  return record;
+}
+
 function isSelectPayload(payload: Payload<unknown>): boolean {
   return "select" in payload;
 }
