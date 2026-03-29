@@ -1,3 +1,8 @@
+---
+sidebar_position: 5
+title: Architecture
+---
+
 ## System Architecture & Subteams
 
 Because Wio provides a comprehensive Backend-as-a-Service, our team utilized a 3-layer architecture split to ensure deep focus on individual infrastructure components:
@@ -23,19 +28,19 @@ To understand how these layers interact, here is a global architectural walkthro
 
 ### Phase 1: Client Upload (CLI Layer)
 
-![Frontend & CLI Architecture Diagram](./diagrams/wio_push_cli.png)
+![Frontend & CLI Architecture Diagram](../../static/diagrams/wio_push_cli.png)
 
 When a developer runs the `wio push` command, the **Frontend & CLI Interface** subteam's architecture takes over. The CLI reads the `wio.yaml` configuration to determine the project name. It recursively globs the local project directory, bundling all HTML, CSS, JavaScript, and asset files into a compressed `.tar.gz` archive using Bun's built-in archiver. Finally, it sends this archive as `FormData` via a `POST` request to the Wio cloud's `/api/site` endpoint. This toolchain ensures developers never have to manually construct build pipelines or configure deployment targets.
 
 ### Phase 2: Engine Provisioning (Backend Engine Layer)
 
-![Backend Architecture Diagram](./diagrams/wio_push_engine.png)
+![Backend Architecture Diagram](../../static/diagrams/wio_push_engine.png)
 
 Upon receiving the `wio push` artifact at the `POST /api/site` endpoint, the flow shifts to the robust architecture built by the **Backend Engine & Database Repositories** subteam. The routing layer delegates to the backend orchestrator (`site.controller.ts`). The engine extracts the tarball into individual files, uploads each one to secure Object Storage via `s3.repository.ts`, and registers every file path in the `site_files` table. For re-deployments, existing files are cleaned from both S3 and the database before the new upload. This provisioning system ensures that deployed applications have all their assets reliably stored and retrievable via the platform's asset serving pipeline.
 
 ### Phase 3: Runtime Consumption (Client SDK Layer)
 
-![Client SDK Architecture Diagram](./diagrams/wio_runtime.png)
+![Client SDK Architecture Diagram](../../static/diagrams/wio_runtime.png)
 
 After the site is successfully deployed via `wio push`, the deployed frontend application running in the browser seamlessly consumes the dynamic `wio.js` SDK bundled by our transpiler. This is where the **Client SDK & Integrations** subteam's work completes the Backend-as-a-Service model. Their client SDK automatically establishes isolated, per-site WebSocket real-time connections back to the backend platform. Instead of developers writing their own complex integration and server logic, the SDK abstracts this away, securely formatting native database and AI operations into generic validated requests.
 
@@ -45,7 +50,7 @@ Within the `wio push` deployed environment, our architecture provides several fo
 
 ### Repository Pattern Abstraction
 
-![Repository Abstraction Diagram](./diagrams/repository_abstraction.png)
+![Repository Abstraction Diagram](../../static/diagrams/repository_abstraction.png)
 To decouple our application logic from direct database queries, we implemented the Repository Pattern. Controllers interact only with defined interfaces (e.g., `SiteAssetRepository`), allowing our concrete implementations like `SiteAssetRepositoryImpl` to encapsulate raw SQL transactions exclusively.
 
 ### Real-Time WebSocket Gateway
