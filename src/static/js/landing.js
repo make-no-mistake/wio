@@ -162,7 +162,7 @@ wio.ws.<span class="fn">on</span>(topic, callback)<br>
         (card) => `
       <div class="feature-card">
         <div class="feature-card-header">
-          <div class="feature-card-icon">${card.icon}</div>
+          <div class="feature-card-icon" aria-hidden="true">${card.icon}</div>
           <h3 class="feature-card-title">${card.title}</h3>
         </div>
         <p class="feature-card-desc">${card.description}</p>
@@ -177,20 +177,20 @@ wio.ws.<span class="fn">on</span>(topic, callback)<br>
   const workflowPanelsEl = document.getElementById("workflow-panels");
   if (workflowStepsEl && workflowPanelsEl) {
     workflowStepsEl.innerHTML =
-      '<div class="workflow-progress-track"><div class="workflow-progress-line" id="workflow-progress"></div></div>' +
+      '<div class="workflow-progress-track" aria-hidden="true"><div class="workflow-progress-line" id="workflow-progress"></div></div>' +
       workflowSteps
         .map(
           (step, i) =>
-            `<div class="workflow-step" data-step="${i}">
+            `<button class="workflow-step" type="button" role="tab" id="workflow-step-${i}" aria-controls="workflow-panel-${i}" aria-selected="false" tabindex="-1" data-step="${i}">
           <h3>${step.title}</h3>
           <p>${step.description}</p>
-        </div>`,
+        </button>`,
         )
         .join("");
     workflowPanelsEl.innerHTML = workflowSteps
       .map(
         (step, i) =>
-          `<div class="workflow-panel" data-step="${i}">
+          `<div class="workflow-panel" role="tabpanel" id="workflow-panel-${i}" aria-labelledby="workflow-step-${i}" tabindex="0" data-step="${i}">
           <div class="workflow-panel-bar">
             <div class="workflow-panel-dots">
               <span class="workflow-panel-dot"></span>
@@ -209,6 +209,7 @@ wio.ws.<span class="fn">on</span>(topic, callback)<br>
 (function () {
   const cmdEl = document.getElementById("hero-install-cmd");
   const copyBtn = document.getElementById("hero-install-copy");
+  const statusEl = document.getElementById("hero-install-status");
   const copySvg =
     '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
   const checkSvg =
@@ -220,14 +221,32 @@ wio.ws.<span class="fn">on</span>(topic, callback)<br>
         cmdEl.getAttribute("data-cmd") ||
         cmdEl.textContent ||
         "npm i -g wio-cli";
-      navigator.clipboard.writeText(cmd).then(() => {
-        copyBtn.classList.add("copied");
-        copyBtn.innerHTML = checkSvg;
-        setTimeout(() => {
-          copyBtn.classList.remove("copied");
-          copyBtn.innerHTML = copySvg;
-        }, 1500);
-      });
+      navigator.clipboard
+        .writeText(cmd)
+        .then(() => {
+          if (statusEl)
+            statusEl.textContent = "Install command copied to clipboard.";
+          copyBtn.classList.add("copied");
+          copyBtn.innerHTML = checkSvg;
+          copyBtn.setAttribute(
+            "aria-label",
+            "Install command copied to clipboard",
+          );
+          setTimeout(() => {
+            copyBtn.classList.remove("copied");
+            copyBtn.innerHTML = copySvg;
+            copyBtn.setAttribute(
+              "aria-label",
+              "Copy install command to clipboard",
+            );
+          }, 1500);
+        })
+        .catch(() => {
+          if (statusEl) {
+            statusEl.textContent =
+              "Unable to copy automatically. Copy the install command manually.";
+          }
+        });
     });
   }
 })();
@@ -262,8 +281,15 @@ wio.ws.<span class="fn">on</span>(topic, callback)<br>
 
   function setActiveStep(idx) {
     if (idx < 0 || idx >= totalSteps) return;
+    steps.forEach((step, stepIdx) => {
+      const isSelected = stepIdx === idx;
+      step.classList.toggle("is-active", isSelected);
+      step.setAttribute("aria-selected", String(isSelected));
+      step.setAttribute("tabindex", isSelected ? "0" : "-1");
+    });
     panels.forEach((p) => {
       const stepIdx = parseInt(p.getAttribute("data-step"), 10);
+      const isActive = stepIdx === idx;
       p.classList.remove(
         "wf-front",
         "wf-behind-1",
@@ -271,6 +297,8 @@ wio.ws.<span class="fn">on</span>(topic, callback)<br>
         "wf-behind-3",
         "wf-hidden",
       );
+      p.setAttribute("aria-hidden", String(!isActive));
+      p.setAttribute("tabindex", isActive ? "0" : "-1");
       if (stepIdx > idx) p.classList.add("wf-hidden");
       else if (stepIdx === idx) p.classList.add("wf-front");
       else p.classList.add("wf-behind-" + (idx - stepIdx));
@@ -294,6 +322,33 @@ wio.ws.<span class="fn">on</span>(topic, callback)<br>
     });
   }, opts);
   steps.forEach((s) => obs.observe(s));
+  steps.forEach((step, idx) => {
+    step.addEventListener("click", () => {
+      activeIdx = idx;
+      setActiveStep(idx);
+      step.focus();
+    });
+    step.addEventListener("keydown", (event) => {
+      let nextIdx = null;
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        nextIdx = Math.min(idx + 1, totalSteps - 1);
+      } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+        nextIdx = Math.max(idx - 1, 0);
+      } else if (event.key === "Home") {
+        nextIdx = 0;
+      } else if (event.key === "End") {
+        nextIdx = totalSteps - 1;
+      } else if (event.key === "Enter" || event.key === " ") {
+        nextIdx = idx;
+      }
+
+      if (nextIdx === null) return;
+      event.preventDefault();
+      activeIdx = nextIdx;
+      setActiveStep(nextIdx);
+      steps[nextIdx].focus();
+    });
+  });
   setActiveStep(0);
 })();
 
