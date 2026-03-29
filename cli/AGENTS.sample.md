@@ -9,6 +9,10 @@ Rules:
   Do not implement functionality using browser APIs if an SDK capability exists.
   Only use functions documented in this file.
   Make No Mistake
+  When using database outputs, always know the expected type of values and always
+  add code to ensure correct typing. The user might not know what type they want.
+  A string comparison and number comparison for two integers is very different.
+  Be intentional with type checking, casting, and comparisons.
 
 SdkToolIndex:
   - renderMarkdown

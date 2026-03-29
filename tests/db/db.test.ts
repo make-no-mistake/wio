@@ -7,6 +7,7 @@ import {
   test,
 } from "bun:test";
 import type { FastifyInstance } from "fastify";
+import { coerceRecord, coerceValue } from "../../src/sdk/db/request";
 import wio from "../../src/sdk/_index";
 import {
   createTestApp,
@@ -314,5 +315,84 @@ describe("SDK DB End-to-End Test", () => {
         { id: inserted[1]!.id, hello: null, count: "3" },
       ]),
     );
+  });
+});
+
+describe("coerceRecord", () => {
+  test("coerces numeric string values in a flat object", () => {
+    const input = { name: "Alice", age: "30", score: "99.5" };
+    const result = coerceRecord(input);
+    expect(result).toEqual({ name: "Alice", age: 30, score: 99.5 });
+  });
+
+  test("coerces numeric strings in an array of objects", () => {
+    const input = [
+      { id: "1", value: "100" },
+      { id: "2", value: "200" },
+    ];
+    const result = coerceRecord(input);
+    expect(result).toEqual([
+      { id: 1, value: 100 },
+      { id: 2, value: 200 },
+    ]);
+  });
+
+  test("preserves non-numeric strings", () => {
+    const input = { greeting: "hello", empty: "" };
+    const result = coerceRecord(input);
+    expect(result).toEqual({ greeting: "hello", empty: "" });
+  });
+
+  test("preserves strings with leading zeros", () => {
+    const input = { zip: "0123", code: "007" };
+    const result = coerceRecord(input);
+    expect(result).toEqual({ zip: "0123", code: "007" });
+  });
+
+  test("does not coerce the literal string 'NaN'", () => {
+    const input = { broken: "NaN" };
+    const result = coerceRecord(input);
+    expect(result).toEqual({ broken: "NaN" });
+  });
+
+  test("passes through null and primitives unchanged", () => {
+    expect(coerceRecord(null)).toBe(null);
+    expect(coerceRecord(42)).toBe(42);
+    expect(coerceRecord("hello")).toBe("hello");
+  });
+
+  test("handles an empty object", () => {
+    expect(coerceRecord({})).toEqual({});
+  });
+
+  test("handles an empty array", () => {
+    expect(coerceRecord([])).toEqual([]);
+  });
+});
+
+describe("coerceValue", () => {
+  test("converts a numeric string to a number", () => {
+    expect(coerceValue("42")).toBe(42);
+    expect(coerceValue("3.14")).toBe(3.14);
+    expect(coerceValue("-7")).toBe(-7);
+    expect(coerceValue("0")).toBe(0);
+  });
+
+  test("preserves non-numeric strings", () => {
+    expect(coerceValue("hello")).toBe("hello");
+    expect(coerceValue("")).toBe("");
+    expect(coerceValue("NaN")).toBe("NaN");
+  });
+
+  test("preserves strings with leading zeros", () => {
+    expect(coerceValue("0123")).toBe("0123");
+    expect(coerceValue("007")).toBe("007");
+  });
+
+  test("passes through non-string values unchanged", () => {
+    expect(coerceValue(42)).toBe(42);
+    expect(coerceValue(null)).toBe(null);
+    expect(coerceValue(undefined)).toBe(undefined);
+    expect(coerceValue(true)).toBe(true);
   });
 });
