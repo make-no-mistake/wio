@@ -1,25 +1,23 @@
-import { describe, expect, it, mock, beforeEach } from "bun:test";
-
-// Mock the @google/genai module before importing our service
-const generateContentMock = mock(async () => ({
-  text: "Mocked AI response",
-}));
-
-mock.module("@google/genai", () => ({
-  GoogleGenAI: class {
-    constructor() {}
-    models = {
-      generateContent: generateContentMock,
-    };
-  },
-}));
-
-// Must import AFTER the mock is set up
-const { generateText } = await import("../../src/llm/gemma");
+import { describe, expect, it, spyOn, beforeEach, afterEach } from "bun:test";
+import { generateText, ai } from "../../src/llm/gemma";
 
 describe("generateText", () => {
+  let generateContentMock: ReturnType<typeof spyOn>;
+
   beforeEach(() => {
-    generateContentMock.mockClear();
+    generateContentMock = spyOn(
+      ai.models,
+      "generateContent",
+    ).mockImplementation(
+      async () =>
+        ({
+          text: "Mocked AI response",
+        }) as never,
+    );
+  });
+
+  afterEach(() => {
+    generateContentMock.mockRestore();
   });
 
   it("should return the model's text response", async () => {
@@ -64,9 +62,12 @@ describe("generateText", () => {
   });
 
   it("should return error when model returns empty response", async () => {
-    generateContentMock.mockImplementationOnce(async () => ({
-      text: "",
-    }));
+    generateContentMock.mockImplementationOnce(
+      async () =>
+        ({
+          text: "",
+        }) as never,
+    );
 
     const result = await generateText("Hello");
     expect(result).toEqual({
