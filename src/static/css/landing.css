@@ -84,6 +84,43 @@ body {
   overflow-x: hidden;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  transform: translateY(-200%);
+  padding: 10px 14px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  z-index: 1000;
+  transition: transform var(--transition-fast);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+a:focus-visible,
+button:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -859,6 +896,18 @@ nav .container {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.workflow-step.is-active h3 {
+  color: #ffffff;
+}
+.workflow-step.is-active p {
+  color: #b8c1cc;
 }
 .workflow-step h3 {
   font-family: "Instrument Serif", "Georgia", serif;
