@@ -8,7 +8,7 @@ if (!apiKey) {
   );
 }
 
-const ai = new GoogleGenAI({ apiKey });
+export const ai = new GoogleGenAI({ apiKey });
 
 const MODEL = "gemma-3-27b-it";
 
