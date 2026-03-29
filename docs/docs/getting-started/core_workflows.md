@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+title: Core Workflows
+---
+
 # Core Workflows
 
 This guide breaks out the primary end-to-end workflows for evaluating Wio. It is intended for TAs, contributors, and anyone who wants to exercise the CLI, SDK, deployment pipeline, database integrations, and observability tooling in a realistic sequence.

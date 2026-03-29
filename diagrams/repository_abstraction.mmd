@@ -1,4 +1,0 @@
-graph TD
-    A["Application Layer:<br/>Controllers and Services"] -->|calls| B["Repository Interface:<br/>SiteAssetRepository"]
-    C["Concrete Repository:<br/>SiteAssetRepositoryImpl"] -.->|implements| B
-    C -->|executes SQL via bun.sql| D[("PostgreSQL Database")]

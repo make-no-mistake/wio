@@ -57,7 +57,7 @@ wio push
 
 ## Core Workflows
 
-The full workflow guide now lives in [CORE_WORKFLOWS.md](CORE_WORKFLOWS.md).
+To see an example of how to use WIO, see our [Core Workflows](http://wio.onl/docs/getting-started/core_workflows).
 
 It covers:
 
@@ -92,7 +92,7 @@ Wio consists of three parts:
 2. **CLI**: command line interface for managing sites.
 3. **SDK**: interface for accessing Wio services.
 
-See the [architecture guide](ARCHITECTURE.md) for more information.
+See the [architecture guide](http://wio.onl/docs/architecture) for more information.
 
 ## Development
 
@@ -100,7 +100,7 @@ All code contributions are expected to follow the feature-branch PR workflow. Se
 
 All PRs must pass all CI steps to be merged and need to be approved by at least one maintainer. All code contributions must provide reasonable test coverage.
 
-See the [development guide](DEVELOPERS.md) for information about setting up the development environment.
+See the [development guide](http://wio.onl/docs/developers) for information about setting up the development environment.
 
 ## Contributors
 
