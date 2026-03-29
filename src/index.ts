@@ -44,6 +44,11 @@ const fastify = Fastify({
 }).withTypeProvider<TypeBoxTypeProvider>();
 
 await fastify.register(sensible);
+await fastify.register(import("@fastify/rate-limit"), {
+  max: 50,
+  global: false,
+  timeWindow: "1 minute",
+});
 registerErrorHandler(fastify);
 
 await fastify.register(multipart, {

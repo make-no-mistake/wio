@@ -5,6 +5,7 @@ import { expect } from "bun:test";
 import fastifyView from "@fastify/view";
 import fastifyCookie from "@fastify/cookie";
 import sensible from "@fastify/sensible";
+import fastifyRateLimit from "@fastify/rate-limit";
 import ejs from "ejs";
 import { fileURLToPath } from "node:url";
 import { appRoutes } from "../src/app/routes";
@@ -12,11 +13,15 @@ import { registerErrorHandler } from "../src/plugins/error-handler";
 import { siteRoutes } from "../src/site/routes";
 
 const viewsRoot = fileURLToPath(new URL("../src/views", import.meta.url));
+const defaultRateLimitOptions = { max: 100, timeWindow: "1 minute" } as const;
 
-export async function createTestApp() {
+export async function createTestApp(
+  rateLimitOptions = defaultRateLimitOptions,
+) {
   const fastify = Fastify();
 
   await fastify.register(sensible);
+  await fastify.register(fastifyRateLimit, rateLimitOptions);
   registerErrorHandler(fastify);
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyView, {
