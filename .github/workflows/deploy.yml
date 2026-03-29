@@ -1,0 +1,46 @@
+name: Deploy to VPS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create archive
+        run: |
+          tar -czf deploy.tar.gz --exclude='.git' --exclude='node_modules' .
+
+      - name: Copy archive to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 5.78.88.198
+          username: icheppy
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: "deploy.tar.gz"
+          target: "~/"
+
+      - name: Extract and Run Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 5.78.88.198
+          username: icheppy
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            mkdir -p ~/app
+            mv ~/deploy.tar.gz ~/app/
+            cd ~/app
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
+
+            # Copy environment variables
+            cp ~/envs/.env ./.env
+
+            # Restart docker containers using docker compose
+            docker compose down
+            docker compose up -d --build
