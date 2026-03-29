@@ -102,6 +102,12 @@ All PRs must pass all CI steps to be merged and need to be approved by at least 
 
 See the [development guide](http://wio.onl/docs/developers) for information about setting up the development environment.
 
+### Deployment
+
+Wio is deployed to a Virtual Private Server (VPS) using GitHub Actions. We maintain separate workflows for **Production** and **Staging** (both triggered manually via GitHub Actions UI).
+
+Deployments are containerized using Docker Compose, with staging utilizing distinct ports to safely run alongside production. Detailed deployment information can be found in our [Deployment Guide](http://wio.onl/docs/developers/deployment).
+
 ## Contributors
 
 | Member         | Role                 | GitHub                                             |
