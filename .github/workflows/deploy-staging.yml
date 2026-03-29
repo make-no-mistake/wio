@@ -1,0 +1,56 @@
+name: Deploy Staging to VPS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create archive
+        run: |
+          tar -czf deploy-staging.tar.gz --exclude='.git' --exclude='node_modules' --exclude='deploy-staging.tar.gz' .
+
+      - name: Copy archive to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 5.78.88.198
+          username: icheppy
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: "deploy-staging.tar.gz"
+          target: "~/"
+
+      - name: Extract and Run Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 5.78.88.198
+          username: icheppy
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            mkdir -p ~/app-staging
+            mv ~/deploy-staging.tar.gz ~/app-staging/
+            cd ~/app-staging
+            tar -xzf deploy-staging.tar.gz
+            rm deploy-staging.tar.gz
+
+            # Copy staging environment variables if present
+            if [ -f ~/envs/.env.staging ]; then
+              cp ~/envs/.env.staging ./.env
+            else
+              touch ./.env
+            fi
+
+            # Override ports so staging does not conflict with prod
+            export WEB_PORT=3001
+            export POSTGRES_PORT=5433
+            export MINIO_PORT=9002
+            export MINIO_CONSOLE_PORT=9003
+
+            # Restart docker containers using docker compose
+            docker compose -p wio-staging down
+            docker compose -p wio-staging up -d --build
