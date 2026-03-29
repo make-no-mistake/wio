@@ -14,7 +14,8 @@ jobs:
 
       - name: Create archive
         run: |
-          tar -czf deploy-staging.tar.gz --exclude='.git' --exclude='node_modules' --exclude='deploy-staging.tar.gz' .
+          tar -czf /tmp/deploy-staging.tar.gz --exclude='.git' --exclude='node_modules' .
+          mv /tmp/deploy-staging.tar.gz ./deploy-staging.tar.gz
 
       - name: Copy archive to VPS
         uses: appleboy/scp-action@v0.1.7
