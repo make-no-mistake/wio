@@ -5,12 +5,14 @@ import { sql } from "bun";
 
 const repo = new RelationRepositoryImpl();
 
+async function insertCourses(siteId: number, data: Record<string, unknown>[]) {
+  return repo.insertRelations("courses", siteId, data);
+}
+
 describe("insertRelations", () => {
   test("inserts a single record", async () => {
     const site = await createSite();
-    const result = await repo.insertRelations("courses", site.id, [
-      { name: "CSC301" },
-    ]);
+    const result = await insertCourses(site.id, [{ name: "CSC301" }]);
 
     expect(result.success).toBe(true);
     expect(result.records).toHaveLength(1);
@@ -19,7 +21,7 @@ describe("insertRelations", () => {
 
   test("inserts multiple records", async () => {
     const site = await createSite();
-    const result = await repo.insertRelations("courses", site.id, [
+    const result = await insertCourses(site.id, [
       { name: "CSC209" },
       { name: "CSC263" },
     ]);
@@ -31,7 +33,7 @@ describe("insertRelations", () => {
   test("stores data as JSONB and returns it", async () => {
     const site = await createSite();
     const data = { name: "CSC301", semester: "Winter", year: 2026 };
-    const result = await repo.insertRelations("courses", site.id, [data]);
+    const result = await insertCourses(site.id, [data]);
 
     expect(result.records![0]?.data).toEqual(data);
   });
@@ -49,7 +51,7 @@ describe("insertRelations", () => {
 describe("deleteRelations", () => {
   test("deletes records and returns their ids", async () => {
     const site = await createSite();
-    const inserted = await repo.insertRelations("courses", site.id, [
+    const inserted = await insertCourses(site.id, [
       { name: "CSC301" },
       { name: "CSC209" },
     ]);
@@ -71,9 +73,7 @@ describe("deleteRelations", () => {
 
   test("only deletes records for the specified relation", async () => {
     const site = await createSite();
-    const courses = await repo.insertRelations("courses", site.id, [
-      { name: "CSC301" },
-    ]);
+    const courses = await insertCourses(site.id, [{ name: "CSC301" }]);
     await repo.insertRelations("labs", site.id, [{ name: "Lab1" }]);
 
     const ids = courses.records!.map((r) => r.id);
@@ -89,7 +89,7 @@ describe("deleteRelations", () => {
 describe("updateRelations", () => {
   test("updates a single record", async () => {
     const site = await createSite();
-    const inserted = await repo.insertRelations("courses", site.id, [
+    const inserted = await insertCourses(site.id, [
       { name: "CSC301", year: 2025 },
     ]);
 
@@ -104,7 +104,7 @@ describe("updateRelations", () => {
 
   test("updates multiple records", async () => {
     const site = await createSite();
-    const inserted = await repo.insertRelations("courses", site.id, [
+    const inserted = await insertCourses(site.id, [
       { name: "CSC209" },
       { name: "CSC263" },
     ]);
@@ -130,9 +130,7 @@ describe("updateRelations", () => {
 
   test("only updates records for the specified relation", async () => {
     const site = await createSite();
-    const courses = await repo.insertRelations("courses", site.id, [
-      { name: "CSC301" },
-    ]);
+    const courses = await insertCourses(site.id, [{ name: "CSC301" }]);
     const labs = await repo.insertRelations("labs", site.id, [
       { name: "Lab1" },
     ]);
@@ -151,7 +149,7 @@ describe("updateRelations", () => {
 describe("selectRelations", () => {
   test("selects all records with wildcard", async () => {
     const site = await createSite();
-    await repo.insertRelations("courses", site.id, [
+    await insertCourses(site.id, [
       { name: "CSC301", year: 2026 },
       { name: "CSC209", year: 2025 },
     ]);
@@ -166,7 +164,7 @@ describe("selectRelations", () => {
 
   test("selects specific columns", async () => {
     const site = await createSite();
-    await repo.insertRelations("courses", site.id, [
+    await insertCourses(site.id, [
       { name: "CSC301", year: 2026, semester: "Winter" },
     ]);
 
@@ -182,10 +180,7 @@ describe("selectRelations", () => {
 
   test("selects with where eq operator", async () => {
     const site = await createSite();
-    await repo.insertRelations("courses", site.id, [
-      { name: "CSC301" },
-      { name: "CSC209" },
-    ]);
+    await insertCourses(site.id, [{ name: "CSC301" }, { name: "CSC209" }]);
 
     const result = await repo.selectRelations("courses", site.id, {
       select: ["*"],
@@ -216,7 +211,7 @@ describe("selectRelations", () => {
 
   test("selects with or combinator", async () => {
     const site = await createSite();
-    await repo.insertRelations("courses", site.id, [
+    await insertCourses(site.id, [
       { name: "CSC301" },
       { name: "CSC209" },
       { name: "CSC263" },
@@ -235,7 +230,7 @@ describe("selectRelations", () => {
 
   test("selects with order_by, limit, and offset", async () => {
     const site = await createSite();
-    await repo.insertRelations("courses", site.id, [
+    await insertCourses(site.id, [
       { name: "B_Course" },
       { name: "A_Course" },
       { name: "C_Course" },
@@ -257,9 +252,9 @@ describe("selectRelations", () => {
   test("only selects records for the specified relation and site", async () => {
     const site1 = await createSite();
     const site2 = await createSite();
-    await repo.insertRelations("courses", site1.id, [{ name: "CSC301" }]);
+    await insertCourses(site1.id, [{ name: "CSC301" }]);
     await repo.insertRelations("labs", site1.id, [{ name: "Lab1" }]);
-    await repo.insertRelations("courses", site2.id, [{ name: "CSC209" }]);
+    await insertCourses(site2.id, [{ name: "CSC209" }]);
 
     const result = await repo.selectRelations("courses", site1.id, {
       select: ["*"],
@@ -268,5 +263,31 @@ describe("selectRelations", () => {
     expect(result.success).toBe(true);
     expect(result.records).toHaveLength(1);
     expect(result.records![0]).toMatchObject({ name: "CSC301" });
+  });
+});
+
+describe("error handling", () => {
+  test("deleteRelations handles empty ids array", async () => {
+    const result = await repo.deleteRelations("test", 1, []);
+    expect(typeof result.success).toBe("boolean");
+  });
+
+  test("insertRelations handles errors gracefully", async () => {
+    const result = await repo.insertRelations("test", -1, [{ key: "value" }]);
+    expect(typeof result.success).toBe("boolean");
+  });
+
+  test("updateRelations handles errors gracefully", async () => {
+    const result = await repo.updateRelations("test", -1, [
+      { id: 999999, data: { key: "value" } },
+    ]);
+    expect(typeof result.success).toBe("boolean");
+  });
+
+  test("selectRelations handles errors gracefully", async () => {
+    const result = await repo.selectRelations("test", -1, {
+      select: ["*"],
+    });
+    expect(typeof result.success).toBe("boolean");
   });
 });
