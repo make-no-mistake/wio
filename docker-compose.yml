@@ -1,7 +1,6 @@
 services:
   minio:
     image: minio/minio:latest
-    container_name: wio-minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
@@ -17,7 +16,6 @@ services:
 
   minio-init:
     image: minio/mc:latest
-    container_name: wio-minio-init
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
@@ -34,7 +32,6 @@ services:
 
   postgres:
     image: postgres:16-alpine
-    container_name: wio-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -59,7 +56,6 @@ services:
       dockerfile: Dockerfile
       args:
         PORT: ${WEB_PORT:-3000}
-    container_name: wio-web
     restart: unless-stopped
     ports:
       - "${WEB_PORT:-3000}:${WEB_PORT:-3000}"
