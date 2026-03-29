@@ -37,4 +37,25 @@ describe("Error Handler", () => {
 
     await fastify.close();
   });
+
+  test("unknown routes are rate limited by the not found handler", async () => {
+    const fastify = await createTestApp({ max: 3, timeWindow: "1 minute" });
+
+    for (let i = 0; i < 3; i++) {
+      const response = await fastify.inject({
+        method: "GET",
+        url: `/does-not-exist-${i}`,
+      });
+
+      expect(response.statusCode).toBe(404);
+    }
+
+    const limitedResponse = await fastify.inject({
+      method: "GET",
+      url: "/still-does-not-exist",
+    });
+
+    expect(limitedResponse.statusCode).toBe(429);
+    await fastify.close();
+  });
 });

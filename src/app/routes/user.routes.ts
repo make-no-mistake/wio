@@ -21,7 +21,7 @@ export async function userRoutes(fastify: FastifyInstance) {
   app.post("/register", create);
   app.post(
     "/login",
-    { schema: { body: LoginBody } },
+    { schema: { body: LoginBody }, preHandler: fastify.rateLimit() },
     async (request, reply) => {
       const { tag } = request.body;
       const user = await findUserByTag(tag);

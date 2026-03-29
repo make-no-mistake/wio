@@ -6,7 +6,7 @@ import type {
 } from "fastify";
 
 export function registerErrorHandler(fastify: FastifyInstance) {
-  fastify.setNotFoundHandler(() => {
+  fastify.setNotFoundHandler({ preHandler: fastify.rateLimit() }, () => {
     throw fastify.httpErrors.notFound();
   });
 
