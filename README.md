@@ -8,6 +8,22 @@
 
 Wio provides a [managed database](https://wio.onl/docs/features/database), [websockets](https://wio.onl/docs/features/websockets), [observability](https://wio.onl/docs/features/observability), [markdown renderer](https://wio.onl/docs/features/markdown-renderer), [sound player](https://wio.onl/docs/features/sound-player), and [LLM API](https://wio.onl/docs/features/llm-api). Sites using Wio rely on the [SDK](https://wio.onl/docs/sdk) to interface with the backend services provided by Wio. The development of sites is meant to be fully AI driven, requiring no human-written code.
 
+---
+
+## Documentation & Demo
+
+The full documentation for Wio, including the SDK reference, feature guides, and architecture details, is available at:
+
+### 🔗 [**wio.onl/docs**](https://wio.onl/docs)
+
+### Demo Video
+
+[![Wio Demo Video](https://img.shields.io/badge/Watch-Demo--Video-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=1TkNEpCDUI4)
+
+_(Click the badge above to watch our project demo)_
+
+---
+
 ## Getting Started
 
 1. Install the [Wio CLI](https://www.npmjs.com/package/wio-cli) NPM package:
