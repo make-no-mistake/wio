@@ -10,6 +10,10 @@ export async function appRoutes(fastify: FastifyInstance) {
     return reply.viewAsync("landing.ejs");
   });
 
+  fastify.get("/contact", async (_, reply) => {
+    return reply.viewAsync("contact.ejs");
+  });
+
   await fastify.register(authorization);
   await fastify.register(userRoutes);
   await fastify.register(siteApiRoutes);

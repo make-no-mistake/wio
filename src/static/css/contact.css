@@ -1,0 +1,19 @@
+.contact-card .login-subhead {
+  max-width: 56ch;
+}
+
+.contact-email {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  padding-bottom: 1px;
+}
+
+.contact-email:hover {
+  border-color: var(--accent);
+}
+
+.contact-actions {
+  margin-top: 26px;
+}

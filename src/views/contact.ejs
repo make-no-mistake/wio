@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — wio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/landing.css" />
+  <link rel="stylesheet" href="/static/css/login.css" />
+  <link rel="stylesheet" href="/static/css/contact.css" />
+</head>
+
+<body>
+  <%- include('partials/nav') %>
+
+  <main class="login-shell">
+    <section class="login-card contact-card">
+      <p class="login-eyebrow">Contact</p>
+      <h1 class="login-title">Contact us</h1>
+      <p class="login-subhead">
+        For support, partnerships, or business inquiries, email us at
+        <a class="contact-email" href="mailto:contact@wio.onl">contact@wio.onl</a>.
+      </p>
+
+      <div class="login-actions contact-actions">
+        <a class="login-btn" href="mailto:contact@wio.onl">Email us</a>
+        <a class="login-btn ghost" href="/">Back to Home</a>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script src="/static/js/landing.js"></script>
+</body>
+
+</html>
