@@ -109,7 +109,7 @@ Wio consists of three parts:
 2. **CLI**: command line interface for managing sites.
 3. **SDK**: interface for accessing Wio services.
 
-See the [architecture guide](http://wio.onl/docs/architecture) for more information.
+See the [architecture guide](https://wio.onl/docs/developers/architecture) for more information.
 
 ## Development
 
@@ -117,7 +117,7 @@ All code contributions are expected to follow the feature-branch PR workflow. Se
 
 All PRs must pass all CI steps to be merged and need to be approved by at least one maintainer. All code contributions must provide reasonable test coverage.
 
-See the [development guide](http://wio.onl/docs/developers) for information about setting up the development environment.
+See the [development guide](https://wio.onl/docs/developers/overview) for information about setting up the development environment.
 
 ### Troubleshooting
 
@@ -128,7 +128,7 @@ If you encounter issues during local development, try using the following comman
 - `bun run down`: Stops and removes the Docker containers.
 - `bun run logs`: View the logs from the running Docker containers.
 
-If nothing else works, refer to the [Local Setup Documentation](https://wio.onl/docs/developers#local-setup) for detailed instructions on how to re-install the project.
+If nothing else works, refer to the [Local Setup Documentation](https://wio.onl/docs/developers/overview#local-setup) for detailed instructions on how to re-install the project.
 
 ### Deployment
 

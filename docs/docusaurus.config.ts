@@ -91,7 +91,7 @@ const config: Config = {
             },
             {
               label: "Developers",
-              to: "/developers",
+              to: "/developers/overview",
             },
           ],
         },

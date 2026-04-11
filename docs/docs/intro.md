@@ -35,7 +35,7 @@ Your app's HTML, CSS, and JS files are uploaded and served from Wio's infrastruc
 - **[Features](/docs/category/features)** — Detailed guides for each platform service
 - **[SDK Reference](/docs/sdk)** — Complete API reference for the `wio` class
 - **[CLI Reference](/docs/cli)** — Every CLI command, flag, and option
-- **[Developers](/docs/developers)** — Contributing to Wio: local setup, architecture, and testing
+- **[Developers](/docs/developers/overview)** — Contributing to Wio: local setup, architecture, and testing
 
 ## Tech Stack
 

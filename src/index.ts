@@ -72,6 +72,12 @@ await fastify.register(fastifyStatic, {
 fastify.get("/docs", (req, reply) => {
   reply.redirect("/docs/");
 });
+fastify.get("/docs/developers", (req, reply) => {
+  reply.redirect("/docs/developers/overview");
+});
+fastify.get("/docs/architecture", (req, reply) => {
+  reply.redirect("/docs/developers/architecture");
+});
 await fastify.register(fastifyStatic, {
   root: `${import.meta.dir}/static/docs`,
   prefix: "/docs/",
