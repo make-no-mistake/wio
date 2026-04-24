@@ -12,16 +12,6 @@
   margin-bottom: 48px;
 }
 
-.marketplace-eyebrow {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-
 .marketplace-header h2 {
   font-family: "Instrument Serif", "Georgia", serif;
   font-size: clamp(28px, 3vw, 40px);
@@ -126,23 +116,6 @@
   font-size: 11px;
   color: var(--light);
   margin-top: 16px;
-}
-
-/* ---- Empty state ---- */
-.marketplace-empty {
-  padding: 64px 0;
-  text-align: center;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.marketplace-empty a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.marketplace-empty a:hover {
-  text-decoration: underline;
 }
 
 /* ---- Responsive ---- */

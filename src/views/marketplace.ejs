@@ -11,8 +11,20 @@
 </head>
 <body>
   <%- include('partials/nav') %>
-  <%- include('partials/marketplace') %>
+
+  <section class="marketplace-section" id="marketplace">
+    <div class="container">
+      <div class="marketplace-header">
+        <h2>Live on wio</h2>
+        <p class="marketplace-sub">Apps built and deployed by developers on the platform.</p>
+      </div>
+      <div class="marketplace-grid" id="marketplace-grid">
+        <% sites.forEach(site => { %>
+          <%- include('partials/site_card', { site }) %>
+        <% }) %>
+      </div>
+  </section>
+
   <%- include('partials/footer') %>
-  <script src="/static/js/marketplace.js"></script>
 </body>
 </html>

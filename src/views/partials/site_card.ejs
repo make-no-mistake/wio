@@ -1,0 +1,14 @@
+<% const siteHost = `${site.name}.${host}`; %>
+<% const siteUrl = `${protocol}://${siteHost}`; %>
+<% const deployedAt = new Date(site.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }); %>
+
+<a href="<%= siteUrl %>" class="marketplace-card" target="_blank" rel="noopener noreferrer">
+    <div class="marketplace-card-top">
+        <span class="marketplace-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        </span>
+        <span class="marketplace-card-name"><%= site.name %></span>
+    </div>
+    <p class="marketplace-card-url"><%= siteUrl %></p>
+    <p class="marketplace-card-date">Deployed <%= deployedAt %></p>
+</a>

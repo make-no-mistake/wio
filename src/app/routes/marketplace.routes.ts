@@ -1,10 +1,12 @@
 import type { FastifyInstance } from "fastify";
-import {
-  listSites,
-  renderMarketplace,
-} from "../../controllers/marketplace.controller";
+import { getAllSites } from "../../repositories/site.repository";
 
 export async function marketplaceRoutes(fastify: FastifyInstance) {
-  fastify.get("/", renderMarketplace);
-  fastify.get("/api", listSites);
+  fastify.get("/", async (request, reply) => {
+    return reply.viewAsync("marketplace.ejs", {
+      sites: await getAllSites(),
+      protocol: request.protocol,
+      host: request.headers.host,
+    });
+  });
 }
