@@ -1,10 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
-import {
-  RelationRepositoryImpl,
-  type RelationRecord,
-} from "../../repositories/relation.repository";
+import { RelationRepositoryImpl } from "../../repositories/relation.repository";
 
 export async function dbRoutes(fastify: FastifyInstance) {
   const app = fastify.withTypeProvider<TypeBoxTypeProvider>();
@@ -33,9 +30,9 @@ export async function dbRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      let parsed;
+      let query;
       try {
-        parsed = JSON.parse(request.query.payload);
+        query = JSON.parse(request.query.payload);
       } catch {
         return reply
           .status(500)
@@ -45,7 +42,7 @@ export async function dbRoutes(fastify: FastifyInstance) {
       const result = await new RelationRepositoryImpl().selectRelations(
         request.params.relation,
         request.site!.id,
-        parsed,
+        query,
       );
 
       if (!result.success)
@@ -145,14 +142,9 @@ export async function dbRoutes(fastify: FastifyInstance) {
           .status(500)
           .send({ success: false, error: String(result.error) });
 
-      const formattedRecords = result.records!.map((r: RelationRecord) => ({
-        ...r.data,
-        id: r.id,
-      }));
-
       return reply.status(200).send({
         success: true,
-        records: isArray ? formattedRecords : formattedRecords[0]!,
+        records: isArray ? result.records! : result.records![0]!,
       });
     },
   );
@@ -207,14 +199,9 @@ export async function dbRoutes(fastify: FastifyInstance) {
           .status(500)
           .send({ success: false, error: String(result.error) });
 
-      const formattedRecords = result.records!.map((r: RelationRecord) => ({
-        ...r.data,
-        id: r.id,
-      }));
-
       return reply.status(200).send({
         success: true,
-        records: isArray ? formattedRecords : formattedRecords[0]!,
+        records: isArray ? result.records! : result.records![0]!,
       });
     },
   );

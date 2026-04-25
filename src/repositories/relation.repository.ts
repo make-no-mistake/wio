@@ -20,13 +20,13 @@ export declare type RelationsDeletionsResult = {
 export declare type RelationsInsertionsResult = {
   success: boolean;
   error?: string;
-  records?: RelationRecord[];
+  records?: Record<string, unknown>[];
 };
 
 export declare type RelationsUpdateResult = {
   success: boolean;
   error?: string;
-  records?: RelationRecord[];
+  records?: Record<string, unknown>[];
 };
 
 export declare type RelationsSelectResult = {
@@ -96,6 +96,10 @@ export class RelationRepositoryImpl implements RelationRepository {
     siteId: number,
     ids: number[],
   ): Promise<RelationsDeletionsResult> {
+    if (ids.length === 0) {
+      return { success: true, deleted_ids: [] };
+    }
+
     try {
       const deleted = await sql<{ id: number }[]>`
       DELETE FROM relations
@@ -118,11 +122,24 @@ export class RelationRepositoryImpl implements RelationRepository {
     siteId: number,
     records: RecordInsertPayload[],
   ): Promise<RelationsInsertionsResult> {
+    if (records.length === 0) {
+      return { success: true, records: [] };
+    }
+
     const rows = records.map((record) => ({
       site_id: siteId,
       relation_name: relation,
       data: record,
     }));
+
+    for (const row of rows) {
+      if (row.data.id) {
+        return {
+          success: false,
+          error: "Inserting records with custom id is not allowed",
+        };
+      }
+    }
 
     let inserted: RelationRecord[] = [];
 
@@ -137,7 +154,12 @@ export class RelationRepositoryImpl implements RelationRepository {
       };
     }
 
-    return { success: true, records: inserted };
+    const insertedRecords = inserted.map((record) => ({
+      id: record.id,
+      ...record.data,
+    }));
+
+    return { success: true, records: insertedRecords };
   }
 
   async updateRelations(
@@ -145,6 +167,10 @@ export class RelationRepositoryImpl implements RelationRepository {
     siteId: number,
     updates: { id: number; data: Record<string, unknown> }[],
   ): Promise<RelationsUpdateResult> {
+    if (updates.length === 0) {
+      return { success: true, records: [] };
+    }
+
     try {
       const updated: RelationRecord[] = [];
 
@@ -161,7 +187,12 @@ export class RelationRepositoryImpl implements RelationRepository {
         }
       });
 
-      return { success: true, records: updated };
+      const updatedRecords = updated.map((record) => ({
+        id: record.id,
+        ...record.data,
+      }));
+
+      return { success: true, records: updatedRecords };
     } catch (error) {
       return {
         success: false,

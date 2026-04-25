@@ -291,17 +291,29 @@ useRelation:
           description:
             Execute the insert query and return results.
           signature:
-            insert.execute() -> Promise<{ success: boolean, records?: object[], error?: string }>
+            insert.execute() -> Promise<object | object[]>
     update:
       description:
         Build an update query for one or more row ids.
       signature:
         relation.update(id: number | number[], data: object | object[]) -> UpdateClause
+      updateClauseMethods:
+        execute:
+          description:
+            Execute the update query and return updated rows.
+          signature:
+            update.execute() -> Promise<object | object[]>
     delete:
       description:
         Build a delete query for one or more row ids.
       signature:
         relation.delete(ids: number | number[]) -> DeleteClause
+      deleteClauseMethods:
+        execute:
+          description:
+            Execute the delete query and return deletion status.
+          signature:
+            delete.execute() -> Promise<{ success: boolean, deleted_ids: number[] }>
     execute:
       description:
         Execute a built query and return the resulting rows or status.
@@ -310,13 +322,13 @@ useRelation:
 
   casting_and_sorting:
     warning: |
-      - Database reads from relations return user-defined values as strings (e.g., "100" instead of 100).
-      - The `id` field is returned as a number.
-      - String-based numeric comparisons in `orderBy` may be incorrect (e.g., "95" > "100").
+      - Database reads from relations preserve JSON value types (number, string, boolean, null, arrays, objects).
+      - The `id` field is always returned as a number.
+      - Missing selected fields may come back as `null`.
+      - If a column contains mixed types across rows, `orderBy` follows PostgreSQL JSON ordering rules, which may not match numeric intent.
     rule:
-      Do not rely on `orderBy` for numeric sorting of user data. Always fetch the results,
-      cast user values to numbers (e.g., `Number(row.score)`), and sort them
-      in JavaScript. Sorting by `id` works as expected since it is a numeric column.
+      Keep relation fields type-safe in application code. Normalize/cast values before doing strict comparisons
+      or custom sorts when data may be mixed (e.g., numbers and numeric strings in the same column).
     example: |
       const rows = await users.select("*").execute()
-      const sorted = rows.sort((a, b) => Number(b.score) - Number(a.score))
+      const sorted = rows.sort((a, b) => Number(b.score ?? 0) - Number(a.score ?? 0))

@@ -285,7 +285,7 @@ describe("SDK DB End-to-End Test", () => {
     expect(updateResult).toEqual({ id: inserted.id, count: 2 });
 
     const result = await rel.select(["id", "hello", "count"]).execute();
-    expect(result).toEqual([{ id: inserted.id, hello: null, count: "2" }]);
+    expect(result).toEqual([{ id: inserted.id, hello: null, count: 2 }]);
   });
 
   test("can update multiple records", async () => {
@@ -311,8 +311,8 @@ describe("SDK DB End-to-End Test", () => {
     const result = await rel.select(["id", "hello", "count"]).execute();
     expect(result).toEqual(
       expect.arrayContaining([
-        { id: inserted[0]!.id, hello: null, count: "2" },
-        { id: inserted[1]!.id, hello: null, count: "3" },
+        { id: inserted[0]!.id, hello: null, count: 2 },
+        { id: inserted[1]!.id, hello: null, count: 3 },
       ]),
     );
   });

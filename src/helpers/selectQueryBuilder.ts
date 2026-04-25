@@ -76,9 +76,11 @@ function buildOperatorCondition(
 ): string {
   const parts = Object.entries(operators).map(([op, value]) => {
     const colExpr =
-      typeof value === "number"
-        ? `(${refJsonCol(column)})::numeric`
-        : refJsonCol(column);
+      column === "id"
+        ? "id"
+        : typeof value === "number"
+          ? `(${refJsonCol(column)})::numeric`
+          : refJsonCol(column);
     return `${colExpr} ${refOp(op)} ${espaceIfString(value)}`;
   });
 
@@ -98,7 +100,7 @@ export function buildSelectQuery(
           if (col === "id") {
             return `${col} AS "${col}"`;
           }
-          return `data->>'${col}' AS "${col}"`;
+          return `data->'${col}' AS "${col}"`;
         })
         .join(", ");
 

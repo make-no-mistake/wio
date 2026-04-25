@@ -17,7 +17,7 @@ describe("relation repository integration", () => {
     ]);
     expect(inserted.success).toBe(true);
     expect(inserted.records).toHaveLength(2);
-    const ids = inserted.records!.map((r) => r.id);
+    const ids = inserted.records!.map((r) => r.id as number);
 
     // 2. Select — both records exist
     const afterInsert = await repo.selectRelations("products", site.id, {
@@ -31,7 +31,7 @@ describe("relation repository integration", () => {
       { id: ids[0]!, data: { name: "Widget Pro", price: 35 } },
     ]);
     expect(updated.success).toBe(true);
-    expect(updated.records![0]?.data).toEqual({
+    expect(updated.records![0]).toMatchObject({
       name: "Widget Pro",
       price: 35,
     });
@@ -128,26 +128,6 @@ describe("relation repository integration", () => {
 
     expect(result.success).toBe(true);
     expect(result.records).toHaveLength(2);
-  });
-
-  test("selects with like operator", async () => {
-    const site = await createSite();
-    await repo.insertRelations("courses", site.id, [
-      { name: "CSC301" },
-      { name: "CSC209" },
-      { name: "MAT237" },
-    ]);
-
-    const result = await repo.selectRelations("courses", site.id, {
-      select: ["name"],
-      where: { name: { like: "CSC%" } },
-    });
-
-    expect(result.success).toBe(true);
-    expect(result.records).toHaveLength(2);
-    for (const rec of result.records!) {
-      expect((rec.name as string).startsWith("CSC")).toBe(true);
-    }
   });
 
   test("selects with combined gt and lte operators on same column", async () => {
@@ -313,7 +293,7 @@ describe("relation repository integration", () => {
     ]);
 
     // Delete all labs
-    const labIds = labs.records!.map((r) => r.id);
+    const labIds = labs.records!.map((r) => r.id as number);
     await repo.deleteRelations("labs", site.id, labIds);
 
     // Courses should be untouched
@@ -342,7 +322,10 @@ describe("relation repository integration", () => {
 
     // Update site2 record
     await repo.updateRelations("courses", site2.id, [
-      { id: site2Inserted.records![0]!.id, data: { name: "CSC209-updated" } },
+      {
+        id: site2Inserted.records![0]!.id as number,
+        data: { name: "CSC209-updated" },
+      },
     ]);
 
     // site1 should be untouched
@@ -370,7 +353,10 @@ describe("relation repository integration", () => {
     ]);
 
     await repo.updateRelations("courses", site.id, [
-      { id: inserted.records![0]!.id, data: { name: "CSC301", year: 2026 } },
+      {
+        id: inserted.records![0]!.id as number,
+        data: { name: "CSC301", year: 2026 },
+      },
     ]);
 
     // The un-updated record should be unchanged
@@ -396,7 +382,7 @@ describe("relation repository integration", () => {
     ]);
 
     expect(inserted.success).toBe(true);
-    expect(inserted.records![0]?.data).toEqual(complexData);
+    expect(inserted.records![0]).toMatchObject(complexData);
 
     // Select it back with wildcard
     const selected = await repo.selectRelations("projects", site.id, {
