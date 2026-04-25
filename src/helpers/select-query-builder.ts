@@ -2,7 +2,7 @@ import type {
   SelectPayload,
   WhereClause,
   WhereOperators,
-} from "../sdk/db/payload";
+} from "@/sdk/db/payload";
 
 const OP_MAP = {
   eq: "=",

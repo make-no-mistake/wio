@@ -1,6 +1,6 @@
 import { sql } from "bun";
-import type { SelectPayload } from "../sdk/db/payload";
-import { buildSelectQuery } from "../helpers/selectQueryBuilder";
+import type { SelectPayload } from "@/sdk/db/payload";
+import { buildSelectQuery } from "@/helpers/select-query-builder";
 
 export declare interface RelationRecord {
   id: number;

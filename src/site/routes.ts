@@ -1,14 +1,14 @@
 import type { FastifyInstance } from "fastify";
 import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
-import { transpileSDK } from "../sdk/transpiler";
-import { SiteAssetRepositoryImpl } from "../repositories/site_asset.repository";
-import { llmRoutes } from "../llm/routes";
-import { markdownRoutes } from "../markdown/routes";
-import { playSoundRoutes } from "../play_sound/routes";
+import { transpileSDK } from "@/sdk/transpiler";
+import { SiteAssetRepositoryImpl } from "@/repositories/site-asset.repository";
+import { llmRoutes } from "@/site/features/llm/routes";
+import { markdownRoutes } from "@/site/features/markdown/routes";
+import { playSoundRoutes } from "@/site/features/play-sound/routes";
 import { dbRoutes } from "./db/routes";
-import { findSiteByName } from "../repositories/site.repository";
-import { cookieRoutes } from "../cookies/routes";
+import { findSiteByName } from "@/repositories/site.repository";
+import { cookieRoutes } from "@/site/features/cookies/routes";
 
 const SiteParams = Type.Object({
   site: Type.String(),

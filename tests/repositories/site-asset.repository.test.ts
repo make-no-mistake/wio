@@ -1,11 +1,8 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { SiteAssetRepositoryImpl } from "../../src/repositories/site_asset.repository";
+import { SiteAssetRepositoryImpl } from "@/repositories/site-asset.repository";
 import { createSite } from "../factories/site.factory";
-import { insertSiteFile } from "../../src/repositories/file.repository";
-import {
-  writeS3File,
-  deleteS3File,
-} from "../../src/repositories/s3.repository";
+import { insertSiteFile } from "@/repositories/file.repository";
+import { writeS3File, deleteS3File } from "@/repositories/s3.repository";
 import { getS3Path } from "../../src/helpers/storage";
 
 const repo = new SiteAssetRepositoryImpl();

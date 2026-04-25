@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { extractLowestLevelDomain } from "../../src/helpers/extractLowestLevelDomain";
+import { extractLowestLevelDomain } from "@/helpers/extract-lowest-level-domain";
 
 test("production domain", () => {
   expect(extractLowestLevelDomain("hi.wio.onl")).toBe("hi");
