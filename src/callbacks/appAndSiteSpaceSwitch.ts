@@ -22,8 +22,10 @@ export function appAndSiteSpaceSwitch(req: IncomingMessage): string {
     url === "/site.webmanifest" ||
     url.startsWith("/android-chrome-")
   ) {
-    return `/static${url}`;
+    return `/static/favicon${url}`;
   }
+
+  if (url.startsWith("/favicon/")) return `/static${url}`;
 
   if (!site) return url;
 
