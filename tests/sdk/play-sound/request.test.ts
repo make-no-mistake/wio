@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { request } from "../../../src/sdk/play_sound/request";
+import { request } from "@/sdk/play-sound/request";
 
 const originalFetch = globalThis.fetch;
 
@@ -33,7 +33,7 @@ function restoreFetch() {
   globalThis.fetch = originalFetch;
 }
 
-describe("play_sound request", () => {
+describe("play-sound request", () => {
   afterEach(() => {
     restoreFetch();
   });

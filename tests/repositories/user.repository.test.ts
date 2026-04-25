@@ -1,8 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import {
-  findUserByTag,
-  createUser,
-} from "../../src/repositories/user.repository";
+import { findUserByTag, createUser } from "@/repositories/user.repository";
+import { createUser as createUserFixture } from "../factories/user.factory";
 
 describe("findUserByTag", () => {
   test("returns null for non-existent tag", async () => {
@@ -19,6 +17,13 @@ describe("findUserByTag", () => {
     expect(result!.tag).toBe(tag);
     expect(typeof result!.id).toBe("number");
     expect(result!.created_at).toBeInstanceOf(Date);
+  });
+
+  test("finds a fixture-created user by tag", async () => {
+    const user = await createUserFixture();
+    const result = await findUserByTag(user.tag);
+
+    expect(result?.tag).toBe(user.tag);
   });
 });
 

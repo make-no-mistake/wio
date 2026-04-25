@@ -1,5 +1,5 @@
 import type { IncomingMessage } from "http";
-import { extractLowestLevelDomain } from "../helpers/extractLowestLevelDomain";
+import { extractLowestLevelDomain } from "@/helpers/extract-lowest-level-domain";
 
 // This hook serves as a switch between the app and site route space.
 // All requests that arrive through a subdomain (e.g mysite.wio.dev/example)

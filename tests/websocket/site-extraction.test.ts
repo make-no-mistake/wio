@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { extractLowestLevelDomain } from "../../src/helpers/extractLowestLevelDomain";
+import { extractLowestLevelDomain } from "@/helpers/extract-lowest-level-domain";
 
 describe("extractLowestLevelDomain (websocket logic)", () => {
   describe("valid hostnames", () => {

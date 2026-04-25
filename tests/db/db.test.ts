@@ -7,8 +7,8 @@ import {
   test,
 } from "bun:test";
 import type { FastifyInstance } from "fastify";
-import { coerceRecord, coerceValue } from "../../src/sdk/db/request";
-import wio from "../../src/sdk/_index";
+import { coerceRecord, coerceValue } from "@/sdk/db/request";
+import wio from "@/sdk";
 import {
   createTestApp,
   setupSiteAndMockSdkFetch,

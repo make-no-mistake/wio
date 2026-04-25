@@ -18,7 +18,7 @@ interface SDKTranspilationResult {
 export async function transpileSDK(): Promise<SDKTranspilationResult> {
   try {
     const result = await Bun.build({
-      entrypoints: [import.meta.dir + "/_index.ts"],
+      entrypoints: [import.meta.dir + "/index.ts"],
     });
 
     if (result.success && result.outputs[0]) {

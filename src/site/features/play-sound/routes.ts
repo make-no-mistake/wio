@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
-import { readS3File } from "../repositories/s3.repository";
+import { readS3File } from "@/repositories/s3.repository";
 
 const Sounds = Type.Union([
   Type.Literal("alert"),

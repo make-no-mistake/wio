@@ -1,5 +1,5 @@
 import { describe, expect, it, spyOn, beforeEach, afterEach } from "bun:test";
-import { generateText, ai } from "../../src/llm/gemma";
+import { generateText, ai } from "@/site/features/llm/gemma";
 
 describe("generateText", () => {
   let generateContentMock: ReturnType<typeof spyOn>;

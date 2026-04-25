@@ -2,10 +2,10 @@ import fastifyIO from "fastify-socket.io";
 import type { FastifyInstance } from "fastify";
 import { Socket, type DefaultEventsMap } from "socket.io";
 import { ManagedSocket } from "./managed-socket";
-import { extractLowestLevelDomain } from "../helpers/extractLowestLevelDomain";
-import { getSiteByName } from "../repositories/site.repository";
+import { extractLowestLevelDomain } from "@/helpers/extract-lowest-level-domain";
+import { getSiteByName } from "@/repositories/site.repository";
 import assert from "node:assert";
-import type { Site } from "../repositories/site.repository";
+import type { Site } from "@/repositories/site.repository";
 
 export type SiteSocket = Socket<
   DefaultEventsMap,

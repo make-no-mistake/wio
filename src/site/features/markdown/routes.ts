@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { convertToHtml } from "./markdown.controller";
+import { convertToHtml } from "./markdown-controller";
 import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
 

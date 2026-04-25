@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { appAndSiteSpaceSwitch } from "../../src/callbacks/appAndSiteSpaceSwitch";
+import { appAndSiteSpaceSwitch } from "@/callbacks/app-and-site-space-switch";
 import type { IncomingMessage } from "node:http";
 
 function createMockRequest(

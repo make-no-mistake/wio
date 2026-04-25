@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { playSound } from "../../../src/sdk/play_sound";
+import { playSound } from "@/sdk/play-sound";
 
 const originalFetch = globalThis.fetch;
 
@@ -34,7 +34,7 @@ function mockFetchAndCapture() {
   };
 }
 
-describe("sdk play_sound - playSound()", () => {
+describe("sdk play-sound - playSound()", () => {
   afterEach(() => {
     restoreFetch();
   });
