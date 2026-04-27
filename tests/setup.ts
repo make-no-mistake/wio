@@ -1,10 +1,12 @@
 import { beforeAll, afterAll } from "bun:test";
-import { initDatabase, clearDatabase } from "../src/db/schema";
+import migrate from "@/db/migrator";
+import { seed, unseed } from "@/db/seeds";
 
 beforeAll(async () => {
-  await initDatabase();
+  await migrate();
+  await seed();
 });
 
 afterAll(async () => {
-  await clearDatabase();
+  await unseed();
 });

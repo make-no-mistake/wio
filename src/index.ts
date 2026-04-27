@@ -5,7 +5,7 @@ import ejs from "ejs";
 import multipart from "@fastify/multipart";
 import { appAndSiteSpaceSwitch } from "@/callbacks/app-and-site-space-switch";
 import type { TransportTargetOptions } from "pino";
-import { initDatabase } from "@/db/schema";
+import { seed } from "@/db/seeds";
 import { appRoutes } from "@/app/routes";
 import { siteRoutes } from "@/site/routes";
 import { initFastifySocket } from "@/websocket";
@@ -13,6 +13,7 @@ import fastifyCookie from "@fastify/cookie";
 import sensible from "@fastify/sensible";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { registerErrorHandler } from "@/plugins/error-handler";
+import migrations from "@/plugins/migrations";
 const transportTargets: TransportTargetOptions[] = [
   {
     target: "pino-pretty",
@@ -57,7 +58,8 @@ await fastify.register(multipart, {
   },
 });
 
-await initDatabase();
+await fastify.register(migrations);
+await seed();
 
 fastify.log.info({ event: "platform_restart" });
 

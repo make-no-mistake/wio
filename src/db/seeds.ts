@@ -142,6 +142,14 @@ export async function seed() {
   await seedRelations();
 }
 
+export async function unseed() {
+  await sql`DELETE FROM logs`;
+  await sql`DELETE FROM relations`;
+  await sql`DELETE FROM site_files`;
+  await sql`DELETE FROM sites`;
+  await sql`DELETE FROM users`;
+}
+
 async function seedUsers() {
   for (const user of users) {
     await sql`
