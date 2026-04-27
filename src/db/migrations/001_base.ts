@@ -1,25 +1,14 @@
 import { sql } from "bun";
-import { seed } from "./seeds";
+import { MigrationShape } from "@/db/migrations";
 
-export async function initDatabase() {
-  await applySchema();
-  await seed();
-}
-
-export async function clearDatabase() {
-  await sql`DROP TABLE IF EXISTS logs`;
-  await sql`DROP TABLE IF EXISTS relations`;
-  await sql`DROP TABLE IF EXISTS site_files`;
-  await sql`DROP TABLE IF EXISTS sites`;
-  await sql`DROP TABLE IF EXISTS users`;
-}
-
-async function applySchema() {
-  await createUsers();
-  await createSites();
-  await createRelations();
-  await createSiteFiles();
-  await createLogsTable();
+export default class Base extends MigrationShape {
+  async upgrade() {
+    await createUsers();
+    await createSites();
+    await createRelations();
+    await createSiteFiles();
+    await createLogsTable();
+  }
 }
 
 /* ===================== USERS ===================== */
