@@ -4,7 +4,6 @@ import fastifyView from "@fastify/view";
 import ejs from "ejs";
 import multipart from "@fastify/multipart";
 import { appAndSiteSpaceSwitch } from "@/callbacks/app-and-site-space-switch";
-import type { TransportTargetOptions } from "pino";
 import { seed } from "@/db/seeds";
 import { appRoutes } from "@/app/routes";
 import { siteRoutes } from "@/site/routes";
@@ -14,36 +13,8 @@ import sensible from "@fastify/sensible";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { registerErrorHandler } from "@/plugins/error-handler";
 import migrations from "@/plugins/migrations";
-const transportTargets: TransportTargetOptions[] = [
-  {
-    target: "pino-pretty",
-    options: {
-      ignore: "pid,hostname",
-      translateTime: "SYS:standard",
-    },
-    level: "info",
-  },
-];
 
-if (process.env.NODE_ENV !== "test") {
-  transportTargets.push({
-    target: "./observability/pino-db-transport.ts",
-    options: {},
-    level: "info",
-  });
-}
-
-const fastify = Fastify({
-  logger: {
-    level: "info",
-    transport: {
-      targets: transportTargets,
-    },
-  },
-  disableRequestLogging: (req) => req.url.startsWith("/sites/"),
-  rewriteUrl: appAndSiteSpaceSwitch,
-}).withTypeProvider<TypeBoxTypeProvider>();
-
+const fastify = Fastify({ rewriteUrl: appAndSiteSpaceSwitch }).withTypeProvider<TypeBoxTypeProvider>();
 await fastify.register(sensible);
 await fastify.register(import("@fastify/rate-limit"), {
   max: 50,

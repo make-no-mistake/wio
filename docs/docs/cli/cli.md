@@ -125,16 +125,6 @@ Project status — /path/to/my-site
   ✓ Logged in as 1234567890123456
 ```
 
-### `wio dashboard`
-
-Open the Wio observability dashboard in your default browser.
-
-```bash
-wio dashboard
-```
-
-This opens [https://wio.onl/dashboard](https://wio.onl/dashboard) where you can view analytics and telemetry for your deployed sites.
-
 ### `wio version`
 
 Print the installed CLI version.

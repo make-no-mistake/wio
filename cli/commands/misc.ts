@@ -1,7 +1,6 @@
 import { printInfo, c } from "../helpers/pretty_print";
-import { getVersion, openBrowser } from "../helpers/utils";
+import { getVersion } from "../helpers/utils";
 import { stripAnsi, padRight } from "../helpers/display";
-import { DASHBOARD_URL } from "../helpers/constants";
 
 const COMMAND_GROUPS = [
   {
@@ -29,7 +28,6 @@ const COMMAND_GROUPS = [
   {
     label: "Other",
     commands: [
-      ["dashboard", "Open the observability dashboard"],
       ["version", "Show version"],
       ["help", "Show this help"],
     ],
@@ -72,11 +70,6 @@ const COMMAND_USAGE: Record<string, string[]> = {
     "",
     "  Shows project files and login state for the current directory.",
   ],
-  dashboard: [
-    "Usage: wio dashboard",
-    "",
-    "  Opens the Wio observability dashboard in your browser.",
-  ],
   version: ["Usage: wio version", "", "  Prints the installed wio version."],
 };
 
@@ -116,9 +109,4 @@ export async function showCommandHelp(cmd: string): Promise<void> {
 export async function runVersion(): Promise<void> {
   const version = await getVersion();
   printInfo(`wio v${version}`);
-}
-
-export async function runDashboard(): Promise<void> {
-  printInfo(`Opening dashboard: ${DASHBOARD_URL}`);
-  await openBrowser(DASHBOARD_URL);
 }
