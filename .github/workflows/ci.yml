@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 3
 
     steps:
@@ -72,7 +72,7 @@ jobs:
           S3_ENDPOINT: http://localhost:${{ steps.ports.outputs.minio }}
 
   lint:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v6
