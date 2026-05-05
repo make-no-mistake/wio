@@ -24,7 +24,7 @@ export async function readWioConfig(): Promise<WioConfig> {
     const code = getErrnoCode(err);
     if (code === "ENOENT") return {};
     if (code === "EACCES")
-      throw new Error("Permission denied reading wio.yaml");
+      throw new Error("Permission denied reading wio.yaml", { cause: err });
     throw err;
   }
 
@@ -32,7 +32,7 @@ export async function readWioConfig(): Promise<WioConfig> {
     const parsed = (await yamlParse(raw)) as WioConfig | null;
     return parsed ?? {};
   } catch (err) {
-    throw new Error(`Invalid wio.yaml: ${formatError(err)}`);
+    throw new Error(`Invalid wio.yaml: ${formatError(err)}`, { cause: err });
   }
 }
 

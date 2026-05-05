@@ -14,7 +14,9 @@ import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { registerErrorHandler } from "@/plugins/error-handler";
 import migrations from "@/plugins/migrations";
 
-const fastify = Fastify({ rewriteUrl: appAndSiteSpaceSwitch }).withTypeProvider<TypeBoxTypeProvider>();
+const fastify = Fastify({
+  rewriteUrl: appAndSiteSpaceSwitch,
+}).withTypeProvider<TypeBoxTypeProvider>();
 await fastify.register(sensible);
 await fastify.register(import("@fastify/rate-limit"), {
   max: 50,
