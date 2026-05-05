@@ -4,12 +4,7 @@ import { wantsHelp } from "./helpers/utils";
 import { getCliArgs } from "./helpers/runtime";
 import { runLogin, runLogout, runRegister } from "./commands/auth";
 import { runInit, runPush, runStatus, runList } from "./commands/project";
-import {
-  showHelp,
-  showCommandHelp,
-  runVersion,
-  runDashboard,
-} from "./commands/misc";
+import { showHelp, showCommandHelp, runVersion } from "./commands/misc";
 
 async function runCommand(cmd: string, args: string[]): Promise<boolean> {
   switch (cmd) {
@@ -63,9 +58,6 @@ async function runCommand(cmd: string, args: string[]): Promise<boolean> {
       } else {
         await runList(args);
       }
-      break;
-    case "dashboard":
-      await runDashboard();
       break;
     default:
       return false;

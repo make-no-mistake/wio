@@ -88,7 +88,7 @@ bun run cli/index.ts init my-test-project
 bun test
 ```
 
-Tests use Bun's built-in test runner. The test environment skips the Pino-to-DB log transport to avoid database dependencies in unit tests.
+Tests use Bun's built-in test runner.
 
 ## Linting
 
@@ -106,7 +106,7 @@ Uses ESLint and Prettier.
 │   ├── index.ts              # Server entry point
 │   ├── app/
 │   │   ├── routes.ts         # App-level route registration
-│   │   └── routes/           # User, site, dashboard routes
+│   │   └── routes/           # User and site routes
 │   ├── site/
 │   │   ├── routes.ts         # Per-site route handler (asset serving, SDK)
 │   │   └── db/routes.ts      # Database API routes (CRUD)
@@ -128,10 +128,9 @@ Uses ESLint and Prettier.
 │   ├── llm/                  # LLM server (Gemma model proxy)
 │   ├── markdown/             # Markdown server endpoint
 │   ├── play_sound/           # Sound playback server endpoint
-│   ├── observability/        # Pino-to-PostgreSQL log transport
 │   ├── helpers/              # Shared utilities
 │   ├── callbacks/            # Fastify hooks (subdomain routing)
-│   ├── views/                # EJS templates (landing, login, dashboard)
+│   ├── views/                # EJS templates (landing, login)
 │   ├── static/               # Static assets (demo sites, sounds)
 │   └── types/                # TypeScript type extensions
 ├── cli/                      # CLI source
@@ -163,7 +162,7 @@ Controllers in `src/controllers/` handle request processing logic. They receive 
 Wio uses subdomain-based routing to serve sites. The `appAndSiteSpaceSwitch` callback rewrites incoming URLs:
 
 - `my-site.wio.onl/page` → internally routes to `/sites/my-site/page`
-- `wio.onl/dashboard` → stays as-is (app-level routes)
+- `wio.onl/page` → stays as-is (app-level routes)
 
 This is implemented via Fastify's `rewriteUrl` option.
 
@@ -173,7 +172,7 @@ The client SDK is written in TypeScript and transpiled to a browser-compatible J
 
 ### Database Model
 
-The platform uses five tables:
+The platform uses four tables:
 
 | Table | Purpose |
 |-------|---------|
@@ -181,8 +180,6 @@ The platform uses five tables:
 | `sites` | Deployed sites (owned by a user) |
 | `site_files` | File registry (maps files to S3 paths) |
 | `relations` | Generic data storage (per-site, per-relation JSONB) |
-| `logs` | Observability logs (structured Pino output) |
-
 The `relations` table is the key abstraction — it stores arbitrary JSONB data keyed by `site_id` and `relation_name`, enabling each site to have its own virtual tables without DDL.
 
 ### Authentication

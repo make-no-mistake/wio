@@ -141,25 +141,23 @@ export class RelationRepositoryImpl implements RelationRepository {
       }
     }
 
-    let inserted: RelationRecord[] = [];
-
     try {
-      inserted = await sql<RelationRecord[]>`
-      INSERT INTO relations ${sql(rows)}
-      RETURNING id, site_id, relation_name, data`;
+      const inserted = await sql<RelationRecord[]>`
+        INSERT INTO relations ${sql(rows)}
+        RETURNING id, site_id, relation_name, data`;
+
+      const insertedRecords = inserted.map((record) => ({
+        id: record.id,
+        ...record.data,
+      }));
+
+      return { success: true, records: insertedRecords };
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       };
     }
-
-    const insertedRecords = inserted.map((record) => ({
-      id: record.id,
-      ...record.data,
-    }));
-
-    return { success: true, records: insertedRecords };
   }
 
   async updateRelations(

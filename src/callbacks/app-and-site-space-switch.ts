@@ -10,8 +10,6 @@ export function appAndSiteSpaceSwitch(req: IncomingMessage): string {
   const url = req.url || "/";
 
   if (url.startsWith("/static/")) return url;
-  if (url.startsWith("/dashboard") || url.startsWith("/api/metrics"))
-    return url;
 
   // Force all tenant sites to use the Wio favicon
   if (

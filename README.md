@@ -6,7 +6,7 @@
 - **Instant deployment**: Sites are deployed instantly with zero configuration.
 - **AI-agent-powered**: All development is powered by an AI agent.
 
-Wio provides a [managed database](https://wio.onl/docs/features/database), [websockets](https://wio.onl/docs/features/websockets), [observability](https://wio.onl/docs/features/observability), [markdown renderer](https://wio.onl/docs/features/markdown-renderer), [sound player](https://wio.onl/docs/features/sound-player), and [LLM API](https://wio.onl/docs/features/llm-api). Sites using Wio rely on the [SDK](https://wio.onl/docs/sdk) to interface with the backend services provided by Wio. The development of sites is meant to be fully AI driven, requiring no human-written code.
+Wio provides a [managed database](https://wio.onl/docs/features/database), [websockets](https://wio.onl/docs/features/websockets), [markdown renderer](https://wio.onl/docs/features/markdown-renderer), [sound player](https://wio.onl/docs/features/sound-player), and [LLM API](https://wio.onl/docs/features/llm-api). Sites using Wio rely on the [SDK](https://wio.onl/docs/sdk) to interface with the backend services provided by Wio. The development of sites is meant to be fully AI driven, requiring no human-written code.
 
 ---
 
@@ -78,24 +78,8 @@ To see an example of how to use WIO, see our [Core Workflows](http://wio.onl/doc
 It covers:
 
 - end-to-end site setup, development, and deployment
-- focused validation paths for the CLI, SDK/database, and observability
+- focused validation paths for the CLI and SDK/database
 - the expected outcomes reviewers should be able to confirm
-
----
-
-## Deliverable 4 Improvements & D3 Feedback
-
-In D3, we received positive feedback on our implementation robustness and clear setup workflow. However, we identified areas for improvement around test coverage, accessibility, and edge case handling based on the feedback.
-
-- To address the UI and accessibility gaps, we significantly revamped the observability dashboard and landing page.
-- To resolve functionality and robustness concerns, we addressed telemetry edge cases and bolstered our test suites.
-
-**Key Changes:**
-
-1. **Observability Dashboard UX & Query Efficiency**: Redesigned the observability dashboard to be more query-efficient and customizable. Users can now filter and view events by specific time ranges, providing a much smoother monitoring experience ([PR #220](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/220)).
-2. **Comprehensive Accessibility**: Added ARIA labels and full keyboard navigation support across the landing page and the observability dashboard, ensuring the platform is accessible to all developers ([PR #251](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/251)).
-3. **Expanded Test Coverage**: Added extensive E2E and Unit tests, directly addressing feedback regarding limited code coverage. (e.g., [PR #233](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/233), [PR #224](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/224)).
-4. **Telemetry Edge Case Handling**: Fixed issues where telemetry edge cases could fail silently, improving error handling and ensuring all AI and site events are accurately captured and reported ([PR #250](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/250), [PR #235](https://github.com/csc301-2026-s/project-21-make-no-mistake/pull/235)).
 
 ---
 
